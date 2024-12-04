@@ -1,55 +1,24 @@
-# ESPHome + LVGL on cheap touchscreen devices
+# Modular butrton system for quick buttons for ESPHome + LVGL on cheap touchscreen devices
 
 ## Supported Devices
-* Sunton `ESP32-2432S028R` - 2.8" with resistive touch and USB micro-B.
-* Sunton `ESP32-8048S043` - 4.3" with capactivive touch and USB-C.
-* Sunton `ESP32-8048S050` - 5.0" with capactivive touch and USB-C.
-* Elecrow CrowPanel `DIS05035H` (v2.2) - 3.5" with resistive touch and USB-C.
+* Guition `ESP32-4848s040` 4.0" with capacitive touch and USB-C [AliExpress Link](https://www.aliexpress.us/item/3256806436431838.html).
+* Guition `JC3248W535` 3.5" with capacitive touch and USB-C. [AliExpress Link](https://www.aliexpress.com/item/1005007566046827.html).
+* Sunton `ESP32-2432S028R` 2.8" with resistive touch and USB micro-B. [AliExpress Link](https://www.aliexpress.com/item/1005004502250619.html).
+* Sunton `ESP32-8048S043` 4.3" with capactivive touch and USB-C. [AliExpress Link](https://www.aliexpress.com/item/1005004788147691.html).
+* Sunton `ESP32-8048S050` 5.0" with capactivive touch and USB-C. [AliExpress Link](https://www.aliexpress.com/item/1005004952694042.html).
+* Elecrow CrowPanel `DIS05035H` (v2.2) 3.5" with resistive touch and USB-C. [Manufacturer's Link](https://www.elecrow.com/esp32-display-3-5-inch-hmi-display-spi-tft-lcd-touch-screen.html).
 
-## File Structure
-If all you are looking for is a device-specific config then look no further than the `devices/` directory. The YAML files in there are clean and free from anything not related to the devices themselves. They are intended to be used as [Packages](https://esphome.io/components/packages.html) in a higher-level YAML config file, which allows for device-specific settings and common settings to be kept in separate files, avoiding duplicate code and making it easier to update groups of devices. 
+# Example ESPHome config files for screens and devices
 
-The YAML files in the root of this repo demonstrate how to use each device's config file with a common config, as well as a resolution-specific (but not device-specific) LVGL config/layout. 
+I use a lot of svg vector graphics. The latest ESPHome does not install svg by default. Use pip to install cairosvg. 
 
-## Advanced YAML Techniques
-Aside from the Packages feature used to separate device-specfic YAML from common YAML config, there are some other potentially unfamiliar techniques in use here. For example, the files within `layouts/` use [YAML anchors and aliases](https://ref.coddy.tech/yaml/yaml-anchors) which help reduce code duplication. I use anchors and aliases instead of `style_definitions` and `styles` as anchors can be used on anything instead of being restricted to just styles, and because they override `theme` settings when used (there is a bug or perhaps odd design choice that prevent `styles` from overriding `theme`). I define most of my anchors within a made-up section called `.sizing` because top-level sections prefixed with a period do not cause errors when parsed by ESPHome. 
+pip install esphome cairosvg
 
-## How-tos
-### How to specify the home page on a particular device
-To change which page loads at boot time and when the home button is pressed on a particular device, adjust the `home_page` variable in the device's config file to the ID of the desired page. 
+### SDL Display on host
 
-For example, to set a page with the ID `printers`, adjust this in your device's config file:
-```yaml
-substitutions:
-  ...
-  home_page: printers
-```
+The SDL display platform allows you to use create an ESPHome display on a desktop system running Linux or MacOS. This is particularly useful for designing display layouts, since compiling and running a host binary is much faster than compiling for and flashing a microcontroller target system.
 
-### How to hide pages on particular devices
-To hide a page on a particular device, extend the desired `page` definition by adding `skip: true` using `!extend` (see [Packages](https://esphome.io/components/packages.html) feature). 
+### `ESP32-4848s040` 4.0" 480px * 480px Smart Screen
 
-For example, to hide a page with the ID `bedroom`, add this to your device's config file:
-```yaml
-lvgl:
-  pages:
-    - id: !extend bedroom
-      skip: true
-```
-
-## Todo
-This readme isn't finished. I'll be elaborating on some more techniques being used in here, such as the modularization of the widgets using `!include` and how the stateful widget files relate to their sensor counterparts (tip, just make sure to pass the same `uid` and `entity_id` when including a widget and when including the related widget sensor).
-
-## Photos
-These look better in real life, I promise! I took these photos in low-light and displays are not easy to photograph in general.
-
-4.3" 800x480  
-![Lighting Page](media/4.3_lighting.jpg "Lighting Page")
-![Printers Page](media/4.3_printers.jpg "Printers Page")
-
-3.5" 480x320  
-![Lighting Page](media/3.5_lighting.jpg "Lighting Page")
-![Printers Page](media/3.5_printers.jpg "Printers Page")
-
-2.8" 320x240  
-![Lighting Page](media/2.8_lighting.jpg "Lighting Page")
-![Printers Page](media/2.8_printers.jpg "Printers Page")
+This is a really great little screen. I have a basic config and also a full featured one. guition-esp32-s3-4848s040-display_modular.yaml
+ has a boot screen, a system for dimming the backligh at night and some basic buttons for controlling local and Home Assistant devices.
