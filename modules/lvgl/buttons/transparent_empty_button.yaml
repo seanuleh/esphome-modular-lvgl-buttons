@@ -1,0 +1,5 @@
+---
+            height: ${height}
+            bg_opa: TRANSP
+            checkable: no
+            id: lv_button_${id}

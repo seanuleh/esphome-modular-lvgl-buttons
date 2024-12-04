@@ -1,0 +1,7 @@
+---
+globals:
+# Keeps track of late night mode for turning off the backlight
+  - id: late_night_mode
+    type: bool
+    restore_value: false
+    initial_value: 'false'
