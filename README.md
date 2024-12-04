@@ -1,4 +1,4 @@
-# Modular butrton system for quick buttons for ESPHome + LVGL on cheap touchscreen devices
+# Modular easy button screen for ESPHome + LVGL on cheap touchscreen devices
 
 ## Supported Devices
 * Guition `ESP32-4848s040` 4.0" with capacitive touch and USB-C [AliExpress Link](https://www.aliexpress.us/item/3256806436431838.html).
