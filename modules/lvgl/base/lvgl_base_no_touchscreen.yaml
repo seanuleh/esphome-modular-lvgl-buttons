@@ -1,0 +1,13 @@
+---
+esphome:
+  on_boot:
+    priority: -100
+    then:
+      - delay: 60s
+      - lvgl.widget.hide: boot_screen
+
+lvgl:
+  displays:
+    - my_display
+
+
