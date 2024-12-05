@@ -12,7 +12,9 @@
 
 I use a lot of svg vector graphics. The latest ESPHome does not install svg by default. Use pip to install cairosvg. 
 
+```
 pip install esphome cairosvg
+```
 
 ### SDL Display on host
 
@@ -20,5 +22,4 @@ The SDL display platform allows you to use create an ESPHome display on a deskto
 
 ### `ESP32-4848s040` 4.0" 480px * 480px Smart Screen
 
-This is a really great little screen. I have a basic config and also a full featured one. guition-esp32-s3-4848s040-display_modular.yaml
- has a boot screen, a system for dimming the backligh at night and some basic buttons for controlling local and Home Assistant devices.
+This is a really great little screen.  guition-esp32-s3-4848s040-display_modular.yaml has a boot screen, a system for dimming the backligh at night and some basic buttons for controlling local and Home Assistant devices.
