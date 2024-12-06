@@ -28,6 +28,7 @@ substitutions:
   touchscreen_idle_timeout: "120s"
   touchscreen_daytime_brightness: "100%"
   touchscreen_nighttime_brightness: "50%"
+  # Boot screen configuration
   boot_screen_delay: 60s
 
   # Screen goes to sleep at Mightnight
@@ -79,6 +80,9 @@ packages:
   lvgl_time: !include modules/lvgl/base/lvgl_time_sntp.yaml
   lvgl_sensors: !include modules/lvgl/base/lvgl_sensors_base.yaml
   lvgl_base: !include modules/lvgl/base/lvgl_base.yaml
+
+  # Time update script
+  lvgl_time_update: !include modules/lvgl/base/lvgl_time_update_none.yaml
   
   # Update button and relay state from Home Assistant
   button_1_sensor: !include { file: modules/sensors/basic_local_relay_button_state.yaml, vars: { id: 1 } }
@@ -93,7 +97,7 @@ lvgl:
   page_wrap: true
 
 # Boot screen
-  top_layer: !include { file: modules/lvgl/screens/boot_screen.yaml, vars: { height: $screen_height, width: $screen_width  } }
+  top_layer: !include { file: modules/lvgl/screens/boot_screen.yaml }
 
 # Main Page
   pages:
