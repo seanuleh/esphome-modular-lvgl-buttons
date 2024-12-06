@@ -1,0 +1,7 @@
+---
+# use lvgl_time_update.yaml or some other script if you want something to actaully happen!
+script:
+  - id: time_update
+    then:
+      - lambda: |-
+          // No operation

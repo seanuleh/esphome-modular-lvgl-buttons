@@ -28,6 +28,7 @@ substitutions:
   touchscreen_idle_timeout: "120s"
   touchscreen_daytime_brightness: "100%"
   touchscreen_nighttime_brightness: "50%"
+  boot_screen_delay: 60s
 
   # Screen goes to sleep at Mightnight
   screen_sleep_hour: '0'

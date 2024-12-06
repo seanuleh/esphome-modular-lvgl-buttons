@@ -49,3 +49,7 @@ time:
           - light.turn_on:
               id: display_backlight
               brightness: $touchscreen_nighttime_brightness
+      - minutes: '*'
+        seconds: 0
+        then:
+          - script.execute: time_update

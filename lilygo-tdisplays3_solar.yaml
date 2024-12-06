@@ -12,9 +12,9 @@ substitutions:
   ceiling_fan_light: "\U000F1798"
 
   icon_font: light40
-  text_font: roboto24
-  screen_height: '480px'
-  screen_width: '480px'
+  text_font: roboto12
+  screen_height: '170px'
+  screen_width: '320px'
   button_on_color: "burnt_sienna"
   button_off_color: "very_dark_gray"
   icon_on_color: "yellow"
@@ -28,6 +28,9 @@ substitutions:
   touchscreen_idle_timeout: "120s"
   touchscreen_daytime_brightness: "100%"
   touchscreen_nighttime_brightness: "50%"
+  
+  # Boot screen configuration
+  boot_screen_delay: 10s
 
   # Screen goes to sleep at Mightnight
   screen_sleep_hour: '0'
@@ -37,18 +40,42 @@ substitutions:
   screen_wake_hour: '5'
   screen_wake_minute: '30'
 
-
-  # Button 1 is a switch (some devcies show up as switches some as lights make sure you use the corresponding file)
-  button_1_name: "Button 2"
-  button_1_id: couch_lamp
-  button_1_icon: $lightbulb
-  button_1_device: "switch.athom_smart_plug_v3_50ebc0_switch"
-
 esphome:
-  name: enphdisp
-  friendly_name: Enphase info display
-  comment: "lilygo tdisplays3 170px * 320px Smart Screen"  
-    
+  name: solardisp
+  friendly_name: Solar info display
+  comment: "Solar info display 170px * 320px Smart Screen"  
+
+sensor:
+  - platform: homeassistant
+    id: solar_current_power_production
+    entity_id: sensor.envoy_122030047695_current_power_production
+    internal: true
+    on_value:
+      then:
+        if:
+            condition:
+              sensor.in_range:
+                id: solar_current_power_production
+                below: 1
+            then:
+              - lvgl.label.update:
+                  id: solarCPP
+                  text:
+                    format: "%.0f"
+                    args: [ 'id(solar_current_power_production).state *= 1000' ]
+              - lvgl.label.update:
+                  id: solarCPP_unit
+                  text: "W"
+            else:
+              - lvgl.label.update:
+                  id: solarCPP
+                  text:
+                    format: "%.1f"
+                    args: [ 'id(solar_current_power_production).state' ]
+              - lvgl.label.update:
+                  id: solarCPP_unit
+                  text: "kW"  
+
 packages:
   # Generic configuration for ESP32 screens
   base: !include modules/common/base.yaml
@@ -65,10 +92,9 @@ packages:
   lvgl_time: !include modules/lvgl/base/lvgl_time_sntp.yaml
   lvgl_sensors: !include modules/lvgl/base/lvgl_sensors_base.yaml
   lvgl_base: !include modules/lvgl/base/lvgl_base_no_touchscreen.yaml
-  
-  # Update button and relay state from Home Assistant
-  button_1_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 1 } } 
- 
+
+  # Time update script
+  lvgl_time_update: !include modules/lvgl/base/lvgl_time_update.yaml
 
 # -------------------------------------------------------------------------
 # LVGL pages and buttons
@@ -78,18 +104,89 @@ lvgl:
   page_wrap: true
 
 # Boot screen
-  top_layer: !include { file: modules/lvgl/screens/boot_screen.yaml, vars: { height: $screen_height, width: $screen_width  } }
+  top_layer: !include { file: modules/lvgl/screens/boot_screen_170x320.yaml, vars: { height: $screen_height, width: $screen_width  } }
 
 # Main Page
   pages:
     - id: main_page
-      layout:
-        type: flex
-        flex_flow: COLUMN_WRAP
-      width: 100%
-      bg_color: black
-      bg_opa: cover
-      pad_all: 5
-      widgets: # Include all the buttons
-        - button: !include { file: modules/lvgl/buttons/basic_switch_button.yaml, vars: { id: 1, height: $button_height_single } }
+      widgets:
+          - obj:
+              align: CENTER
+              width: $screen_width
+              height: $screen_height
+              bg_color: white
+              bg_opa: COVER
+              layout:
+                type: GRID
+                grid_columns: [FR(25), FR(45), FR(30)]
+                grid_rows: [FR(25), FR(55), FR(20)]
+              widgets:
+                - obj:
+                    grid_cell_column_pos: 0
+                    grid_cell_row_pos: 0
+                    grid_cell_column_span: 2
+                    grid_cell_x_align: STRETCH
+                    grid_cell_y_align: STRETCH
+                    layout:
+                        type: FLEX
+                        flex_align_cross: end
+                        flex_align_track: center
+                        pad_column: 3
+                        pad_row: 1
+                    widgets:
+                      - image:
+                          src: grid_ok_30px
+                      - label:
+                          text_font: roboto18
+                          text: "On Grid"
+                - label:
+                    id: display_time                
+                    grid_cell_column_pos: 2
+                    grid_cell_row_pos: 0
+                    grid_cell_x_align: end
+                    pad_all: 2
+                    text_font: roboto18
+                    text: "12:00"
+                    
+                - image:
+                    src: produced_icon_80px
+                    grid_cell_column_pos: 0
+                    grid_cell_row_pos: 1
+                    grid_cell_x_align: center
+                    grid_cell_y_align: center
+                - obj:
+                    grid_cell_column_pos: 1
+                    grid_cell_row_pos: 1
+                    grid_cell_x_align: STRETCH
+                    grid_cell_y_align: STRETCH
+                    layout:
+                        type: FLEX
+                        flex_flow: ROW_WRAP
+                        flex_align_cross: end
+                        flex_align_track: center
+                        pad_column: 3
+                        pad_row: 1
+                    widgets:
+                      - label:
+                          id: solarCPP                    
+                          text_font: roboto48
+                          text_color: ep_blue
+                          text: 88.8
+                      - label:
+                          id: solarCPP_unit
+                          text_font: roboto14
+                          text_color: ep_blue
+                          text: kW
+                          pad_bottom: 6
+
+                      - label:
+                          width: 140
+                          text_font: roboto14
+                          text: Production
+                - label:
+                    text: "EMPTY"
+                    grid_cell_column_pos: 2
+                    grid_cell_row_pos: 1
+                    grid_cell_x_align: STRETCH
+                    grid_cell_y_align: STRETCH
 

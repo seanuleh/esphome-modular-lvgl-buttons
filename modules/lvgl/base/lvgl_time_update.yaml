@@ -1,0 +1,15 @@
+---
+script:
+  - id: time_update
+    then:
+        lvgl.label.update:
+          id: display_time
+          text: !lambda |-
+            auto time = id(system_time).now();
+            int hour = time.hour % 12;
+            if (hour == 0) {
+              hour = 12;
+            }
+            static char time_str[8];
+            snprintf(time_str, sizeof(time_str), "%d:%02d", hour, time.minute);
+            return time_str;
