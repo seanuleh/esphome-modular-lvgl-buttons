@@ -1,0 +1,301 @@
+substitutions:
+  name: "tideclock"
+  friendly_name: "tide clock"
+  device_description: "tide clock"
+  icon_font: light40
+  text_font: roboto24
+
+packages:
+  # Generic configuration for ESP32 screens
+
+  colors: !include esphome-modular-lvgl-buttons/modules/common/color.yaml
+
+esphome:
+  name: tideclock
+  friendly_name: "Tide Clock"
+
+host:
+  mac_address: "62:23:45:AF:B3:01"
+  
+touchscreen:  
+  - platform: sdl
+    id: my_touchscreen
+    display: my_display
+
+display:
+  - platform: sdl
+    id: my_display
+    update_interval: never
+    auto_clear_enabled: false
+    dimensions:
+      width: 480
+      height: 480  
+
+api:
+
+logger:
+  level: verbose
+
+time:
+  - platform: homeassistant
+    id: system_time
+
+sensor:
+  - platform: homeassistant
+    id: tide_pos
+    entity_id: sensor.tide_pos
+
+text_sensor:   
+  - platform: homeassistant
+    entity_id: sensor.tides
+    attribute: next_tide_type
+    id: next_tide_type
+    
+  - platform: homeassistant
+    entity_id: sensor.tides
+    attribute: next_tide_time
+    id: next_tide_time
+    on_value:
+      - if:
+          condition:
+            text_sensor.state:
+              id: next_tide_type
+              state: 'Low'
+          then:
+            - lvgl.label.update:
+                id: low_tide_label
+                text: !lambda |-
+                  return id(next_tide_time).state;
+          else:
+            - lvgl.label.update:
+                id: hight_tide_label
+                text: !lambda |-
+                  return id(next_tide_time).state;
+
+  - platform: homeassistant
+    entity_id: sensor.tides
+    attribute: last_tide_type
+    id: last_tide_type
+    
+  - platform: homeassistant
+    entity_id: sensor.tides
+    attribute: last_tide_time
+    id: last_tide_time
+    on_value:
+      - if:
+          condition:
+            text_sensor.state:
+              id: last_tide_type
+              state: 'Low'
+          then:
+            - lvgl.label.update:
+                id: low_tide_label
+                text: !lambda |-
+                  return id(last_tide_time).state;
+          else:
+            - lvgl.label.update:
+                id: hight_tide_label
+                text: !lambda |-
+                  return id(last_tide_time).state;  
+   
+
+interval:
+  - interval: 1min
+    then:
+      - if:
+          condition:
+            text_sensor.state:
+              id: next_tide_type
+              state: 'Low'
+          then:
+            - lvgl.label.update:
+                id: low_tide_label
+                text: !lambda |-
+                  return id(next_tide_time).state;
+          else:
+            - lvgl.label.update:
+                id: hight_tide_label
+                text: !lambda |-
+                  return id(next_tide_time).state;
+      - if:
+          condition:
+            text_sensor.state:
+              id: last_tide_type
+              state: 'Low'
+          then:
+            - lvgl.label.update:
+                id: low_tide_label
+                text: !lambda |-
+                  return id(last_tide_time).state;
+          else:
+            - lvgl.label.update:
+                id: hight_tide_label
+                text: !lambda |-
+                  return id(last_tide_time).state;                  
+      - lambda: |-
+          ESP_LOGD("sensor", "Tide position: %f", id(tide_pos).state);
+      - if:
+          condition:
+            lambda: 'return !isnan(id(tide_pos).raw_state);'
+          then: 
+            - lvgl.indicator.update:
+                id: tide_level
+                value: !lambda |-
+                  return id(tide_pos).state;
+
+
+                  
+# -------------------------------------------
+# LVGL Buttons
+# -------------------------------------------
+lvgl:
+  displays: 
+    - my_display
+  touchscreens:
+    - my_touchscreen
+
+  style_definitions:
+    - id: no_checked_color
+      bg_color: 0xCC5E14
+      text_color: 0xB6B6B6
+      
+    - id: tide_text
+      text_color: white
+      text_align: center
+      text_font: roboto36
+      width: 100%
+      
+  theme:
+    obj:
+      border_width: 0
+      pad_all: 0
+      scrollable: false
+      outline_width: 1
+      outline_color: red
+    label:
+      border_width: 0
+      scrollable: false
+      outline_width: 1
+      outline_color: red
+    image:
+      border_width: 0
+      scrollable: false
+      outline_width: 1
+      outline_color: red
+    meter:
+      border_width: 0
+      pad_all: 0
+      scrollable: false
+      outline_width: 1
+      outline_color: red
+
+  page_wrap: true
+  
+  pages:
+      - id: main_page
+        width: 100%
+        bg_color: Black
+        align: center
+        widgets:
+          - obj:
+              height: 480
+              width: 335
+              layout: 
+                type: flex
+                pad_row: 0
+              bg_color: Black
+              align: center
+              widgets:
+                - label:
+                    text_color: blue
+                    text_align: center
+                    text_font: roboto24
+                    width: 100%                
+                    text: "High Tide"              
+                - label:
+                    id: hight_tide_label
+                    text_color: blue
+                    text_align: center
+                    text_font: roboto36
+                    width: 100%
+                    text: "00:00"
+                - meter:
+                    height: 335
+                    width: 335
+                    scales:
+                      range_from: 1
+                      range_to: 100
+                      angle_range: 360
+                      rotation: 270
+                      ticks:
+                        count: 13
+                        length: 10
+                      indicators:
+                        - image:
+                            id: tide_level2
+                            src: tide_pointer
+                            pivot_x: 22
+                            pivot_y: 78
+                            value: 0
+                        - line:
+                            id: tide_level
+                            width: 3
+                            color: red
+                            r_mod: -4
+                        - arc:
+                            color: gray
+                            width: 20
+                            end_value: 100
+                            start_value: 0
+
+                - label:
+                    text_color: red
+                    text_align: center
+                    text_font: roboto24
+                    width: 100%                
+                    text: "Low Tide"                             
+                - label:
+                    id: low_tide_label
+                    text_color: red
+                    text_align: center
+                    text_font: roboto36
+                    width: 100%  
+                    text: "00:00"
+          - image:
+              id: tide_level_img
+              src: tide_pointer
+
+
+
+
+                            
+# -------------------------------------------
+# Graphics and Fonts
+# -------------------------------------------
+image:
+  - file: https://esphome.io/_static/logo-text-on-light.svg
+    id: boot_logo
+    type: RGB565
+    resize: 470x95
+    use_transparency: true
+    
+  - file: assets/tide_pointer.svg
+    id: tide_pointer
+    resize: 100x44 # 2.272  - 22x22
+    type: RGB565
+    use_transparency: true  
+    
+font:
+  - file: "gfonts://Roboto"
+    id: roboto24
+    size: 24
+    bpp: 8
+    
+  - file: "gfonts://Roboto"
+    id: roboto36
+    size: 36
+    bpp: 8    
+
+
+
+

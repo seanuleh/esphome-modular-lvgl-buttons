@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xml:space="preserve"
+   width="0.96876in"
+   height="2.21322in"
+   version="1.1"
+   style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality; fill-rule:evenodd; clip-rule:evenodd"
+   viewBox="0 0 279 637"
+   id="svg1"
+   sodipodi:docname="tide_pointer.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs1" /><sodipodi:namedview
+   id="namedview1"
+   pagecolor="#ffffff"
+   bordercolor="#000000"
+   borderopacity="0.25"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:document-units="in"
+   inkscape:zoom="5.5584551"
+   inkscape:cx="46.415775"
+   inkscape:cy="106.23455"
+   inkscape:window-width="3440"
+   inkscape:window-height="1377"
+   inkscape:window-x="-8"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="svg1" />
+
+  <metadata
+   id="metadata1" /><path
+   fill="#ff0000"
+   d="M140 408c53,0 95,41 95,91 0,50 -42,91 -95,91 -52,0 -95,-41 -95,-91 0,-50 43,-91 95,-91zm-35 -375c9,-42 54,-46 66,0 43,155 88,307 108,466 0,184 -279,184 -279,0 21,-158 70,-310 105,-466z"
+   id="path1" />
+ </svg>
