@@ -21,12 +21,12 @@ esp32:
       CONFIG_SPIRAM_FETCH_INSTRUCTIONS: y
       CONFIG_SPIRAM_RODATA: y
 
-preferences:
-  flash_write_interval: 1min      
-
 psram:
   mode: octal
   speed: 80MHz
+
+preferences:
+  flash_write_interval: 1min   
   
 #-------------------------------------------
 # Internal outputs

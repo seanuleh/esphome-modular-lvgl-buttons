@@ -2,8 +2,6 @@
 # Hardware configuration file
 
 esphome:
-  name: "${name}"
-  friendly_name: "${friendly_name}"
   min_version: 2024.8.0 # First version with LVGL and SDL
 
 host:

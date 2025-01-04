@@ -2,11 +2,12 @@
 
 ## Supported Devices
 * Guition `ESP32-4848s040` 4.0" with capacitive touch and USB-C [AliExpress Link](https://www.aliexpress.us/item/3256806436431838.html).
-* Guition `JC3248W535` 3.5" with capacitive touch and USB-C. [AliExpress Link](https://www.aliexpress.com/item/1005007566046827.html).
-* Sunton `ESP32-2432S028R` 2.8" with resistive touch and USB micro-B. [AliExpress Link](https://www.aliexpress.com/item/1005004502250619.html).
-* Sunton `ESP32-8048S043` 4.3" with capactivive touch and USB-C. [AliExpress Link](https://www.aliexpress.com/item/1005004788147691.html).
-* Sunton `ESP32-8048S050` 5.0" with capactivive touch and USB-C. [AliExpress Link](https://www.aliexpress.com/item/1005004952694042.html).
-* Elecrow CrowPanel `DIS05035H` (v2.2) 3.5" with resistive touch and USB-C. [Manufacturer's Link](https://www.elecrow.com/esp32-display-3-5-inch-hmi-display-spi-tft-lcd-touch-screen.html).
+* Guition `JC3248W535` 3.5" with capacitive touch and USB-C [AliExpress Link](https://www.aliexpress.com/item/1005007566046827.html).
+* Sunton `ESP32-2432S028R` 2.8" with resistive touch and USB micro-B [AliExpress Link](https://www.aliexpress.com/item/1005004502250619.html).
+* Sunton `ESP32-8048S043` 4.3" with capactivive touch and USB-C [AliExpress Link](https://www.aliexpress.com/item/1005004788147691.html).
+* Sunton `ESP32-8048S050` 5.0" with capactivive touch and USB-C [AliExpress Link](https://www.aliexpress.com/item/1005004952694042.html).
+* Elecrow CrowPanel `DIS05035H` (v2.2) 3.5" with resistive touch and USB-C  [Manufacturer's Link](https://www.elecrow.com/esp32-display-3-5-inch-hmi-display-spi-tft-lcd-touch-screen.html).
+* Waveshare `ESP32-S3-Touch-LCD-7` 7.0" with capactivive touch and USB-C [Manufacturer's Link](https://www.waveshare.com/esp32-s3-touch-lcd-7.htm).
 
 # Example ESPHome config files for screens and devices
 
