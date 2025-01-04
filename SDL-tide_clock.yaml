@@ -8,7 +8,7 @@ substitutions:
 packages:
   # Generic configuration for ESP32 screens
 
-  colors: !include esphome-modular-lvgl-buttons/modules/common/color.yaml
+  colors: !include modules/common/color.yaml
 
 esphome:
   name: tideclock
