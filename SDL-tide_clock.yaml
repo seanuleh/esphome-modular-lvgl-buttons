@@ -1,14 +1,8 @@
 substitutions:
   name: "tideclock"
   friendly_name: "tide clock"
-  device_description: "tide clock"
-  icon_font: light40
+  device_description: "Simple tide clock"
   text_font: roboto24
-
-packages:
-  # Generic configuration for ESP32 screens
-
-  colors: !include modules/common/color.yaml
 
 esphome:
   name: tideclock
@@ -36,28 +30,23 @@ display:
       height: 480  
 
 api:
-
 logger:
-
 time:
   - platform: homeassistant
     id: system_time
 
-sensor:
+text_sensor:
   - platform: homeassistant
-    id: tide_percent
-    entity_id: sensor.tide_percent
+    entity_id: sensor.tides
+    attribute: tide_percentage
+    id: tide_percentage
     on_value:
-      - if:
-          condition:
-            lambda: 'return !isnan(id(tide_percent).raw_state);'
-          then: 
-            - lvgl.indicator.update:
-                id: tide_level
-                value: !lambda |-
-                  return id(tide_percent).state;
+      then: 
+        - lvgl.indicator.update:
+            id: tide_level
+            value: !lambda |-
+              return std::stof(id(tide_percentage).state);
 
-text_sensor:   
   - platform: homeassistant
     entity_id: sensor.tides
     attribute: next_tide_type
@@ -76,21 +65,15 @@ text_sensor:
           then:
             - lvgl.label.update:
                 id: low_tide_label
-                text: !lambda |-
-                  struct tm timeinfo;
-                  strptime(id(next_tide_time).state.c_str(), "%Y-%m-%dT%H:%M", &timeinfo);
-                  char buffer[10];
-                  strftime(buffer, sizeof(buffer), "%-I:%M %P", &timeinfo);
-                  return std::string(buffer).c_str();
+                text:
+                   format: "%s"                  
+                   args: [ 'id(next_tide_time).state.c_str()' ]
           else:
             - lvgl.label.update:
                 id: high_tide_label
-                text: !lambda |-
-                  struct tm timeinfo;
-                  strptime(id(next_tide_time).state.c_str(), "%Y-%m-%dT%H:%M", &timeinfo);
-                  char buffer[10];
-                  strftime(buffer, sizeof(buffer), "%-I:%M %P", &timeinfo);
-                  return std::string(buffer).c_str();
+                text:
+                   format: "%s"                
+                   args: [ 'id(next_tide_time).state.c_str()' ]
 
   - platform: homeassistant
     entity_id: sensor.tides
@@ -110,21 +93,15 @@ text_sensor:
           then:
             - lvgl.label.update:
                 id: low_tide_label
-                text: !lambda |-
-                  struct tm timeinfo;
-                  strptime(id(last_tide_time).state.c_str(), "%Y-%m-%dT%H:%M", &timeinfo);
-                  char buffer[10];
-                  strftime(buffer, sizeof(buffer), "%-I:%M %P", &timeinfo);
-                  return std::string(buffer).c_str();
+                text:
+                   format: "%s"                  
+                   args: [ 'id(last_tide_time).state.c_str()' ]
           else:
             - lvgl.label.update:
                 id: high_tide_label
-                text: !lambda |-
-                  struct tm timeinfo;
-                  strptime(id(last_tide_time).state.c_str(), "%Y-%m-%dT%H:%M", &timeinfo);
-                  char buffer[10];
-                  strftime(buffer, sizeof(buffer), "%-I:%M %P", &timeinfo);
-                  return std::string(buffer).c_str(); 
+                text:
+                   format: "%s"                
+                   args: [ 'id(last_tide_time).state.c_str()' ]
 
 # -------------------------------------------
 # LVGL Buttons
@@ -134,41 +111,33 @@ lvgl:
     - my_display
   touchscreens:
     - my_touchscreen
-
-  style_definitions:
-    - id: no_checked_color
-      bg_color: 0xCC5E14
-      text_color: 0xB6B6B6
-      
-    - id: tide_text
-      text_color: white
-      text_align: center
-      text_font: roboto36
-      width: 100%
-      
+     
   theme:
     obj:
+      radius: 0
       border_width: 0
       pad_all: 0
       scrollable: false
-      # outline_width: 1
-      # outline_color: red
+#      outline_width: 1
+#      outline_color: red
     label:
+      radius: 0    
       border_width: 0
       scrollable: false
-      # outline_width: 1
-      # outline_color: red
+#      outline_width: 1
+#      outline_color: red
     image:
+      radius: 0    
       border_width: 0
       scrollable: false
-      # outline_width: 1
-      # outline_color: red
+#      outline_width: 1
+#      outline_color: red
     meter:
       border_width: 0
       pad_all: 0
       scrollable: false
-      # outline_width: 1
-      # outline_color: red
+#      outline_width: 1
+#      outline_color: red
 
   page_wrap: true
   
@@ -180,73 +149,96 @@ lvgl:
         widgets:
           - obj:
               height: 480
-              width: 335
-              layout: 
-                type: flex
-                pad_row: 0
-              bg_color: Black
+              width: 480
+#              layout: 
+#                type: flex
+#                pad_row: 0
+              bg_color: White
               align: center
+              pad_all: 4
               widgets:
-                - label:
-                    text_color: blue
-                    text_align: center
-                    text_font: roboto24
-                    width: 100%                
-                    text: "High Tide"              
-                - label:
-                    id: high_tide_label
-                    text_color: blue
-                    text_align: center
-                    text_font: roboto36
-                    width: 100%
-                    text: "00:00 am"
                 - meter:
-                    height: 335
-                    width: 335
+                    height: 100%
+                    width: 100%
+                    text_font: roboto24
+                    outline_width: 1
                     scales:
-                      range_from: 1
-                      range_to: 100
-                      angle_range: 360
-                      rotation: 270
-                      ticks:
-                        count: 13
-                        length: 10
-                      indicators:
-                        - image:
-                            id: tide_level
-                            src: tide_pointer
-                            pivot_x: 22
-                            pivot_y: 22
-                            value: 0
-                         
+                        - range_from: 1
+                          range_to: 100
+                          angle_range: 360
+                          rotation: 270
+                          indicators:
+                            - image:
+                                id: tide_level
+                                src: tide_pointer
+                                pivot_x: 44
+                                pivot_y: 44
+                                value: 0
+                          ticks:
+                            count: 0
+                        - range_from: 5
+                          range_to: 1
+                          angle_range: 120
+                          rotation: 300
+                          ticks:
+                            width: 1
+                            count: 5
+                            major:
+                              label_gap: 25
+                              stride: 1
+                              width: 2
+                              length: 20
+                        - range_from: 5
+                          range_to: 1
+                          angle_range: 120
+                          rotation: 120
+                          ticks:
+                            width: 1
+                            count: 5
+                            major:
+                              label_gap: 25
+                              stride: 1
+                              width: 2
+                              length: 20                              
 
                 - label:
-                    text_color: red
+                    align: center
+                    width: 100%
                     text_align: center
                     text_font: roboto24
-                    width: 100%                
-                    text: "Low Tide"                             
+                    text: "High Tide"
+                    y: -215              
+                - label:
+                    id: high_tide_label
+                    align: center
+                    width: 100%                    
+                    text_align: center
+                    text_font: roboto24
+                    text: "00:00 am"
+                    y: -185                 
+                - label:
+                    align: center
+                    width: 100%
+                    text_align: center
+                    text_font: roboto24
+                    text: "Low Tide"
+                    y: 215                   
                 - label:
                     id: low_tide_label
-                    text_color: red
+                    align: center
+                    width: 100%                    
                     text_align: center
-                    text_font: roboto36
-                    width: 100%  
+                    text_font: roboto24
                     text: "00:00 am"
+                    y: 185  
 
 # -------------------------------------------
 # Graphics and Fonts
 # -------------------------------------------
 image:
-  - file: https://esphome.io/_static/logo-text-on-light.svg
-    id: boot_logo
-    type: RGB565
-    resize: 470x95
-    use_transparency: true
-    
   - file: assets/tide_pointer.svg
     id: tide_pointer
-    resize: 100x44 # 2.272  - 22x22
+    resize: 200x88 # 2.272  - 22x22
     type: RGB565
     use_transparency: true  
     
@@ -255,12 +247,3 @@ font:
     id: roboto24
     size: 24
     bpp: 8
-    
-  - file: "gfonts://Roboto"
-    id: roboto36
-    size: 36
-    bpp: 8    
-
-
-
-
