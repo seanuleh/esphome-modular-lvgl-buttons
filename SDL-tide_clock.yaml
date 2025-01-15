@@ -213,7 +213,7 @@ lvgl:
                     align: center
                     width: 100%                    
                     text_align: center
-                    text_font: roboto24
+                    text_font: roboto30_bold
                     text: "00:00 am"
                     y: -185                 
                 - label:
@@ -228,7 +228,7 @@ lvgl:
                     align: center
                     width: 100%                    
                     text_align: center
-                    text_font: roboto24
+                    text_font: roboto30_bold
                     text: "00:00 am"
                     y: 185  
 
@@ -247,3 +247,8 @@ font:
     id: roboto24
     size: 24
     bpp: 8
+  - file: "gfonts://Roboto@700"
+    id: roboto30_bold
+    size: 30
+    bpp: 8  
+    

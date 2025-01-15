@@ -1,8 +1,5 @@
+# Substitution variables used through the codebase
 substitutions:
-  name: "sunton-esp32-8048s070"
-  friendly_name: "Sunton800"
-  device_description: "Sunton ESP32-S3-8048S070 480px X 800px Smart Screen"
-
   lightbulb:         "\U000F0335"
   ceiling_light:     "\U000F0769"
   lamp:              "\U000F06B5"
@@ -31,60 +28,69 @@ substitutions:
   touchscreen_idle_timeout: "120s"
   touchscreen_daytime_brightness: "100%"
   touchscreen_nighttime_brightness: "50%"
+  # Boot screen configuration
+  boot_screen_delay: 60s
+
   # Screen goes to sleep at Mightnight
   screen_sleep_hour: '0'
   screen_sleep_minute: '0'
+
   # Screen wakes up at 5:30am
   screen_wake_hour: '5'
   screen_wake_minute: '30'
 
-  button_1_name: "Button 2"
-  button_1_id: couch_lamp
-  button_1_icon: $lightbulb
-  button_1_device: "switch.athom_smart_plug_v3_50ebc0_switch"
+  # Button 2 is a switch (some devcies show up as switches some as lights make sure you use the corresponding file)
+  button_2_name: "Button 2"
+  button_2_id: couch_lamp
+  button_2_icon: $lightbulb
+  button_2_device: "switch.athom_smart_plug_v3_50ebc0_switch"
 
-globals:
-# Keeps track of late night mode for turning off the backlight
-  - id: late_night_mode
-    type: bool
-    restore_value: false
-    initial_value: 'false'
+  # Button 3 is an empty object that requires no settings. It just pushes everything down one button
 
-packages:
-  base: !include modules/common_base.yaml
-  webserver: !include modules/wifi_base.yaml
-  hardware: !include modules/hardware/sunton-esp32-8048s070.yaml
-  colors: !include modules/common/color.yaml
-  fonts: !include modules/common/fonts.yaml  
-  time: !include modules/lvgl/lvgl_time_sntp.yaml
-  sensors: !include modules/lvgl/lvgl_sensors_base.yaml
-  touchscreen: !include modules/lvgl/lvgl_touchscreen.yaml
-  
-  # Update button and relay state from Home Assistant
-  button_1_sensor: !include { file: modules/sensors/basic_local_relay_button_state.yaml, vars: { id: 1 } }  
+  # Button 4 is dimmable light
+  button_4_name: "RGB light"
+  button_4_id: rgb_light
+  button_4_icon: $string_lights
+  button_4_device: light.athom_rgb_light_d93662_rgb_light_strip
 
 esphome:
-  on_boot:
-    priority: -100
-    then:
-      - delay: 60s
-      - lvgl.widget.hide: boot_screen
+  name: "sunton-esp32-8048s070"
+  friendly_name: "Sunton_4848s040"
+  comment: "Sunton ESP32-S3-8048S070 480px X 800px Smart Screen"
+    
+packages:
+  # Generic configuration for ESP32 screens
+  base: !include modules/common/base.yaml
+  globals: !include modules/common/globals.yaml
+  wifi: !include modules/common/wifi.yaml
+  colors: !include modules/common/color.yaml
+  fonts: !include modules/common/fonts.yaml
+  images: !include modules/common/images.yaml
+  
+  # Harware description file
+  hardware: !include modules/hardware/sunton-esp32-8048s070.yaml
+  
+  # Base settings for LVGL libary
+  lvgl_time: !include modules/lvgl/base/lvgl_time_sntp.yaml
+  lvgl_sensors: !include modules/lvgl/base/lvgl_sensors_base.yaml
+  lvgl_base: !include modules/lvgl/base/lvgl_base.yaml
 
+  # Time update script
+  lvgl_time_update: !include modules/lvgl/base/lvgl_time_update_none.yaml
+  
+  # Update button and relay state from Home Assistant
+  button_2_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 2 } } 
+  button_4_sensor: !include { file: modules/sensors/dimmer_light_state.yaml, vars: { id: 4 } }  
 
-
-#-------------------------------------------
-# LVGL pages and Buttons
-#-------------------------------------------
-
-
-# Main LVGL section
+# -------------------------------------------------------------------------
+# LVGL pages and buttons
+# -------------------------------------------------------------------------
 lvgl:
-  on_idle: !include { file: modules/lvgl/lvgl_touchscreen_idle.yaml }
-  theme: !include { file: modules/lvgl/lvgl_theme.yaml }
+  theme: !include { file: modules/lvgl/base/lvgl_theme.yaml }
   page_wrap: true
 
-# Boot Screen
-  top_layer: !include { file: modules/lvgl/boot_screen.yaml, vars: { height: $screen_height, width: $screen_width  } }
+# Boot screen
+  top_layer: !include { file: modules/lvgl/screens/boot_screen.yaml }
 
 # Main Page
   pages:
@@ -97,16 +103,6 @@ lvgl:
       bg_opa: cover
       pad_all: 5
       widgets: # Include all the buttons
-        - button: !include { file: modules/lvgl/basic_switch_button.yaml, vars: { id: 1, height: $button_height_single } }
-
-#-------------------------------------------
-# Graphics
-#-------------------------------------------
-image:
-  - file: https://esphome.io/_static/logo-text-on-light.svg
-    id: boot_logo
-    resize: 460x90
-    type: RGB565
-    use_transparency: true
-
-
+        - button: !include { file: modules/lvgl/buttons/basic_switch_button.yaml, vars: { id: 2, height: $button_height_single } }
+        - button: !include { file: modules/lvgl/buttons/transparent_empty_button.yaml, vars: { id: 3, height: $button_height_single } }
+        - button: !include { file: modules/lvgl/buttons/dimmer_light_button.yaml, vars: { id: 4, height: $button_height_double } }

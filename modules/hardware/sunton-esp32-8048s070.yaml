@@ -73,10 +73,11 @@ i2c:
     
 touchscreen:
   platform: gt911
+  id: my_touchscreen
+  display: my_display  
   transform:
     mirror_x: false
     mirror_y: false
-
   on_touch:
     - logger.log:
           format: Touch at (%d, %d)
@@ -94,6 +95,7 @@ touchscreen:
 #-------------------------------------------
 display:
   - platform: rpi_dpi_rgb
+    id: my_display  
     color_order: RGB
     invert_colors: True
     update_interval: never

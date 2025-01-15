@@ -68,12 +68,10 @@ i2c:
     
 touchscreen:
   platform: gt911
-  transform:
-    mirror_x: false
-    mirror_y: false
   id: my_touchscreen
   display: my_display
-
+  transform:
+    mirror_x: false
   on_touch:
     - logger.log:
           format: Touch at (%d, %d)
