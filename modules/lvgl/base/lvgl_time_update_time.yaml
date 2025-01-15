@@ -1,0 +1,7 @@
+---
+script:
+  - id: time_update
+    then:
+      - lvgl.label.update:
+          id: time_label
+          text: !lambda 'return id(system_time).now().strftime("%I:%M %P");' # The format %I:%M %p will display the time in a 12-hour format with "am" or "pm" included

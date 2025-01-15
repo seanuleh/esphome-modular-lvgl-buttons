@@ -1,0 +1,288 @@
+# Substitution variables used through the codebase
+substitutions:
+  lightbulb:         "\U000F0335"
+  ceiling_light:     "\U000F0769"
+  lamp:              "\U000F06B5"
+  floor_lamp:        "\U000F08DD"
+  string_lights:     "\U000F12BA"
+  track_light:       "\U000F0914"
+  bulkhead_light:    "\U000F1A2F"
+  led_strip:         "\U000F07D6"
+  coach_lamp:        "\U000F1020"
+  ceiling_fan_light: "\U000F1798"
+
+  icon_font: light40
+  text_font: roboto24
+  screen_height: '480px'
+  screen_width: '800px'
+  button_on_color: "burnt_sienna"
+  button_off_color: "very_dark_gray"
+  icon_on_color: "yellow"
+  icon_off_color: "gray"
+  label_on_color: "white"
+  label_off_color: "gray"
+  button_text_color: "white"
+  button_height_single: '109px'
+  button_height_double: '228px'
+  button_width: '150px'
+  touchscreen_idle_timeout: "10s"
+  touchscreen_daytime_brightness: "100%"
+  touchscreen_nighttime_brightness: "50%"
+  # Boot screen configuration
+  boot_screen_delay: 60s
+
+  # Screen goes to sleep at Mightnight
+  screen_sleep_hour: '0'
+  screen_sleep_minute: '0'
+
+  # Screen wakes up at 5:30am
+  screen_wake_hour: '5'
+  screen_wake_minute: '30'
+
+  # Button 2 is a switch (some devcies show up as switches some as lights make sure you use the corresponding file)
+  button_2_name: "Button 2"
+  button_2_id: couch_lamp
+  button_2_icon: $lightbulb
+  button_2_device: "switch.athom_smart_plug_v3_50ebc0_switch"
+
+  # Button 3 is an empty object that requires no settings. It just pushes everything down one button
+
+  # Button 4 is dimmable light
+  button_4_name: "RGB light"
+  button_4_id: rgb_light
+  button_4_icon: $string_lights
+  button_4_device: light.athom_rgb_light_d93662_rgb_light_strip
+
+esphome:
+  name: "sunton-esp32-8048s070"
+  friendly_name: "Sunton_4848s040"
+  comment: "Sunton ESP32-S3-8048S070 480px X 800px Smart Screen"
+  
+external_components:
+  - source: github://pr#8005
+    components: [lvgl]  
+    
+packages:
+  # Generic configuration for ESP32 screens
+  base: !include modules/common/base.yaml
+  globals: !include modules/common/globals.yaml
+  wifi: !include modules/common/wifi.yaml
+  colors: !include modules/common/color.yaml
+  fonts: !include modules/common/fonts.yaml
+  images: !include modules/common/images.yaml
+  
+  # Harware description file
+  hardware: !include modules/hardware/sunton-esp32-8048s070.yaml
+  
+  # Base settings for LVGL libary
+  lvgl_time: !include modules/lvgl/base/lvgl_time_homeassistant.yaml
+  lvgl_sensors: !include modules/lvgl/base/lvgl_sensors_base.yaml
+  lvgl_base: !include modules/lvgl/base/lvgl_base.yaml
+
+  # Time update script
+  lvgl_time_update: !include modules/lvgl/base/lvgl_time_update_time_date.yaml
+  
+sensor:
+  - platform: homeassistant
+    entity_id: sensor.tides
+    attribute: tide_percentage
+    id: tide_percentage
+    on_value:
+      then: 
+        - lvgl.indicator.update:
+            id: tide_level
+            value: !lambda "return id(tide_percentage).state;"
+
+text_sensor:
+  - platform: homeassistant
+    entity_id: sensor.tides
+    attribute: next_tide_type
+    id: next_tide_type
+    
+  - platform: homeassistant
+    entity_id: sensor.tides
+    attribute: next_tide_time
+    id: next_tide_time
+    on_value:
+      - if:
+          condition:
+            text_sensor.state:
+              id: next_tide_type
+              state: 'Low'
+          then:
+            - lvgl.label.update:
+                id: low_tide_label
+                text:
+                   format: "%s"                  
+                   args: [ 'id(next_tide_time).state.c_str()' ]
+          else:
+            - lvgl.label.update:
+                id: high_tide_label
+                text:
+                   format: "%s"                
+                   args: [ 'id(next_tide_time).state.c_str()' ]
+
+  - platform: homeassistant
+    entity_id: sensor.tides
+    attribute: last_tide_type
+    id: last_tide_type
+    
+  - platform: homeassistant
+    entity_id: sensor.tides
+    attribute: last_tide_time
+    id: last_tide_time
+    on_value:
+      - if:
+          condition:
+            text_sensor.state:
+              id: last_tide_type
+              state: 'Low'
+          then:
+            - lvgl.label.update:
+                id: low_tide_label
+                text:
+                   format: "%s"                  
+                   args: [ 'id(last_tide_time).state.c_str()' ]
+          else:
+            - lvgl.label.update:
+                id: high_tide_label
+                text:
+                   format: "%s"                
+                   args: [ 'id(last_tide_time).state.c_str()' ]  
+
+# -------------------------------------------------------------------------
+# LVGL pages and buttons
+# -------------------------------------------------------------------------
+lvgl:
+  theme: !include { file: modules/lvgl/base/lvgl_theme.yaml }
+  page_wrap: true
+
+# Boot screen
+  top_layer: !include { file: modules/lvgl/screens/boot_screen.yaml }
+
+# Main Page
+  pages:
+      - id: main_page
+        width: 100%
+        bg_color: White
+        widgets:
+          - obj:
+              height: 480
+              width: 480
+              bg_opa: TRANSP
+#              layout: 
+#                type: flex
+#                pad_row: 0
+              align: TOP_RIGHT
+              pad_all: 4
+              widgets:
+                - meter:
+                    height: 100%
+                    width: 100%
+                    text_font: roboto24
+                    outline_width: 1
+                    scales:
+                        - range_from: 1
+                          range_to: 100
+                          angle_range: 360
+                          rotation: 270
+                          indicators:
+                            - image:
+                                id: tide_level
+                                src: tide_pointer
+                                pivot_x: 44
+                                pivot_y: 44
+                                value: 0
+                          ticks:
+                            count: 0
+                        - range_from: 5
+                          range_to: 1
+                          angle_range: 120
+                          rotation: 300
+                          ticks:
+                            width: 1
+                            count: 5
+                            major:
+                              label_gap: 25
+                              stride: 1
+                              width: 2
+                              length: 20
+                        - range_from: 5
+                          range_to: 1
+                          angle_range: 120
+                          rotation: 120
+                          ticks:
+                            width: 1
+                            count: 5
+                            major:
+                              label_gap: 25
+                              stride: 1
+                              width: 2
+                              length: 20                              
+
+                - label:
+                    align: center
+                    width: 100%
+                    text_align: center
+                    text_font: roboto24
+                    text: "High Tide"
+                    y: -215              
+                - label:
+                    id: high_tide_label
+                    align: center
+                    width: 100%                    
+                    text_align: center
+                    text_font: roboto30_bold
+                    text: "00:00 am"
+                    y: -185                 
+                - label:
+                    align: center
+                    width: 100%
+                    text_align: center
+                    text_font: roboto24
+                    text: "Low Tide"
+                    y: 215                   
+                - label:
+                    id: low_tide_label
+                    align: center
+                    width: 100%                    
+                    text_align: center
+                    text_font: roboto30_bold
+                    text: "00:00 am"
+                    y: 185
+          - obj:
+              width: 100%
+              height: 8%
+              bg_opa: TRANSP
+              pad_all: 2              
+              widgets:
+                - label:
+                    id: time_label
+                    text_color: black
+                    align: TOP_RIGHT
+                    text_align: right
+                    text_font: roboto24
+                    text: "00:00 am" 
+                - label:
+                    id: date_label
+                    text_color: black
+                    align: TOP_LEFT
+                    text_align: left
+                    text_font: roboto24
+                    text: "January 1, 1970"
+
+# -------------------------------------------
+# Graphics and Fonts
+# -------------------------------------------
+image:
+  - file: assets/tide_pointer.svg
+    id: tide_pointer
+    resize: 200x88 # 2.272  - 22x22
+    type: RGB565
+    use_transparency: true  
+    
+font:
+  - file: "gfonts://Roboto@700"
+    id: roboto30_bold
+    size: 30
+    bpp: 8                     
