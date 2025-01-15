@@ -57,11 +57,11 @@ esphome:
   name: "sunton-esp32-8048s070"
   friendly_name: "Sunton_4848s040"
   comment: "Sunton ESP32-S3-8048S070 480px X 800px Smart Screen"
-  
+
 external_components:
   - source: github://pr#8005
-    components: [lvgl]  
-    
+    components: [lvgl]
+
 packages:
   # Generic configuration for ESP32 screens
   base: !include modules/common/base.yaml
@@ -70,10 +70,10 @@ packages:
   colors: !include modules/common/color.yaml
   fonts: !include modules/common/fonts.yaml
   images: !include modules/common/images.yaml
-  
+
   # Harware description file
   hardware: !include modules/hardware/sunton-esp32-8048s070.yaml
-  
+
   # Base settings for LVGL libary
   lvgl_time: !include modules/lvgl/base/lvgl_time_homeassistant.yaml
   lvgl_sensors: !include modules/lvgl/base/lvgl_sensors_base.yaml
@@ -81,14 +81,14 @@ packages:
 
   # Time update script
   lvgl_time_update: !include modules/lvgl/base/lvgl_time_update_time_date.yaml
-  
+
 sensor:
   - platform: homeassistant
     entity_id: sensor.tides
     attribute: tide_percentage
     id: tide_percentage
     on_value:
-      then: 
+      then:
         - lvgl.indicator.update:
             id: tide_level
             value: !lambda "return id(tide_percentage).state;"
@@ -98,7 +98,7 @@ text_sensor:
     entity_id: sensor.tides
     attribute: next_tide_type
     id: next_tide_type
-    
+
   - platform: homeassistant
     entity_id: sensor.tides
     attribute: next_tide_time
@@ -113,20 +113,20 @@ text_sensor:
             - lvgl.label.update:
                 id: low_tide_label
                 text:
-                   format: "%s"                  
+                   format: "%s"
                    args: [ 'id(next_tide_time).state.c_str()' ]
           else:
             - lvgl.label.update:
                 id: high_tide_label
                 text:
-                   format: "%s"                
+                   format: "%s"
                    args: [ 'id(next_tide_time).state.c_str()' ]
 
   - platform: homeassistant
     entity_id: sensor.tides
     attribute: last_tide_type
     id: last_tide_type
-    
+
   - platform: homeassistant
     entity_id: sensor.tides
     attribute: last_tide_time
@@ -141,14 +141,14 @@ text_sensor:
             - lvgl.label.update:
                 id: low_tide_label
                 text:
-                   format: "%s"                  
+                   format: "%s"
                    args: [ 'id(last_tide_time).state.c_str()' ]
           else:
             - lvgl.label.update:
                 id: high_tide_label
                 text:
-                   format: "%s"                
-                   args: [ 'id(last_tide_time).state.c_str()' ]  
+                   format: "%s"
+                   args: [ 'id(last_tide_time).state.c_str()' ]
 
 # -------------------------------------------------------------------------
 # LVGL pages and buttons
@@ -170,7 +170,7 @@ lvgl:
               height: 480
               width: 480
               bg_opa: TRANSP
-#              layout: 
+#              layout:
 #                type: flex
 #                pad_row: 0
               align: TOP_RIGHT
@@ -181,6 +181,9 @@ lvgl:
                     width: 100%
                     text_font: roboto24
                     outline_width: 1
+                    outline_color: black
+                    indicator:
+                      opa: TRANSP # get rid of that black dot in the center of the meter
                     scales:
                         - range_from: 1
                           range_to: 100
@@ -218,7 +221,7 @@ lvgl:
                               label_gap: 25
                               stride: 1
                               width: 2
-                              length: 20                              
+                              length: 20
 
                 - label:
                     align: center
@@ -226,26 +229,26 @@ lvgl:
                     text_align: center
                     text_font: roboto24
                     text: "High Tide"
-                    y: -215              
+                    y: -215
                 - label:
                     id: high_tide_label
                     align: center
-                    width: 100%                    
+                    width: 100%
                     text_align: center
                     text_font: roboto30_bold
                     text: "00:00 am"
-                    y: -185                 
+                    y: -185
                 - label:
                     align: center
                     width: 100%
                     text_align: center
                     text_font: roboto24
                     text: "Low Tide"
-                    y: 215                   
+                    y: 215
                 - label:
                     id: low_tide_label
                     align: center
-                    width: 100%                    
+                    width: 100%
                     text_align: center
                     text_font: roboto30_bold
                     text: "00:00 am"
@@ -254,7 +257,7 @@ lvgl:
               width: 100%
               height: 8%
               bg_opa: TRANSP
-              pad_all: 2              
+              pad_all: 2
               widgets:
                 - label:
                     id: time_label
@@ -262,7 +265,7 @@ lvgl:
                     align: TOP_RIGHT
                     text_align: right
                     text_font: roboto24
-                    text: "00:00 am" 
+                    text: "00:00 am"
                 - label:
                     id: date_label
                     text_color: black
@@ -279,10 +282,10 @@ image:
     id: tide_pointer
     resize: 200x88 # 2.272  - 22x22
     type: RGB565
-    use_transparency: true  
-    
+    use_transparency: true
+
 font:
   - file: "gfonts://Roboto@700"
     id: roboto30_bold
     size: 30
-    bpp: 8                     
+    bpp: 8
