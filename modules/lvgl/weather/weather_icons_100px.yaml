@@ -1,0 +1,100 @@
+---
+# Weather icons
+# https://github.com/manifestinteractive/weather-underground-icons.git
+
+image:
+  - file: assets/weather/nt_clear.svg
+    id: clear_night
+    resize: 100x100
+    type: RGB565
+    use_transparency: true
+
+  - file: assets/weather/cloudy.svg
+    id: cloudy
+    resize: 100x100
+    type: RGB565
+    use_transparency: true
+
+  - file: assets/weather/tstorms.svg
+    id: exceptional
+    resize: 100x100
+    type: RGB565
+    use_transparency: true
+
+  - file: assets/weather/fog.svg
+    id: fog
+    resize: 100x100
+    type: RGB565
+    use_transparency: true
+
+  - file: assets/weather/sleet.svg
+    id: hail
+    resize: 100x100
+    type: RGB565
+    use_transparency: true
+
+  - file: assets/weather/chancetstorms.svg
+    id: lightning
+    resize: 100x100
+    type: RGB565
+    use_transparency: true
+
+  - file: assets/weather/tstorms.svg
+    id: lightning_rainy
+    resize: 100x100
+    type: RGB565
+    use_transparency: true
+
+  - file: assets/weather/partlycloudy.svg
+    id: partlycloudy
+    resize: 100x100
+    type: RGB565
+    use_transparency: true
+
+  - file: assets/weather/rain.svg
+    id: pouring
+    resize: 100x100
+    type: RGB565
+    use_transparency: true
+
+  - file: assets/weather/chancerain.svg
+    id: rainy
+    resize: 100x100
+    type: RGB565
+    use_transparency: true
+
+  - file: assets/weather/snow.svg
+    id: snowy
+    resize: 100x100
+    type: RGB565
+    use_transparency: true
+
+  - file: assets/weather/chancesleet.svg
+    id: snowy_rainy
+    resize: 100x100
+    type: RGB565
+    use_transparency: true
+
+  - file: assets/weather/sunny.svg
+    id: sunny
+    resize: 100x100
+    type: RGB565
+    use_transparency: true
+
+  - file: assets/weather/windy.svg
+    id: windy
+    resize: 100x100
+    type: RGB565
+    use_transparency: true
+
+  - file: assets/weather/unknown.svg
+    id: unknown
+    resize: 100x100
+    type: RGB565
+    use_transparency: true
+
+  - file: assets/weather/circle-slash.svg
+    id: unavailable
+    resize: 100x100
+    type: RGB565
+    use_transparency: true

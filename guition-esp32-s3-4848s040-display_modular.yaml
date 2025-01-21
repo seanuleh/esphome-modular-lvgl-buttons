@@ -66,7 +66,7 @@ esphome:
     
 packages:
   # Generic configuration for ESP32 screens
-  base: !include modules/common/base.yaml
+  core: !include modules/common/core.yaml
   globals: !include modules/common/globals.yaml
   wifi: !include modules/common/wifi.yaml
   colors: !include modules/common/color.yaml
@@ -77,12 +77,12 @@ packages:
   hardware: !include modules/hardware/guition-esp32-s3-4848s040.yaml
   
   # Base settings for LVGL libary
-  lvgl_time: !include modules/lvgl/base/lvgl_time_sntp.yaml
-  lvgl_sensors: !include modules/lvgl/base/lvgl_sensors_base.yaml
-  lvgl_base: !include modules/lvgl/base/lvgl_base.yaml
+  time: !include modules/lvgl/base/time_sntp.yaml
+  sensors: !include modules/lvgl/base/sensors_base.yaml
+  base: !include modules/lvgl/base/base.yaml
 
   # Time update script
-  lvgl_time_update: !include modules/lvgl/base/lvgl_time_update_none.yaml
+  time_update: !include modules/lvgl/base/time_update_none.yaml
   
   # Update button and relay state from Home Assistant
   button_1_sensor: !include { file: modules/sensors/basic_local_relay_button_state.yaml, vars: { id: 1 } }
@@ -93,7 +93,7 @@ packages:
 # LVGL pages and buttons
 # -------------------------------------------------------------------------
 lvgl:
-  theme: !include { file: modules/lvgl/base/lvgl_theme.yaml }
+  theme: !include { file: modules/lvgl/base/theme.yaml }
   page_wrap: true
 
 # Boot screen

@@ -78,7 +78,7 @@ sensor:
 
 packages:
   # Generic configuration for ESP32 screens
-  base: !include modules/common/base.yaml
+  core: !include modules/common/core.yaml
   globals: !include modules/common/globals.yaml
   wifi: !include modules/common/wifi.yaml
   colors: !include modules/common/color.yaml
@@ -89,18 +89,18 @@ packages:
   hardware: !include modules/hardware/lilygo-tdisplays3.yaml
   
   # Base settings for LVGL libary
-  lvgl_time: !include modules/lvgl/base/lvgl_time_sntp.yaml
-  lvgl_sensors: !include modules/lvgl/base/lvgl_sensors_base.yaml
-  lvgl_base: !include modules/lvgl/base/lvgl_base_no_touchscreen.yaml
+  time: !include modules/lvgl/base/time_sntp.yaml
+  sensors: !include modules/lvgl/base/sensors_base.yaml
+  base: !include modules/lvgl/base/base_no_touchscreen.yaml
 
   # Time update script
-  lvgl_time_update: !include modules/lvgl/base/lvgl_time_update.yaml
+  time_update: !include modules/lvgl/base/time_update.yaml
 
 # -------------------------------------------------------------------------
 # LVGL pages and buttons
 # -------------------------------------------------------------------------
 lvgl:
-  theme: !include { file: modules/lvgl/base/lvgl_theme.yaml }
+  theme: !include { file: modules/lvgl/base/theme.yaml }
   page_wrap: true
 
 # Boot screen

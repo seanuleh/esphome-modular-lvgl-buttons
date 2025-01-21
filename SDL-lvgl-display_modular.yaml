@@ -66,7 +66,7 @@ esphome:
     
 packages:
   # Generic configuration for ESP32 screens
-  base: !include modules/common/base.yaml
+  core: !include modules/common/core.yaml
   globals: !include modules/common/globals.yaml
 # SDL has no Wi-Fi
 # wifi: !include modules/common/wifi.yaml
@@ -78,9 +78,9 @@ packages:
   hardware: !include modules/hardware/SDL-lvgl.yaml
   
   # Base settings for LVGL libary
-  lvgl_time: !include modules/lvgl/base/lvgl_time_homeassistant.yaml
-  lvgl_sensors: !include modules/lvgl/base/lvgl_sensors_base-SDL.yaml
-  lvgl_base: !include modules/lvgl/base/lvgl_base.yaml
+  time: !include modules/lvgl/base/time_homeassistant.yaml
+  sensors: !include modules/lvgl/base/sensors_base-SDL.yaml
+  base: !include modules/lvgl/base/base.yaml
   
   # Update button and relay state from Home Assistant
   button_1_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 1 } }   
@@ -91,7 +91,7 @@ packages:
 # LVGL pages and buttons
 # -------------------------------------------------------------------------
 lvgl:
-  theme: !include { file: modules/lvgl/base/lvgl_theme.yaml }
+  theme: !include { file: modules/lvgl/base/theme.yaml }
   page_wrap: true
 
 # Boot screen
