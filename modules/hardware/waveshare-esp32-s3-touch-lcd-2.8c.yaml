@@ -1,0 +1,174 @@
+esphome:
+  min_version: 2024.11.0
+  platformio_options:
+    build_flags: "-DBOARD_HAS_PSRAM"
+
+esp32:
+  board: esp32-s3-devkitc-1
+  flash_size: 8MB
+  variant: esp32s3
+  framework:
+    type: esp-idf
+    sdkconfig_options:
+      CONFIG_ESPTOOLPY_FLASHFREQ: "80MHz" # this is needed for flashing
+      CONFIG_ESPTOOLPY_FLASHMODE_QIO: y
+      CONFIG_FLASHMODE_QIO: y
+      CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ_240: y
+      CONFIG_ESP_DEFAULT_CPU_FREQ_MHZ: '240'
+      CONFIG_SPIRAM_RODATA: "y"
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+preferences:
+  flash_write_interval: 1min
+
+# Backlight PWM output and light component
+output:
+    # Backlight LED
+  - platform: ledc
+    pin: GPIO06
+    id: GPIO06
+    frequency: 100Hz
+
+light:
+  - platform: monochromatic
+    output: GPIO06
+    name: Display Backlight
+    id: display_backlight
+    restore_mode: ALWAYS_ON
+
+#-------------------------------------------
+# Touchscreen GT911 i2c
+#-------------------------------------------
+
+# I2C bus configuration
+i2c:
+  - id: i2c_bus
+    sda: GPIO15
+    scl: GPIO07
+    scan: true
+
+# GT911 Touchscreen Controller
+touchscreen:
+  - platform: gt911
+    id: my_touchscreen
+    display: my_display
+    i2c_id: i2c_bus
+    reset_pin:
+      pca9554: p_c_a
+      number: 1
+    interrupt_pin: GPIO16
+    on_touch:
+      - logger.log:
+          format: Touch at (%d, %d)
+          args: [touch.x, touch.y]
+      - lambda: |-
+          ESP_LOGI("cal", "x=%d, y=%d, x_raw=%d, y_raw=%0d",
+              touch.x,
+              touch.y,
+              touch.x_raw,
+              touch.y_raw
+              );
+
+#-------------------------------------------
+# Display ST7701S spi
+#-------------------------------------------
+
+# SPI bus configuration
+spi:
+  - id: spi_lcd
+    clk_pin: GPIO02
+    mosi_pin: GPIO01
+    interface: spi3
+    
+# PCA9554 GPIO extender for display reset
+pca9554:
+  - id: p_c_a
+    address: 0x20
+    i2c_id: i2c_bus    
+
+display:
+  - platform: st7701s
+    id: my_display
+    update_interval: never
+    spi_id: spi_lcd
+    spi_mode: MODE1
+    color_order: bgr
+    auto_clear_enabled: false
+    dimensions:
+      width: 480
+      height: 480
+    cs_pin: GPIO42
+    reset_pin:
+      pca9554: p_c_a
+      number: 3
+    de_pin: GPIO40
+    hsync_pin: GPIO38
+    vsync_pin: GPIO39
+    pclk_pin: GPIO41
+    init_sequence:
+      - [ 0xFF, 0x77, 0x01, 0x00, 0x00, 0x13 ]
+      - [ 0xEF, 0x08 ]
+      - [ 0xFF, 0x77, 0x01, 0x00, 0x00, 0x10 ]
+      - [ 0xC0, 0x3B, 0x00 ]
+      - [ 0xC1, 0x10, 0x0C ]
+      - [ 0xC2, 0x07, 0x0A ]
+      - [ 0xC7, 0x00 ]
+      - [ 0xCC, 0x10 ]
+      - [ 0xCD, 0x08 ]
+      - [ 0xB0, 0x05, 0x12, 0x98, 0x0E, 0x0F, 0x07, 0x07, 0x09, 0x09, 0x23, 0x05, 0x52, 0x0F, 0x67, 0x2C, 0x11 ]
+      - [ 0xB1, 0x0B, 0x11, 0x97, 0x0C, 0x12, 0x06, 0x06, 0x08, 0x08, 0x22, 0x03, 0x51, 0x11, 0x66, 0x2B, 0x0F ]
+      - [ 0xFF, 0x77, 0x01, 0x00, 0x00, 0x11 ]
+      - [ 0xB0, 0x5D ]
+      - [ 0xB1, 0x3E ]
+      - [ 0xB2, 0x81 ]
+      - [ 0xB3, 0x80 ]
+      - [ 0xB5, 0x4E ]
+      - [ 0xB7, 0x85 ]
+      - [ 0xB8, 0x20 ]
+      - [ 0xC1, 0x78 ]
+      - [ 0xC2, 0x78 ]
+      - [ 0xD0, 0x88 ]
+      - [ 0xE0, 0x00, 0x00, 0x02 ]
+      - [ 0xE1, 0x06, 0x30, 0x08, 0x30, 0x05, 0x30, 0x07, 0x30, 0x00, 0x33, 0x33 ]
+      - [ 0xE2, 0x11, 0x11, 0x33, 0x33, 0xF4, 0x00, 0x00, 0x00, 0xF4, 0x00, 0x00, 0x00 ]
+      - [ 0xE3, 0x00, 0x00, 0x11, 0x11 ]
+      - [ 0xE4, 0x44, 0x44 ]
+      - [ 0xE5, 0x0D, 0xF5, 0x30, 0xF0, 0x0F, 0xF7, 0x30, 0xF0, 0x09, 0xF1, 0x30, 0xF0, 0x0B, 0xF3, 0x30, 0xF0 ]
+      - [ 0xE6, 0x00, 0x00, 0x11, 0x11 ]
+      - [ 0xE7, 0x44, 0x44 ]
+      - [ 0xE8, 0x0C, 0xF4, 0x30, 0xF0, 0x0E, 0xF6, 0x30, 0xF0, 0x08, 0xF0, 0x30, 0xF0, 0x0A, 0xF2, 0x30, 0xF0 ]
+      - [ 0xE9, 0x36, 0x01 ]
+      - [ 0xEB, 0x00, 0x01, 0xE4, 0xE4, 0x44, 0x88, 0x40 ]
+      - [ 0xED, 0xFF, 0x10, 0xAF, 0x76, 0x54, 0x2B, 0xCF, 0xFF, 0xFF, 0xFC, 0xB2, 0x45, 0x67, 0xFA, 0x01, 0xFF ]
+      - [ 0xEF, 0x08, 0x08, 0x08, 0x45, 0x3F, 0x54 ]
+      - [ 0xFF, 0x77, 0x01, 0x00, 0x00, 0x00 ]
+      - [ 0x11 ]
+      - delay 120ms      
+      - [ 0x3A, 0x66 ]
+      - [ 0x36, 0x00 ]
+      - [ 0x35, 0x00 ]
+      - [ 0x29 ]
+
+    data_pins:
+      red:
+        - 46       #r1
+        - 3        #r2
+        - 8        #r3
+        - 18       #r4
+        - 17       #r5
+      green:
+        - 14       #g0
+        - 13       #g1
+        - 12       #g2
+        - 11       #g3
+        - 10       #g4
+        - 9        #g5
+      blue:
+        - 5        #b1
+        - 45       #b2
+        - 48       #b3
+        - 47       #b4
+        - 21       #b5
