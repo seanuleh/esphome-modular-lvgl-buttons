@@ -14,7 +14,7 @@ esphome:
       - lvgl.widget.hide: boot_screen
 
 host:
-  mac_address: "62:23:45:AF:B3:01"
+  mac_address: "62:23:45:AF:B3:07"
 
 touchscreen:
   - platform: sdl

@@ -13,7 +13,7 @@ external_components:
     components: [lvgl]
 
 host:
-  mac_address: "62:23:45:AF:B3:01"
+  mac_address: "62:23:45:AF:B3:08"
   
 touchscreen:  
   - platform: sdl

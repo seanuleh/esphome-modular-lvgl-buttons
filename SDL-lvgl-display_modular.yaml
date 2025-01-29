@@ -63,6 +63,9 @@ esphome:
   name: "sdl-lvgl"
   friendly_name: "SDL test system"
   comment: "SDL test 480px * 480px Smart Screen"  
+
+host:
+  mac_address: "62:23:45:AF:B3:06"
     
 packages:
   # Generic configuration for ESP32 screens
