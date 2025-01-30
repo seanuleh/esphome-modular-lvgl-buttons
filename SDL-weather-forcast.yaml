@@ -70,10 +70,21 @@ packages:
   sensors: !include modules/lvgl/base/sensors_base-SDL.yaml
   base: !include modules/lvgl/base/base.yaml
 
-  # Weather packages  
-  weather_icons_200: !include modules/lvgl/weather/weather_icons_200px.yaml
-  weather_icons_100: !include modules/lvgl/weather/weather_icons_100px.yaml
-  weather_forcast_100: !include modules/lvgl/weather/weather_forecast_100px.yaml  
+  # Weather packages 
+  # Build icon set from .svg files  
+  weather_icons_80: !include
+    file: modules/weather/weather_icons.yaml
+    vars:
+      size: 80
+  # Display weather forcast using icon set (defined above)    
+  weather_forcast_80: !include
+    file: modules/weather/weather_forecast.yaml  
+    vars:
+      size: 80      
+  weather_icons_200: !include
+    file: modules/weather/weather_icons.yaml
+    vars:
+      size: 200
 
 
 script:

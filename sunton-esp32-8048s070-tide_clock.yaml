@@ -39,20 +39,6 @@ substitutions:
   screen_wake_hour: '5'
   screen_wake_minute: '30'
 
-  # Button 2 is a switch (some devcies show up as switches some as lights make sure you use the corresponding file)
-  button_2_name: "Button 2"
-  button_2_id: couch_lamp
-  button_2_icon: $lightbulb
-  button_2_device: "switch.athom_smart_plug_v3_50ebc0_switch"
-
-  # Button 3 is an empty object that requires no settings. It just pushes everything down one button
-
-  # Button 4 is dimmable light
-  button_4_name: "RGB light"
-  button_4_id: rgb_light
-  button_4_icon: $string_lights
-  button_4_device: light.athom_rgb_light_d93662_rgb_light_strip
-
 esphome:
   name: "tideweather"
   friendly_name: "tideweather"
@@ -79,10 +65,21 @@ packages:
   sensors: !include modules/lvgl/base/sensors_base.yaml
   base: !include modules/lvgl/base/base.yaml
   
-  # Weather packages
-  weather_icons_200: !include modules/weather/weather_icons_200px.yaml
-  weather_icons_100: !include modules/weather/weather_icons_100px.yaml
-  weather_forcast_100: !include modules/weather/weather_forecast_100px.yaml
+  # Weather packages 
+  # Build icon set from .svg files  
+  weather_icons_80: !include
+    file: modules/weather/weather_icons.yaml
+    vars:
+      size: 80
+  # Display weather forcast using icon set (defined above)    
+  weather_forcast_80: !include
+    file: modules/weather/weather_forecast.yaml  
+    vars:
+      size: 80      
+  weather_icons_200: !include
+    file: modules/weather/weather_icons.yaml
+    vars:
+      size: 200
 
   # Tide forcast packages  
   tides: !include modules/tides/tide_update.yaml  
