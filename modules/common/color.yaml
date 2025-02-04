@@ -8,7 +8,9 @@ color:
     - id: ep_blue
       hex: '01B4DE'
     - id: ep_green
-      hex: '7ACf38'       
+      hex: '7ACf38'
+    - id: verylightgray
+      hex: 'F0F0F0'
 
 # The standard RGB color table is already in ESPHome!
 # RGB color table
