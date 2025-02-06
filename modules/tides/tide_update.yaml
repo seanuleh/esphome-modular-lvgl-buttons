@@ -15,9 +15,9 @@ font:
   - file: "gfonts://Roboto@700"
     id: roboto30_bold
     size: 30
-    bpp: 8    
-    
-    
+    bpp: 8
+
+
 sensor:
   - platform: homeassistant
     entity_id: sensor.tides

@@ -14,8 +14,8 @@ external_components:
 
 host:
   mac_address: "62:23:45:AF:B3:08"
-  
-touchscreen:  
+
+touchscreen:
   - platform: sdl
     id: my_touchscreen
     display: my_display
@@ -27,7 +27,7 @@ display:
     auto_clear_enabled: false
     dimensions:
       width: 480
-      height: 480  
+      height: 480
 
 api:
 logger:
@@ -41,7 +41,7 @@ text_sensor:
     attribute: tide_percentage
     id: tide_percentage
     on_value:
-      then: 
+      then:
         - lvgl.indicator.update:
             id: tide_level
             value: !lambda |-
@@ -51,7 +51,7 @@ text_sensor:
     entity_id: sensor.tides
     attribute: next_tide_type
     id: next_tide_type
-    
+
   - platform: homeassistant
     entity_id: sensor.tides
     attribute: next_tide_time
@@ -66,20 +66,20 @@ text_sensor:
             - lvgl.label.update:
                 id: low_tide_label
                 text:
-                   format: "%s"                  
+                   format: "%s"
                    args: [ 'id(next_tide_time).state.c_str()' ]
           else:
             - lvgl.label.update:
                 id: high_tide_label
                 text:
-                   format: "%s"                
+                   format: "%s"
                    args: [ 'id(next_tide_time).state.c_str()' ]
 
   - platform: homeassistant
     entity_id: sensor.tides
     attribute: last_tide_type
     id: last_tide_type
-    
+
   - platform: homeassistant
     entity_id: sensor.tides
     attribute: last_tide_time
@@ -94,24 +94,24 @@ text_sensor:
             - lvgl.label.update:
                 id: low_tide_label
                 text:
-                   format: "%s"                  
+                   format: "%s"
                    args: [ 'id(last_tide_time).state.c_str()' ]
           else:
             - lvgl.label.update:
                 id: high_tide_label
                 text:
-                   format: "%s"                
+                   format: "%s"
                    args: [ 'id(last_tide_time).state.c_str()' ]
 
 # -------------------------------------------
 # LVGL Buttons
 # -------------------------------------------
 lvgl:
-  displays: 
+  displays:
     - my_display
   touchscreens:
     - my_touchscreen
-     
+
   theme:
     obj:
       radius: 0
@@ -121,13 +121,13 @@ lvgl:
 #      outline_width: 1
 #      outline_color: red
     label:
-      radius: 0    
+      radius: 0
       border_width: 0
       scrollable: false
 #      outline_width: 1
 #      outline_color: red
     image:
-      radius: 0    
+      radius: 0
       border_width: 0
       scrollable: false
 #      outline_width: 1
@@ -140,7 +140,7 @@ lvgl:
 #      outline_color: red
 
   page_wrap: true
-  
+
   pages:
       - id: main_page
         width: 100%
@@ -150,7 +150,7 @@ lvgl:
           - obj:
               height: 480
               width: 480
-#              layout: 
+#              layout:
 #                type: flex
 #                pad_row: 0
               bg_color: White
@@ -199,7 +199,7 @@ lvgl:
                               label_gap: 25
                               stride: 1
                               width: 2
-                              length: 20                              
+                              length: 20
 
                 - label:
                     align: center
@@ -207,30 +207,30 @@ lvgl:
                     text_align: center
                     text_font: roboto24
                     text: "High Tide"
-                    y: -215              
+                    y: -215
                 - label:
                     id: high_tide_label
                     align: center
-                    width: 100%                    
+                    width: 100%
                     text_align: center
                     text_font: roboto30_bold
                     text: "00:00 am"
-                    y: -185                 
+                    y: -185
                 - label:
                     align: center
                     width: 100%
                     text_align: center
                     text_font: roboto24
                     text: "Low Tide"
-                    y: 215                   
+                    y: 215
                 - label:
                     id: low_tide_label
                     align: center
-                    width: 100%                    
+                    width: 100%
                     text_align: center
                     text_font: roboto30_bold
                     text: "00:00 am"
-                    y: 185  
+                    y: 185
 
 # -------------------------------------------
 # Graphics and Fonts
@@ -240,8 +240,8 @@ image:
     id: tide_pointer
     resize: 200x88 # 2.272  - 22x22
     type: RGB565
-    use_transparency: true  
-    
+    use_transparency: true
+
 font:
   - file: "gfonts://Roboto"
     id: roboto24
@@ -250,5 +250,5 @@ font:
   - file: "gfonts://Roboto@700"
     id: roboto30_bold
     size: 30
-    bpp: 8  
-    
+    bpp: 8
+

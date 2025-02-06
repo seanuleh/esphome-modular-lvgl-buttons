@@ -62,8 +62,8 @@ substitutions:
 esphome:
   name: "guition-esp32-4848s040"
   friendly_name: "Guition480"
-  comment: "Guition ESP32-4848S040 480px * 480px Smart Screen"  
-    
+  comment: "Guition ESP32-4848S040 480px * 480px Smart Screen"
+
 packages:
   # Generic configuration for ESP32 screens
   core: !include modules/common/core.yaml
@@ -72,10 +72,10 @@ packages:
   colors: !include modules/common/color.yaml
   fonts: !include modules/common/fonts.yaml
   images: !include modules/common/images.yaml
-  
+
   # Harware description file
   hardware: !include modules/hardware/guition-esp32-s3-4848s040.yaml
-  
+
   # Base settings for LVGL libary
   time: !include modules/lvgl/base/time_sntp.yaml
   sensors: !include modules/lvgl/base/sensors_base.yaml
@@ -83,11 +83,11 @@ packages:
 
   # Time update script
   time_update: !include modules/lvgl/base/time_update_none.yaml
-  
+
   # Update button and relay state from Home Assistant
   button_1_sensor: !include { file: modules/sensors/basic_local_relay_button_state.yaml, vars: { id: 1 } }
-  button_2_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 2 } } 
-  button_4_sensor: !include { file: modules/sensors/dimmer_light_state.yaml, vars: { id: 4 } }  
+  button_2_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 2 } }
+  button_4_sensor: !include { file: modules/sensors/dimmer_light_state.yaml, vars: { id: 4 } }
 
 # -------------------------------------------------------------------------
 # LVGL pages and buttons

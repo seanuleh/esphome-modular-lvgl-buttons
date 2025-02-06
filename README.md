@@ -11,7 +11,7 @@
 
 # Install ESPHome on a build machine
 
-I use a lot of svg vector graphics. The latest ESPHome does not install svg by default. Use pip to install cairosvg. 
+I use a lot of svg vector graphics. The latest ESPHome does not install svg by default. Use pip to install cairosvg.
 
 ```
 pip install esphome cairosvg

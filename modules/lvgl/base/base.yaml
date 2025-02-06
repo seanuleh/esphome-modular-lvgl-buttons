@@ -11,7 +11,7 @@ lvgl:
     - my_display
   touchscreens:
     - my_touchscreen
-  on_idle:     
+  on_idle:
     timeout: $touchscreen_idle_timeout
     then:
       - logger.log: "LVGL is idle"

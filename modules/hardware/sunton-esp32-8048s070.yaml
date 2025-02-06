@@ -8,7 +8,7 @@ esphome:
     board_build.esp-idf.memory_type: qio_opi
     board_build.flash_mode: dio
     board_upload.maximum_ram_size: 524288
-    
+
 esp32:
   board: esp32-s3-devkitc-1
   variant: esp32s3
@@ -16,7 +16,7 @@ esp32:
   framework:
     type: esp-idf
     sdkconfig_options:
-      COMPILER_OPTIMIZATION_SIZE: y    
+      COMPILER_OPTIMIZATION_SIZE: y
       CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240: y
       CONFIG_ESP32S3_DATA_CACHE_64KB: y
       CONFIG_SPIRAM_FETCH_INSTRUCTIONS: y
@@ -27,7 +27,7 @@ psram:
   speed: 80MHz
 
 preferences:
-  flash_write_interval: 1min      
+  flash_write_interval: 1min
 
 #-------------------------------------------
 #  Audio output (Mono)
@@ -45,8 +45,8 @@ preferences:
 #    dac_type: external
 #    i2s_dout_pin: 17
 #    mode: stereo
-#    id: media_out   
-  
+#    id: media_out
+
 #-------------------------------------------
 # Backlight
 #-------------------------------------------
@@ -70,11 +70,11 @@ i2c:
   - id: bus_a
     sda: GPIO19
     scl: GPIO20
-    
+
 touchscreen:
   platform: gt911
   id: my_touchscreen
-  display: my_display  
+  display: my_display
   transform:
     mirror_x: false
     mirror_y: false
@@ -95,7 +95,7 @@ touchscreen:
 #-------------------------------------------
 display:
   - platform: rpi_dpi_rgb
-    id: my_display  
+    id: my_display
     color_order: RGB
     invert_colors: True
     update_interval: never

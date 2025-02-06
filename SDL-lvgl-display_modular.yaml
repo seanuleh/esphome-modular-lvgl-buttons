@@ -62,11 +62,11 @@ substitutions:
 esphome:
   name: "sdl-lvgl"
   friendly_name: "SDL test system"
-  comment: "SDL test 480px * 480px Smart Screen"  
+  comment: "SDL test 480px * 480px Smart Screen"
 
 host:
   mac_address: "62:23:45:AF:B3:06"
-    
+
 packages:
   # Generic configuration for ESP32 screens
   core: !include modules/common/core.yaml
@@ -76,19 +76,19 @@ packages:
   colors: !include modules/common/color.yaml
   fonts: !include modules/common/fonts.yaml
   images: !include modules/common/images.yaml
-  
+
   # Harware description file
   hardware: !include modules/hardware/SDL-lvgl.yaml
-  
+
   # Base settings for LVGL libary
   time: !include modules/lvgl/base/time_homeassistant.yaml
   sensors: !include modules/lvgl/base/sensors_base-SDL.yaml
   base: !include modules/lvgl/base/base.yaml
-  
+
   # Update button and relay state from Home Assistant
-  button_1_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 1 } }   
-  button_2_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 2 } } 
-  button_4_sensor: !include { file: modules/sensors/dimmer_light_state.yaml, vars: { id: 4 } }  
+  button_1_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 1 } }
+  button_2_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 2 } }
+  button_4_sensor: !include { file: modules/sensors/dimmer_light_state.yaml, vars: { id: 4 } }
 
 # -------------------------------------------------------------------------
 # LVGL pages and buttons

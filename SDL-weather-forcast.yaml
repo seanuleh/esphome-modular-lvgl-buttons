@@ -44,9 +44,9 @@ substitutions:
 esphome:
   name: weatherapp
   friendly_name: "Weather app"
-  
+
 host:
-  mac_address: "62:23:45:AF:B3:05"     
+  mac_address: "62:23:45:AF:B3:05"
 
 external_components:
   - source: github://pr#8005
@@ -61,26 +61,26 @@ packages:
   colors: !include modules/common/color.yaml
   fonts: !include modules/common/fonts.yaml
   images: !include modules/common/images.yaml
-  
+
   # Harware description file
   hardware: !include modules/hardware/SDL-lvgl.yaml
-  
+
   # Base settings for LVGL libary
   time: !include modules/lvgl/base/time_homeassistant.yaml
   sensors: !include modules/lvgl/base/sensors_base-SDL.yaml
   base: !include modules/lvgl/base/base.yaml
 
-  # Weather packages 
-  # Build icon set from .svg files  
+  # Weather packages
+  # Build icon set from .svg files
   weather_icons_80: !include
     file: modules/weather/weather_icons.yaml
     vars:
       size: 80
-  # Display weather forcast using icon set (defined above)    
+  # Display weather forcast using icon set (defined above)
   weather_forcast_80: !include
-    file: modules/weather/weather_forecast.yaml  
+    file: modules/weather/weather_forecast.yaml
     vars:
-      size: 80      
+      size: 80
   weather_icons_200: !include
     file: modules/weather/weather_icons.yaml
     vars:
@@ -108,7 +108,7 @@ number:
     min_value: 10
     max_value: 180
     step: 5
-    mode: box  
+    mode: box
 
 
 text_sensor:
@@ -129,7 +129,7 @@ text_sensor:
               id: weather_temperature_today
               text:
                 format: "%s°"
-                args: [ 'id(temperature).state.c_str()' ]         
+                args: [ 'id(temperature).state.c_str()' ]
 
   - platform: homeassistant
     entity_id: sensor.home_condition_day_0
@@ -141,16 +141,16 @@ text_sensor:
               id: weather_condition_today
               text:
                 format: "%s"
-                args: [ 'id(condition_today).state.c_str()' ] 
+                args: [ 'id(condition_today).state.c_str()' ]
 
 
 lvgl:
   theme: !include { file: modules/lvgl/base/theme.yaml }
   page_wrap: true
- 
+
  # Boot screen
   top_layer: !include { file: modules/lvgl/screens/boot_screen.yaml, vars: { height: $screen_height, width: $screen_width  } }
-  
+
   pages:
       - id: main_page
         width: 100%
@@ -166,7 +166,7 @@ lvgl:
                   pad_row: 0
                   type: GRID
                   # grid_rows: [FR(16), FR(9), FR(15), FR(18), FR(8), FR(22), FR(6), FR(6)]
-                  grid_rows: [ 75px, 28px, 75px, 90px, 42px, 98px, 42px, 28px ]                  
+                  grid_rows: [ 75px, 28px, 75px, 90px, 42px, 98px, 42px, 28px ]
                   grid_columns: [FR(25), FR(25), FR(25), FR(25)]
                 widgets:
                   - label:
@@ -212,8 +212,8 @@ lvgl:
                       grid_cell_column_pos: 2
                       grid_cell_column_span: 2
                       grid_cell_row_span: 3
-                      
-                      
+
+
                   - label:
                       text: "Sat"
                       id: forecast_day_0
@@ -238,11 +238,11 @@ lvgl:
                       text: "100°"
                       id: forecast_temperature_lo_0
                       text_font: roboto24
-                      text_color: dodgerblue                      
+                      text_color: dodgerblue
                       grid_cell_row_pos: 7
                       grid_cell_column_pos: 0
                       grid_cell_x_align: CENTER
-                      
+
                   - label:
                       text: "Sat"
                       id: forecast_day_1
@@ -267,7 +267,7 @@ lvgl:
                       text: "100°"
                       id: forecast_temperature_lo_1
                       text_font: roboto24
-                      text_color: dodgerblue                      
+                      text_color: dodgerblue
                       grid_cell_row_pos: 7
                       grid_cell_column_pos: 1
                       grid_cell_x_align: CENTER
@@ -296,7 +296,7 @@ lvgl:
                       text: "100°"
                       id: forecast_temperature_lo_2
                       text_font: roboto24
-                      text_color: dodgerblue                      
+                      text_color: dodgerblue
                       grid_cell_row_pos: 7
                       grid_cell_column_pos: 2
                       grid_cell_x_align: CENTER
@@ -328,4 +328,4 @@ lvgl:
                       text_color: dodgerblue
                       grid_cell_row_pos: 7
                       grid_cell_column_pos: 3
-                      grid_cell_x_align: CENTER                      
+                      grid_cell_x_align: CENTER

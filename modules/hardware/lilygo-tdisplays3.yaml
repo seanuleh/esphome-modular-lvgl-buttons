@@ -8,7 +8,7 @@ esphome:
 
 external_components:
  - source: github://clydebarrow/esphome@i8080
-   components: [ i80, io_bus, ili9xxx, spi ] 
+   components: [ i80, io_bus, ili9xxx, spi ]
 
 esp32:
   board: esp32-s3-devkitc-1
@@ -18,10 +18,10 @@ esp32:
 
 psram:
   speed: 80MHz
-  mode: octal    
+  mode: octal
 
 preferences:
-  flash_write_interval: 1min   
+  flash_write_interval: 1min
 
 power_supply:
   - id: lcd_pwr
@@ -32,7 +32,7 @@ i80:
   dc_pin: 7
   wr_pin: 8
   rd_pin: 9
-  data_pins: 
+  data_pins:
     - 39
     - 40
     - 41
@@ -72,12 +72,12 @@ display:
 
 binary_sensor:
   - platform: gpio
-    pin: 
+    pin:
       number: GPIO0
       inverted: true
     name: "Button 1"
   - platform: gpio
-    pin: 
+    pin:
       number: GPIO14
       inverted: true
     name: "Button 2"
@@ -95,5 +95,5 @@ light:
     id: display_backlight
     restore_mode: ALWAYS_ON
 
-#touchscreen: 
+#touchscreen:
 # None

@@ -56,8 +56,8 @@ substitutions:
 esphome:
   name: "waveshare-esp32-s3-touch-lcd-7"
   friendly_name: "Waveshare7"
-  comment: "Waveshare 7” ESP32-S3N8R8 Capacitive Touch Display 800×480"  
-    
+  comment: "Waveshare 7” ESP32-S3N8R8 Capacitive Touch Display 800×480"
+
 packages:
   # Generic configuration for ESP32 screens
   core: !include modules/common/core.yaml
@@ -66,10 +66,10 @@ packages:
   colors: !include modules/common/color.yaml
   fonts: !include modules/common/fonts.yaml
   images: !include modules/common/images.yaml
-  
+
   # Harware description file
   hardware: !include modules/hardware/waveshare-esp32-s3-touch-lcd-7.yaml
-  
+
   # Base settings for LVGL libary
   time: !include modules/lvgl/base/time_sntp.yaml
   sensors: !include modules/lvgl/base/sensors_base.yaml
@@ -77,10 +77,10 @@ packages:
 
   # Time update script
   time_update: !include modules/lvgl/base/time_update_none.yaml
-  
+
   # Update button and relay state from Home Assistant
-  button_2_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 2 } } 
-  button_4_sensor: !include { file: modules/sensors/dimmer_light_state.yaml, vars: { id: 4 } }  
+  button_2_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 2 } }
+  button_4_sensor: !include { file: modules/sensors/dimmer_light_state.yaml, vars: { id: 4 } }
 
 # -------------------------------------------------------------------------
 # LVGL pages and buttons

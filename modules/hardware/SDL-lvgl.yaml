@@ -13,7 +13,7 @@ display:
       width: $sdl_width
       height: $sdl_height
 
-touchscreen:  
+touchscreen:
   platform: sdl
   transform:
     mirror_x: false
@@ -31,7 +31,7 @@ touchscreen:
               touch.y,
               touch.x_raw,
               touch.y_raw
-              );  
+              );
 
 light:
   - platform: monochromatic
@@ -47,4 +47,4 @@ output:
     type: float
     write_action:
       - lambda: |-
-          ESP_LOGD("fake_light", "Fake brightness level: %.2f", state);         
+          ESP_LOGD("fake_light", "Fake brightness level: %.2f", state);

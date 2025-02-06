@@ -82,12 +82,12 @@ spi:
     clk_pin: GPIO02
     mosi_pin: GPIO01
     interface: spi3
-    
+
 # PCA9554 GPIO extender for display reset
 pca9554:
   - id: p_c_a
     address: 0x20
-    i2c_id: i2c_bus    
+    i2c_id: i2c_bus
 
 display:
   - platform: st7701s
@@ -146,7 +146,7 @@ display:
       - [ 0xEF, 0x08, 0x08, 0x08, 0x45, 0x3F, 0x54 ]
       - [ 0xFF, 0x77, 0x01, 0x00, 0x00, 0x00 ]
       - [ 0x11 ]
-      - delay 120ms      
+      - delay 120ms
       - [ 0x3A, 0x66 ]
       - [ 0x36, 0x00 ]
       - [ 0x35, 0x00 ]

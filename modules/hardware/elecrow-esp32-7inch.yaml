@@ -7,7 +7,7 @@ esphome:
     build_flags: "-DBOARD_HAS_PSRAM"
     board_build.esp-idf.memory_type: qio_opi
     board_build.flash_mode: dio
-    
+
 esp32:
   board: esp32-s3-devkitc-1
   framework:
@@ -26,7 +26,7 @@ psram:
   speed: 80MHz
 
 preferences:
-  flash_write_interval: 1min      
+  flash_write_interval: 1min
 
 output:
   - platform: ledc
@@ -35,30 +35,31 @@ output:
     id: gpio_backlight_pwm
 
 light:
-  - platform: monochromatic # Define a monochromatic, dimmable light for the backlight
+  # Define a monochromatic, dimmable light for the backlight
+  - platform: monochromatic
     output: gpio_backlight_pwm
     name: Display Backlight
     id: display_backlight
     restore_mode: ALWAYS_ON
 
-#-------------------------------------------
+# -------------------------------------------
 # Touchscreen
-#-------------------------------------------
+# -------------------------------------------
 i2c:
   sda: 19
   scl: 20
-    
+
 touchscreen:
   platform: gt911
   transform:
     mirror_x: false
     mirror_y: false
   update_interval: 50ms
-  address: 0x5D    
+  address: 0x5D
   on_touch:
     - logger.log:
-          format: Touch at (%d, %d)
-          args: [touch.x, touch.y]
+        format: Touch at (%d, %d)
+        args: [touch.x, touch.y]
     - lambda: |-
           ESP_LOGI("cal", "x=%d, y=%d, x_raw=%d, y_raw=%0d",
               touch.x,
@@ -82,7 +83,7 @@ display:
         - 46
         - 3
         - 8
-        - 16 
+        - 16
         - 1
       blue:
         - 15

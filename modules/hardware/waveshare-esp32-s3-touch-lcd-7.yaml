@@ -47,11 +47,11 @@ preferences:
 # IO Extender
 #-------------------------------------------
 ch422g:
-  - id: ch422g_hub  
+  - id: ch422g_hub
 
 #-------------------------------------------
 # Back light
-#-------------------------------------------  
+#-------------------------------------------
 
 # This one is only on and off
 switch:
@@ -82,18 +82,18 @@ output:
     type: float
     write_action:
       - lambda: |-
-          ESP_LOGD("fake_light", "Fake brightness level: %.2f", state);   
+          ESP_LOGD("fake_light", "Fake brightness level: %.2f", state);
 
 #-------------------------------------------
 # Touchscreen gt911
 #-------------------------------------------
-    
+
 i2c:
   sda: GPIO08
   scl: GPIO09
   scan: True
   id: bus_a
-  
+
 touchscreen:
   platform: gt911
   id: my_touchscreen
@@ -112,7 +112,7 @@ touchscreen:
               if (touch.state <= 2) {
                 ESP_LOGI("Touch points:", "id=%d x=%d, y=%d x.raw=%d, y.raw=%d", touch.id, touch.x, touch.y, touch.x_raw, touch.y_raw);
               }
-          }  
+          }
 
 #-------------------------------------------
 # Display
@@ -143,7 +143,7 @@ display:
       number: 3
 #    enable_pin:
 #      ch422g: ch422g_hub
-#      number: 2  
+#      number: 2
     hsync_back_porch: 8
     hsync_front_porch: 8
     hsync_pulse_width: 4

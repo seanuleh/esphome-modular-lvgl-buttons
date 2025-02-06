@@ -64,38 +64,43 @@ packages:
   time: !include modules/lvgl/base/time_homeassistant.yaml
   sensors: !include modules/lvgl/base/sensors_base.yaml
   base: !include modules/lvgl/base/base.yaml
-  
+
   # Weather packages
-  # Build icon set from .svg files 
+  # Build icon set from .svg files
   weather_icons_80: !include
     file: modules/weather/weather_icons.yaml
     vars:
       size: 80
-  # Display weather forcast using icon set (defined above)    
+  # Display weather forcast using icon set (defined above)
   weather_forcast_80: !include
-    file: modules/weather/weather_forecast.yaml  
+    file: modules/weather/weather_forecast.yaml
     vars:
-      size: 80      
+      size: 80
   weather_icons_200: !include
     file: modules/weather/weather_icons.yaml
     vars:
       size: 200
 
-  # Tide forcast packages  
-  tides: !include modules/tides/tide_update.yaml  
+  # Tide forcast packages
+  tides: !include modules/tides/tide_update.yaml
 
 script:
   - id: time_update
     then:
       - lvgl.label.update:
           id: week_day
-          text: !lambda 'return id(system_time).now().strftime("%A");'  # weekday
+          text: !lambda 'return id(system_time).now().strftime("%A");'  # Weekday
       - lvgl.label.update:
           id: month_day
-          text: !lambda 'return id(system_time).now().strftime("%B %d");'  # Month Day
+          text: !lambda |- # Month Day
+            auto time = id(system_time).now();
+            int day = time.day_of_month;
+            char strftime_buf[64];
+            snprintf(strftime_buf, sizeof(strftime_buf), "%s %d", time.strftime("%B").c_str(), day);
+            return {strftime_buf};
       - lvgl.label.update:
           id: time_label
-          text: !lambda 'return id(system_time).now().strftime("%I:%M %P");' # The format %I:%M %p will display the time in a 12-hour format with "am" or "pm" included              
+          text: !lambda 'return id(system_time).now().strftime("%l:%M %P");' # The format %I:%M %p will display the time in a 12-hour format with "am" or "pm" included
 
 
 text_sensor:
@@ -116,7 +121,7 @@ text_sensor:
               id: weather_temperature_today
               text:
                 format: "%s°"
-                args: [ 'id(temperature).state.c_str()' ]         
+                args: [ 'id(temperature).state.c_str()' ]
 
   - platform: homeassistant
     entity_id: sensor.home_condition_day_0
@@ -129,8 +134,8 @@ text_sensor:
               text:
                 format: "%s"
                 args: [ 'id(condition_today).state.c_str()' ]
-                
-.forcast_styles: 
+
+.forcast_styles:
     - &forcast_obj_base
       height: SIZE_CONTENT
       width: SIZE_CONTENT
@@ -153,10 +158,10 @@ text_sensor:
     - &forcast_label_base_lo
       height: SIZE_CONTENT
       text_font: roboto20
-      text_color: dodgerblue      
-      
+      text_color: dodgerblue
+
     - &forcast_image_base
-      height: SIZE_CONTENT                 
+      height: SIZE_CONTENT
 
 # -------------------------------------------------------------------------
 # LVGL pages and buttons
@@ -183,7 +188,7 @@ lvgl:
                 - image:
                    src: unknown_200
                    id: weather_condition_icon
-    
+
           - obj:
                 width: 320
                 height: 300
@@ -194,7 +199,7 @@ lvgl:
                   pad_column: 0
                   pad_row: 0
                   type: GRID
-                  grid_rows: [ content, content, content, content ]                  
+                  grid_rows: [ content, content, content, content ]
                   grid_columns: [320 ]
                 widgets:
                   - label:
@@ -266,7 +271,7 @@ lvgl:
                           - label:
                               id: forecast_temperature_lo_0
                               <<: *forcast_label_base_lo
-                              text: "---°" 
+                              text: "---°"
                   - obj:
                       <<: *forcast_obj_base
                       grid_cell_row_pos: 0
@@ -308,7 +313,7 @@ lvgl:
                           - label:
                               id: forecast_temperature_lo_2
                               <<: *forcast_label_base_lo
-                              text: "---°" 
+                              text: "---°"
                   - obj:
                       <<: *forcast_obj_base
                       grid_cell_row_pos: 0
@@ -329,8 +334,8 @@ lvgl:
                           - label:
                               id: forecast_temperature_lo_3
                               <<: *forcast_label_base_lo
-                              text: "---°"                       
-                      
+                              text: "---°"
+
           - obj:
               height: 480
               width: 480
@@ -414,7 +419,7 @@ lvgl:
                     text_align: center
                     text_font: roboto30_bold
                     text: "00:00 am"
-                    y: 185     
+                    y: 185
           - label:
                 id: time_label
                 width: SIZE_CONTENT

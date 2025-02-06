@@ -28,7 +28,7 @@ substitutions:
   touchscreen_idle_timeout: "120s"
   touchscreen_daytime_brightness: "100%"
   touchscreen_nighttime_brightness: "50%"
-  
+
   # Boot screen configuration
   boot_screen_delay: 10s
 
@@ -43,7 +43,7 @@ substitutions:
 esphome:
   name: solardisp
   friendly_name: Solar info display
-  comment: "Solar info display 170px * 320px Smart Screen"  
+  comment: "Solar info display 170px * 320px Smart Screen"
 
 sensor:
   - platform: homeassistant
@@ -74,7 +74,7 @@ sensor:
                     args: [ 'id(solar_current_power_production).state' ]
               - lvgl.label.update:
                   id: solarCPP_unit
-                  text: "kW"  
+                  text: "kW"
 
 packages:
   # Generic configuration for ESP32 screens
@@ -84,10 +84,10 @@ packages:
   colors: !include modules/common/color.yaml
   fonts: !include modules/common/fonts.yaml
   images: !include modules/common/images.yaml
-  
+
   # Harware description file
   hardware: !include modules/hardware/lilygo-tdisplays3.yaml
-  
+
   # Base settings for LVGL libary
   time: !include modules/lvgl/base/time_sntp.yaml
   sensors: !include modules/lvgl/base/sensors_base.yaml
@@ -140,14 +140,14 @@ lvgl:
                           text_font: roboto18
                           text: "On Grid"
                 - label:
-                    id: display_time                
+                    id: display_time
                     grid_cell_column_pos: 2
                     grid_cell_row_pos: 0
                     grid_cell_x_align: end
                     pad_all: 2
                     text_font: roboto18
                     text: "12:00"
-                    
+
                 - image:
                     src: produced_icon_80px
                     grid_cell_column_pos: 0
@@ -168,7 +168,7 @@ lvgl:
                         pad_row: 1
                     widgets:
                       - label:
-                          id: solarCPP                    
+                          id: solarCPP
                           text_font: roboto48
                           text_color: ep_blue
                           text: 88.8

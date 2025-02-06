@@ -6,21 +6,21 @@ image:
     resize: 450x90 # aspect ratio 5
     type: RGB565
     use_transparency: true
-    
+
   - file: https://esphome.io/_static/logo-text-on-light.svg
     id: boot_logo_20px
     resize: 100x20  # aspect ratio 5
     type: RGB565
     use_transparency: true
-    
+
   - file: assets/produced_icon.svg
     id: produced_icon_80px
     resize: 80x80
     type: RGB565
-    use_transparency: true  
+    use_transparency: true
 
   - file: assets/grid_ok.svg
     id: grid_ok_30px
     resize: 30x30
     type: RGB565
-    use_transparency: true       
+    use_transparency: true
