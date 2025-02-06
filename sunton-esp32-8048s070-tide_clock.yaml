@@ -134,7 +134,7 @@ text_sensor:
     - &forcast_obj_base
       height: SIZE_CONTENT
       width: SIZE_CONTENT
-      bg_color: verylightgray
+      bg_color: gray6
       radius: 3
       pad_top: 2
       pad_bottom : 2
@@ -415,16 +415,15 @@ lvgl:
                     text_font: roboto30_bold
                     text: "00:00 am"
                     y: 185     
-          - obj:
-              width: 100%
-              height: 8%
-              bg_opa: TRANSP
-              pad_all: 2
-              widgets:
-                - label:
-                    id: time_label
-                    text_color: black
-                    align: TOP_RIGHT
-                    text_align: right
-                    text_font: roboto24
-                    text: "00:00 am"
+          - label:
+                id: time_label
+                width: SIZE_CONTENT
+                height: SIZE_CONTENT
+                pad_all: 3
+                bg_opa: cover
+                bg_color: burnt_sienna
+                text_color: white
+                align: TOP_RIGHT
+                text_align: right
+                text_font: roboto24
+                text: "00:00 am"

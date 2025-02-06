@@ -9,8 +9,22 @@ color:
       hex: '01B4DE'
     - id: ep_green
       hex: '7ACf38'
-    - id: verylightgray
-      hex: 'F0F0F0'
+
+# The grays in order of darkness    
+    - id: gray1
+      hex: '202020'
+    - id: gray2
+      hex: '404040'
+    - id: gray3
+      hex: '606060'
+    - id: gray4
+      hex: '808080'
+    - id: gray5
+      hex: 'A0A0A0'
+    - id: gray6
+      hex: 'C0C0C0'
+    - id: gray7
+      hex: 'E0E0E0'
 
 # The standard RGB color table is already in ESPHome!
 # RGB color table
@@ -68,8 +82,6 @@ color:
 #   hex: 'A9A9A9'
 # - id: darkgreen
 #   hex: '006400'
-# - id: darkgrey
-#   hex: 'A9A9A9'
 # - id: darkkhaki
 #   hex: 'BDB76B'
 # - id: darkmagenta
@@ -90,8 +102,6 @@ color:
 #   hex: '483D8B'
 # - id: darkslategray
 #   hex: '2F4F4F'
-# - id: darkslategrey
-#   hex: '2F4F4F'
 # - id: darkturquoise
 #   hex: '00CED1'
 # - id: darkviolet
@@ -101,8 +111,6 @@ color:
 # - id: deepskyblue
 #   hex: '00BFFF'
 # - id: dimgray
-#   hex: '696969'
-# - id: dimgrey
 #   hex: '696969'
 # - id: dodgerblue
 #   hex: '1E90FF'
@@ -128,8 +136,6 @@ color:
 #   hex: '008000'
 # - id: greenyellow
 #   hex: 'ADFF2F'
-# - id: grey
-#   hex: '808080'
 # - id: honeydew
 #   hex: 'F0FFF0'
 # - id: hotpink
@@ -162,8 +168,6 @@ color:
 #   hex: 'D3D3D3'
 # - id: lightgreen
 #   hex: '90EE90'
-# - id: lightgrey
-#   hex: 'D3D3D3'
 # - id: lightpink
 #   hex: 'FFB6C1'
 # - id: lightsalmon
@@ -173,8 +177,6 @@ color:
 # - id: lightskyblue
 #   hex: '87CEFA'
 # - id: lightslategray
-#   hex: '778899'
-# - id: lightslategrey
 #   hex: '778899'
 # - id: lightsteelblue
 #   hex: 'B0C4DE'
@@ -282,8 +284,6 @@ color:
 #   hex: '6A5ACD'
 # - id: slategray
 #   hex: '708090'
-# - id: slategrey
-#   hex: '708090'
 # - id: snow
 #   hex: 'FFFAFA'
 # - id: springgreen
@@ -312,5 +312,3 @@ color:
 #   hex: 'FFFF00'
 # - id: yellowgreen
 #   hex: '9ACD32'
-
-
