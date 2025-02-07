@@ -1,7 +1,5 @@
 # Substitution variables used through the codebase
 substitutions:
-  lib_dir: "."
-  
   lightbulb:         "\U000F0335"
   ceiling_light:     "\U000F0769"
   lamp:              "\U000F06B5"
