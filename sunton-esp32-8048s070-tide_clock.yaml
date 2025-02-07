@@ -76,65 +76,18 @@ packages:
     file: modules/weather/weather_forecast.yaml
     vars:
       size: 80
+  # Big icons for today weather   
   weather_icons_200: !include
     file: modules/weather/weather_icons.yaml
     vars:
       size: 200
-
-  # Tide forcast packages
-  tides: !include modules/tides/tide_update.yaml
-
-script:
-  - id: time_update
-    then:
-      - lvgl.label.update:
-          id: week_day
-          text: !lambda 'return id(system_time).now().strftime("%A");'  # Weekday
-      - lvgl.label.update:
-          id: month_day
-          text: !lambda |- # Month Day
-            auto time = id(system_time).now();
-            int day = time.day_of_month;
-            char strftime_buf[64];
-            snprintf(strftime_buf, sizeof(strftime_buf), "%s %d", time.strftime("%B").c_str(), day);
-            return {strftime_buf};
-      - lvgl.label.update:
-          id: time_label
-          text: !lambda 'return id(system_time).now().strftime("%l:%M %P");' # The format %I:%M %p will display the time in a 12-hour format with "am" or "pm" included
-
-
-text_sensor:
-  - platform: homeassistant
-    entity_id: weather.home
-    id: weather_condition
-    on_value:
-        then:  !include { file: modules/weather/weather_icons_update.yaml, vars: { size: 200, id: weather_condition_icon, input_id: weather_condition  } }
-
-  - platform: homeassistant
-    entity_id: weather.home
-    attribute: temperature
-    id: temperature
-    on_value:
-        then:
-          # Update weather_condition
-          - lvgl.label.update:
-              id: weather_temperature_today
-              text:
-                format: "%s°"
-                args: [ 'id(temperature).state.c_str()' ]
-
-  - platform: homeassistant
-    entity_id: sensor.home_condition_day_0
-    id: condition_today
-    on_value:
-        then:
-          # Update weather_condition
-          - lvgl.label.update:
-              id: weather_condition_today
-              text:
-                format: "%s"
-                args: [ 'id(condition_today).state.c_str()' ]
-
+  # Get todays weather and display it     
+  weather_today_200: !include
+    file: modules/weather/weather_today.yaml
+    vars:
+      size: 200  
+      
+# Styles for Weather forcast
 .forcast_styles:
     - &forcast_obj_base
       height: SIZE_CONTENT
@@ -161,7 +114,29 @@ text_sensor:
       text_color: dodgerblue
 
     - &forcast_image_base
-      height: SIZE_CONTENT
+      height: SIZE_CONTENT      
+
+  # Tide forcast packages
+  tides: !include modules/tides/tide_update.yaml
+
+script:
+  - id: time_update
+    then:
+      - lvgl.label.update:
+          id: week_day
+          text: !lambda 'return id(system_time).now().strftime("%A");'  # Weekday
+      - lvgl.label.update:
+          id: month_day
+          text: !lambda |- # Month Day
+            auto time = id(system_time).now();
+            int day = time.day_of_month;
+            char strftime_buf[64];
+            snprintf(strftime_buf, sizeof(strftime_buf), "%s %d", time.strftime("%B").c_str(), day);
+            return {strftime_buf};
+      - lvgl.label.update:
+          id: time_label
+          text: !lambda 'return id(system_time).now().strftime("%l:%M %P");' # The format %I:%M %p will display the time in a 12-hour format with "am" or "pm" included
+
 
 # -------------------------------------------------------------------------
 # LVGL pages and buttons
@@ -188,7 +163,6 @@ lvgl:
                 - image:
                    src: unknown_200
                    id: weather_condition_icon
-
           - obj:
                 width: 320
                 height: 300
@@ -211,7 +185,6 @@ lvgl:
                       text_align: LEFT
                       grid_cell_row_pos: 0
                       grid_cell_column_pos: 0
-                      # grid_cell_column_span: 2
                   - label:
                       text: "September 19"
                       id: month_day
@@ -219,7 +192,6 @@ lvgl:
                       text_align: LEFT
                       grid_cell_row_pos: 1
                       grid_cell_column_pos: 0
-                      # grid_cell_column_span: 1
                   - label:
                       text: "100°"
                       id: weather_temperature_today
@@ -227,7 +199,6 @@ lvgl:
                       text_align: LEFT
                       grid_cell_row_pos: 2
                       grid_cell_column_pos: 0
-                      # grid_cell_column_span: 1
                   - label:
                       width: 320
                       height: 90
@@ -420,6 +391,8 @@ lvgl:
                     text_font: roboto30_bold
                     text: "00:00 am"
                     y: 185
+                    
+          # Time display - upper right          
           - label:
                 id: time_label
                 width: SIZE_CONTENT
