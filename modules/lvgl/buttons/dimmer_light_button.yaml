@@ -41,7 +41,7 @@
                           entity_id: $button_${id}_device
                           brightness: !lambda return int(x);
             on_click:
-                - homeassistant.service:
-                    service: light.toggle
+                - homeassistant.action:
+                    action: light.toggle
                     data:
                       entity_id: $button_${id}_device

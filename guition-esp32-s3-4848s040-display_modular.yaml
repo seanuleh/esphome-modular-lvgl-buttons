@@ -10,7 +10,9 @@ substitutions:
   led_strip:         "\U000F07D6"
   coach_lamp:        "\U000F1020"
   ceiling_fan_light: "\U000F1798"
-
+  bed:               "\U000F02E3"
+  
+  
   icon_font: light40
   text_font: roboto24
   screen_height: '480px'
@@ -58,6 +60,12 @@ substitutions:
   button_4_id: rgb_light
   button_4_icon: $string_lights
   button_4_device: light.athom_rgb_light_d93662_rgb_light_strip
+  
+  # Button 5 is scene
+  button_5_name: "Bed Time"
+  button_5_id: bed_time_scene
+  button_5_icon: $bed
+  button_5_device: scene.bed_time  
 
 esphome:
   name: "guition-esp32-4848s040"
@@ -114,3 +122,6 @@ lvgl:
         - button: !include { file: modules/lvgl/buttons/basic_switch_button.yaml, vars: { id: 2, height: $button_height_single } }
         - button: !include { file: modules/lvgl/buttons/transparent_empty_button.yaml, vars: { id: 3, height: $button_height_single } }
         - button: !include { file: modules/lvgl/buttons/dimmer_light_button.yaml, vars: { id: 4, height: $button_height_double } }
+        - button: !include { file: modules/lvgl/buttons/scene_button.yaml, vars: { id: 5, height: $button_height_single} }        
+        
+       

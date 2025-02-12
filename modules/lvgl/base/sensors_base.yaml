@@ -1,8 +1,13 @@
 ---
-binary_sensor:
-  - platform: status
-    name: "Status"
-    entity_category: diagnostic
+button:
+  - platform: restart
+    name: "Restart"
+    entity_category: config
+
+  - platform: factory_reset
+    name: "Factory Reset"
+    id: Reset
+    entity_category: config
 
 sensor:
   - platform: wifi_signal
@@ -17,6 +22,7 @@ sensor:
     id: wifi_signal_db_percent
     source_id: wifi_signal_db
     name: "WiFi Strength"
+    icon: mdi:wifi  
     filters:
       - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
     unit_of_measurement: "%"
@@ -27,22 +33,25 @@ sensor:
               id: wifi_signal_db_percent_label
               text:
                 format: "Wi-Fi Strength: %.0f%%"
-                args: [ 'id(wifi_signal_db_percent).state' ]
+                args: [ 'id(wifi_signal_db_percent).state' ]    
+    
+binary_sensor:
+  - platform: status
+    name: "Status"
+    icon: mdi:check-network-outline
+    entity_category: diagnostic  
 
 text_sensor:
-  - platform: homeassistant
-    entity_id: weather.forecast_home
-    id: weather_now_condition
-    internal: true
-
   - platform: version
     id: esphome_version
-    name: "ESPHome Version"
+    name: 'ESPHome Version'
     hide_timestamp: true
+    icon: mdi:source-branch
+    entity_category: diagnostic
 
   - platform: template
-    name: 'Last Restart'
     id: device_last_restart
+    name: 'Last Restart'
     icon: mdi:clock
     entity_category: diagnostic
 
@@ -50,10 +59,12 @@ text_sensor:
     mac_address:
       id: mac_address
       name: "MAC Address"
+      icon: mdi:network-pos
       entity_category: diagnostic
     ip_address:
       id: ip_address
       name: "IP Address"
+      icon: mdi:ip-network
       entity_category: diagnostic
       on_value:
         then:
@@ -75,7 +86,8 @@ text_sensor:
     ssid:
       id: connected_ssid
       name: "Connected SSID"
-      entity_category: diagnostic
+      icon: mdi:wifi-check
+      entity_category: diagnostic      
       on_value:
         then:
           - lvgl.label.update:

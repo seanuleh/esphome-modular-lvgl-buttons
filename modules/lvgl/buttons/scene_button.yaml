@@ -1,7 +1,7 @@
 ---
-# Basic light switch button - define its setting in substitutions
+# Scene button - define its scene in substitutions
             height: ${height}
-            checkable: true
+            checkable: false
             id: lv_button_${id}
             widgets:
               - label:
@@ -15,6 +15,6 @@
                   text: $button_${id}_name
             on_click:
                 - homeassistant.action:
-                    action: switch.toggle
+                    action: scene.turn_on
                     data:
                       entity_id: $button_${id}_device

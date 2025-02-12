@@ -14,7 +14,7 @@
                   id: lv_button_${id}_label
                   text: $button_${id}_name
             on_click:
-                - homeassistant.service:
-                    service: switch.toggle
+                - homeassistant.action:
+                    action: switch.toggle
                     data:
                       entity_id: $button_${id}_device
