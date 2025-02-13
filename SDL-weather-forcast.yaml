@@ -10,13 +10,10 @@ substitutions:
   led_strip:         "\U000F07D6"
   coach_lamp:        "\U000F1020"
   ceiling_fan_light: "\U000F1798"
-
+  bed:               "\U000F02E3"
+  
   icon_font: light40
   text_font: roboto24
-  screen_height: '480px'
-  screen_width: '480px'
-  sdl_height: '480'
-  sdl_width: '480'
   button_on_color: "burnt_sienna"
   button_off_color: "very_dark_gray"
   icon_on_color: "yellow"
@@ -27,19 +24,26 @@ substitutions:
   button_height_single: '109px'
   button_height_double: '228px'
   button_width: '150px'
-  touchscreen_idle_timeout: "10s"
+  touchscreen_idle_timeout: "30s"
   touchscreen_daytime_brightness: "100%"
   touchscreen_nighttime_brightness: "50%"
   # Boot screen configuration
   boot_screen_delay: 60s
 
-  # Screen goes to sleep at Mightnight
-  screen_sleep_hour: '0'
-  screen_sleep_minute: '0'
+  # Set Night mode  at Mightnight
+  screen_night_hour: '0'
+  screen_night_minute: '0'
 
-  # Screen wakes up at 5:30am
-  screen_wake_hour: '5'
-  screen_wake_minute: '30'
+  # Set Day mode at 5:30am
+  screen_day_hour: '5'
+  screen_day_minute: '30'
+  
+  # Screen Size
+  screen_height: '480px'
+  screen_width: '480px'
+  sdl_height: '480'
+  sdl_width: '480'
+
 
 esphome:
   name: weatherapp
@@ -48,14 +52,9 @@ esphome:
 host:
   mac_address: "62:23:45:AF:B3:05"
 
-external_components:
-  - source: github://pr#8005
-    components: [lvgl]
-
 packages:
   # Generic configuration for ESP32 screens
   core: !include modules/common/core.yaml
-  globals: !include modules/common/globals.yaml
 # SDL has no Wi-Fi
 # wifi: !include modules/common/wifi.yaml
   colors: !include modules/common/color.yaml

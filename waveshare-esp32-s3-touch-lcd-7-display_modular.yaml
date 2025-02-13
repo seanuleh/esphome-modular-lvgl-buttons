@@ -10,11 +10,10 @@ substitutions:
   led_strip:         "\U000F07D6"
   coach_lamp:        "\U000F1020"
   ceiling_fan_light: "\U000F1798"
-
+  bed:               "\U000F02E3"
+  
   icon_font: light40
   text_font: roboto24
-  screen_height: '480px'
-  screen_width: '800px'
   button_on_color: "burnt_sienna"
   button_off_color: "very_dark_gray"
   icon_on_color: "yellow"
@@ -25,19 +24,24 @@ substitutions:
   button_height_single: '109px'
   button_height_double: '228px'
   button_width: '150px'
-  touchscreen_idle_timeout: "120s"
+  touchscreen_idle_timeout: "30s"
   touchscreen_daytime_brightness: "100%"
   touchscreen_nighttime_brightness: "50%"
   # Boot screen configuration
   boot_screen_delay: 60s
 
-  # Screen goes to sleep at Mightnight
-  screen_sleep_hour: '0'
-  screen_sleep_minute: '0'
+  # Set Night mode  at Mightnight
+  screen_night_hour: '0'
+  screen_night_minute: '0'
 
-  # Screen wakes up at 5:30am
-  screen_wake_hour: '5'
-  screen_wake_minute: '30'
+  # Set Day mode at 5:30am
+  screen_day_hour: '5'
+  screen_day_minute: '30'
+  
+  # Screen Size
+  screen_height: '480px'
+  screen_width: '800px'
+
 
   # Button 2 is a switch (some devcies show up as switches some as lights make sure you use the corresponding file)
   button_2_name: "Button 2"
@@ -58,10 +62,17 @@ esphome:
   friendly_name: "Waveshare7"
   comment: "Waveshare 7” ESP32-S3N8R8 Capacitive Touch Display 800×480"
 
+# Time update script - This is run once per second. Use it to update any time related labels.
+script:
+  - id: time_update
+    then:
+      - lambda: |-
+          // No operation
+
+
 packages:
   # Generic configuration for ESP32 screens
   core: !include modules/common/core.yaml
-  globals: !include modules/common/globals.yaml
   wifi: !include modules/common/wifi.yaml
   colors: !include modules/common/color.yaml
   fonts: !include modules/common/fonts.yaml
@@ -74,9 +85,6 @@ packages:
   time: !include modules/lvgl/base/time_sntp.yaml
   sensors: !include modules/lvgl/base/sensors_base.yaml
   base: !include modules/lvgl/base/base.yaml
-
-  # Time update script
-  time_update: !include modules/lvgl/base/time_update_none.yaml
 
   # Update button and relay state from Home Assistant
   button_2_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 2 } }
