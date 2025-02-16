@@ -11,10 +11,9 @@ button:
 
 sensor:
   - platform: wifi_signal
-    name: "WiFi Signal"
+    name: "WiFi Signal dB"
     id: wifi_signal_db
     update_interval: 60s
-    entity_category: diagnostic
     internal: true
 
   # Reports the WiFi signal strength in %
@@ -25,6 +24,7 @@ sensor:
     icon: mdi:wifi  
     filters:
       - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+      - throttle: 60s
     unit_of_measurement: "%"
     entity_category: diagnostic
     on_value:
