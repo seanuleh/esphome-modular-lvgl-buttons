@@ -83,7 +83,6 @@ script:
 packages:
   # Generic configuration for ESP32 screens
   core: !include modules/common/core.yaml
-  globals: !include modules/common/globals.yaml
   wifi: !include modules/common/wifi.yaml
   colors: !include modules/common/color.yaml
   fonts: !include modules/common/fonts.yaml
