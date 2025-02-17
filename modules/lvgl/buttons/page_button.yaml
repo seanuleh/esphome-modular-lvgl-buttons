@@ -1,5 +1,5 @@
 ---
-# Scene button - define its scene in substitutions
+# Page button - define its page in substitutions
             height: ${height}
             checkable: false
             id: lv_button_${id}
@@ -14,7 +14,5 @@
                   id: lv_button_${id}_label
                   text: $button_${id}_name
             on_click:
-                - homeassistant.action:
-                    action: scene.turn_on
-                    data:
-                      entity_id: $button_${id}_scene
+                then:
+                  lvgl.page.show: $button_${id}_page

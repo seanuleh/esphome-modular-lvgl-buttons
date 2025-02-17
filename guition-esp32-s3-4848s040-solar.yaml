@@ -11,6 +11,7 @@ substitutions:
   coach_lamp:        "\U000F1020"
   ceiling_fan_light: "\U000F1798"
   bed:               "\U000F02E3"
+  sunny:             "\U000F05A8"
   
   icon_font: light40
   text_font: roboto24
@@ -66,7 +67,13 @@ substitutions:
   button_5_name: "Bedtime"
   button_5_id: bedtime_scene
   button_5_icon: $bed
-  button_5_device: scene.bed_time  
+  button_5_scene: scene.bed_time 
+
+  # Button 6 is page
+  button_6_name: "Solar"
+  button_6_id: solar_page
+  button_6_icon: $sunny
+  button_6_page: enphase    
 
 esphome:
   name: "guition-esp32-4848s040"
@@ -100,7 +107,6 @@ packages:
   button_1_sensor: !include { file: modules/sensors/basic_local_relay_button_state.yaml, vars: { id: 1 } }
   button_2_sensor: !include { file: modules/sensors/basic_switch_or_light_button_state.yaml, vars: { id: 2 } }
   button_4_sensor: !include { file: modules/sensors/dimmer_light_state.yaml, vars: { id: 4 } }
-
 
 sensor:
   - platform: homeassistant
@@ -155,6 +161,7 @@ sensor:
     id: daily_net_sum
     type: linear
     name: "Daily net sum"
+    internal: true
     sources:
       - source: daily_net_import
         coeffecient: 1.0
@@ -210,19 +217,8 @@ lvgl:
         - button: !include { file: modules/lvgl/buttons/basic_switch_button.yaml, vars: { id: 2, height: $button_height_single } }
         - button: !include { file: modules/lvgl/buttons/transparent_empty_button.yaml, vars: { id: 3, height: $button_height_single } }
         - button: !include { file: modules/lvgl/buttons/dimmer_light_button.yaml, vars: { id: 4, height: $button_height_double } }
-        - button: !include { file: modules/lvgl/buttons/scene_button.yaml, vars: { id: 5, height: $button_height_single} }        
-        - button:
-            height: $button_height_single
-            checkable: true
-            id: lv_button_6
-            widgets:
-              - label:
-                  align: bottom_left
-                  id: lv_button_6_label
-                  text: Enphase
-            on_click:
-                then:
-                  lvgl.page.show: enphase
+        - button: !include { file: modules/lvgl/buttons/scene_button.yaml, vars: { id: 5, height: $button_height_single} }
+        - button: !include { file: modules/lvgl/buttons/page_button.yaml, vars: { id: 6, height: $button_height_single} }  
 
     - id: enphase
       width: 480px
