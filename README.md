@@ -21,6 +21,10 @@ pip install esphome cairosvg
 
 The SDL display platform allows you to use create an ESPHome display on a desktop system running Linux or MacOS. This is particularly useful for designing display layouts, since compiling and running a host binary is much faster than compiling for and flashing a microcontroller target system.
 
-### `ESP32-4848s040` 4.0" 480px * 480px Smart Screen
+### Guition `ESP32-4848s040` 4.0" 480px * 480px Smart Screen
 
 This is a really great little screen. It has 120v/240v relays so it can control lights directly.  guition-esp32-s3-4848s040-display_modular.yaml has a boot screen, a system for dimming the backlight at night and some basic buttons for controlling local and Home Assistant devices.
+
+### Sunton `ESP32-8048s070` 7.0" 480px * 800px Smart Screen
+
+This is the largest and higest resolution screen avalible for a low cost. It has a very good touch screen and good dimmining ability. Very good for info display.
