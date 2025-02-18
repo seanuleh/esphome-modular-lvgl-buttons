@@ -27,4 +27,4 @@ This is a really great little screen. It has 120v/240v relays so it can control 
 
 ### Sunton `ESP32-8048s070` 7.0" 480px * 800px Smart Screen
 
-This is the largest and higest resolution screen avalible for a low cost. It has a very good touch screen and good dimmining ability. Very good for info display.
+This is the largest and higest resolution screen avalible for a low cost. It has a very good touch screen and good dimmining ability. Very good for info displays.
