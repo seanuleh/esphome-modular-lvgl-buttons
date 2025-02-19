@@ -65,7 +65,7 @@ touchscreen:
               - light.turn_on:
                   id: display_backlight
                   brightness: ${touchscreen_nighttime_brightness}
-                  
+
 select:
   - platform: template
     name: "Brightness mode"
@@ -80,7 +80,7 @@ select:
     on_value:
       then:
         - lvgl.resume
-        - lvgl.widget.redraw      
+        - lvgl.widget.redraw
         - if:
             condition:
               - lambda: 'return id(brightness_mode).state == "Day";'
@@ -101,4 +101,4 @@ select:
             then:
               - light.turn_on:
                   id: display_backlight
-                  brightness: ${touchscreen_nighttime_brightness}                 
+                  brightness: ${touchscreen_nighttime_brightness}

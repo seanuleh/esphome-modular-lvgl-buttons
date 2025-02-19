@@ -12,7 +12,7 @@ substitutions:
   ceiling_fan_light: "\U000F1798"
   bed:               "\U000F02E3"
   sunny:             "\U000F05A8"
-  
+
   icon_font: light40
   text_font: roboto24
   button_on_color: "burnt_sienna"
@@ -38,7 +38,7 @@ substitutions:
   # Set Day mode at 5:30am
   screen_day_hour: '5'
   screen_day_minute: '30'
-  
+
   # Screen Size
   screen_height: '480px'
   screen_width: '480px'
@@ -62,24 +62,24 @@ substitutions:
   button_4_id: rgb_light
   button_4_icon: $string_lights
   button_4_device: light.athom_rgb_light_d93662_rgb_light_strip
-  
+
   # Button 5 is scene
   button_5_name: "Bedtime"
   button_5_id: bedtime_scene
   button_5_icon: $bed
-  button_5_scene: scene.bed_time 
+  button_5_scene: scene.bed_time
 
   # Button 6 is page
   button_6_name: "Solar"
   button_6_id: solar_page
   button_6_icon: $sunny
-  button_6_page: enphase    
+  button_6_page: enphase
 
 esphome:
   name: "guition-esp32-4848s040"
   friendly_name: "Guition480"
   comment: "Guition ESP32-4848S040 480px * 480px Smart Screen"
-  
+
 # Time update script - This is run once per second. Use it to update any time related labels.
 script:
   - id: time_update
@@ -132,7 +132,7 @@ sensor:
             text:
               format: "%.1f"
               args: [ 'id(daily_net_export).state' ]
-                
+
   - platform: homeassistant
     id: daily_solar_energy_production
     entity_id: sensor.daily_solar_energy_production
@@ -166,31 +166,31 @@ sensor:
       - source: daily_net_import
         coeffecient: 1.0
       - source: daily_net_export
-        coeffecient: -1.0      
+        coeffecient: -1.0
     on_value:
       then:
         - lvgl.label.update:
             id: daily_net_watts
             text:
               format: "%.1f"
-              args: [ 'id(daily_net_sum).state' ]      
+              args: [ 'id(daily_net_sum).state' ]
         - if:
             condition:
               lambda: return (id(daily_net_sum).state < 0);
             then:
               - lvgl.widget.update:
-                  id: daily_net_watts 
+                  id: daily_net_watts
                   text_color: ep_blue
               - lvgl.image.update:
-                  id: daily_net_watts_icon 
-                  src: up_arrow                 
+                  id: daily_net_watts_icon
+                  src: up_arrow
             else:
               - lvgl.widget.update:
                   id: daily_net_watts
                   text_color: ep_orange
               - lvgl.image.update:
-                  id: daily_net_watts_icon 
-                  src: down_arrow      
+                  id: daily_net_watts_icon
+                  src: down_arrow
 
 # -------------------------------------------------------------------------
 # LVGL pages and buttons
@@ -218,7 +218,7 @@ lvgl:
         - button: !include { file: modules/lvgl/buttons/transparent_empty_button.yaml, vars: { id: 3, height: $button_height_single } }
         - button: !include { file: modules/lvgl/buttons/dimmer_light_button.yaml, vars: { id: 4, height: $button_height_double } }
         - button: !include { file: modules/lvgl/buttons/scene_button.yaml, vars: { id: 5, height: $button_height_single} }
-        - button: !include { file: modules/lvgl/buttons/page_button.yaml, vars: { id: 6, height: $button_height_single} }  
+        - button: !include { file: modules/lvgl/buttons/page_button.yaml, vars: { id: 6, height: $button_height_single} }
 
     - id: enphase
       width: 480px
@@ -226,14 +226,14 @@ lvgl:
       widgets:
         - obj:
             width: 480px
-            height: 116px            
+            height: 116px
             pad_left: 8
             layout:
               type: grid
               grid_rows: [ fr(1), fr(1)]
-              grid_columns: [ content, content, content, content, content, content, content ]              
+              grid_columns: [ content, content, content, content, content, content, content ]
               pad_column: 8
-              pad_row: 5    
+              pad_row: 5
             widgets:
             # Imported from grid
                 - image:
@@ -273,7 +273,7 @@ lvgl:
                     grid_cell_column_pos: 2
                     pad_top: 20
                     pad_left: 6
-                    pad_right: 6                 
+                    pad_right: 6
                     src: arrow_right_gray
                 - obj:
                     grid_cell_row_pos: 0
@@ -350,7 +350,7 @@ lvgl:
                           text_font: ep14
                           text: Exported
 
-             # Produced             
+             # Produced
                 - image:
                     grid_cell_row_pos: 1
                     grid_cell_column_pos: 0
@@ -372,7 +372,7 @@ lvgl:
                         pad_row: 1
                     widgets:
                       - label:
-                          id: daily_solar_production_watts                      
+                          id: daily_solar_production_watts
                           text_font: ep22
                           text_color: ep_blue
                           text: 888.8
@@ -389,12 +389,12 @@ lvgl:
                     grid_cell_row_pos: 1
                     grid_cell_column_pos: 2
                     pad_left: 6
-                    pad_right: 6                
+                    pad_right: 6
                     pad_top: 20
                     src: arrow_right_blue
 
-                    
-         # Net Imported           
+
+         # Net Imported
                 - obj:
                     grid_cell_row_pos: 1
                     grid_cell_column_pos: 4
@@ -406,7 +406,7 @@ lvgl:
                     grid_cell_row_pos: 1
                     grid_cell_column_pos: 5
                     pad_top: 10
-                    src: up_arrow  
+                    src: up_arrow
 
                 - obj:
                     grid_cell_row_pos: 1
@@ -422,7 +422,7 @@ lvgl:
                         pad_row: 1
                     widgets:
                       - label:
-                          id: daily_net_watts                      
+                          id: daily_net_watts
                           text_font: ep22
                           text: 888.8
                       - label:
@@ -434,7 +434,7 @@ lvgl:
                           text: Net Imported
       on_click:
         then:
-          lvgl.page.show: main_page   
+          lvgl.page.show: main_page
 
 #-------------------------------------------
 # Graphics and Fonts
@@ -444,58 +444,58 @@ image:
     id: boot_logo
     resize: 460x90
     type: RGB565
-    use_transparency: true
-    
-    
+    transparency: alpha_channel
+
+
   - file: assets/house.svg
     id: house_icon
     resize: 30x30
     type: RGB565
-    use_transparency: true
-    
+    transparency: alpha_channel
+
   - file: assets/grid_icon.svg
     id: grid_icon
     resize: 30x30
     type: RGB565
-    use_transparency: true
+    transparency: alpha_channel
 
   - file: assets/produced_icon.svg
     id: produced_icon
     resize: 30x30
     type: RGB565
-    use_transparency: true
+    transparency: alpha_channel
 
   - file: assets/down_arrow.svg
     id: down_arrow
     resize: 30x30
     type: RGB565
-    use_transparency: true
+    transparency: alpha_channel
 
   - file: assets/up_arrow.svg
     id: up_arrow
     resize: 30x30
     type: RGB565
-    use_transparency: true       
+    transparency: alpha_channel
 
   - file: assets/arrow_right_gray.svg
     id: arrow_right_gray
     resize: 15x10
     type: RGB565
-    use_transparency: true
+    transparency: alpha_channel
 
   - file: assets/arrow_right_blue.svg
     id: arrow_right_blue
     resize: 15x10
     type: RGB565
-    use_transparency: true
+    transparency: alpha_channel
 
 font:
   - file: "assets/epVisuelt-Regular.ttf"
     id: ep22
     size: 22
     bpp: 8
-    
+
   - file: "assets/epVisuelt-Regular.ttf"
     id: ep14
     size: 14
-    bpp: 8   
+    bpp: 8

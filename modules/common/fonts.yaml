@@ -62,7 +62,7 @@ font:
       "\U000F1798",  # mdi-ceiling-fan-light
       "\U000F02E3",  # mdi-bed
       "\U000F05A8",  # mdi-white-balance-sunny
-    ]      
+    ]
 
   # http://materialdesignicons.com/cdn/7.4.47/
   - file: 'https://github.com/Templarian/MaterialDesign-Webfont/raw/v7.4.47/fonts/materialdesignicons-webfont.ttf'

@@ -264,7 +264,7 @@ image:
     id: boot_logo
     type: RGB565
     resize: 470x95
-    use_transparency: true
+    transparency: alpha_channel
 
 
 

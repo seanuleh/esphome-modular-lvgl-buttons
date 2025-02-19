@@ -21,7 +21,7 @@ sensor:
     id: wifi_signal_db_percent
     source_id: wifi_signal_db
     name: "WiFi Strength"
-    icon: mdi:wifi  
+    icon: mdi:wifi
     filters:
       - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
       - throttle: 60s
@@ -33,13 +33,13 @@ sensor:
               id: wifi_signal_db_percent_label
               text:
                 format: "Wi-Fi Strength: %.0f%%"
-                args: [ 'id(wifi_signal_db_percent).state' ]    
-    
+                args: [ 'id(wifi_signal_db_percent).state' ]
+
 binary_sensor:
   - platform: status
     name: "Status"
     icon: mdi:check-network-outline
-    entity_category: diagnostic  
+    entity_category: diagnostic
 
 text_sensor:
   - platform: version
@@ -87,7 +87,7 @@ text_sensor:
       id: connected_ssid
       name: "Connected SSID"
       icon: mdi:wifi-check
-      entity_category: diagnostic      
+      entity_category: diagnostic
       on_value:
         then:
           - lvgl.label.update:
