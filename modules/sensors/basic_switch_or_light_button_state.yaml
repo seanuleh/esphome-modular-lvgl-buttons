@@ -1,30 +1,32 @@
 ---
 # Basic switch or light state - Define its settings in substitutions
-text_sensor:
-  - platform: homeassistant
-    name: "$button_${id}_name"
+binary_sensor:
+  - id: widget_sensor_${id}
+    platform: homeassistant
     entity_id: $button_${id}_device
-    on_value:
-      then:
-        - lvgl.widget.update:
-            id: lv_button_${id}
-            state:
-              checked: !lambda return (0 == x.compare(std::string{"on"}));
-              disabled: !lambda return ((0 == x.compare(std::string{"unavailable"})) or (0 == x.compare(std::string{"unknown"})));
-        - if:
-            condition:
-              lambda: return (0 == x.compare(std::string{"on"}));
-            then:
-              - lvgl.widget.update:
-                  id: lv_button_${id}_icon
-                  text_color: $icon_on_color
-              - lvgl.widget.update:
-                  id: lv_button_${id}_label
-                  text_color: $label_on_color
-            else:
-              - lvgl.widget.update:
-                  id: lv_button_${id}_icon
-                  text_color: $icon_off_color
-              - lvgl.widget.update:
-                  id: lv_button_${id}_label
-                  text_color: $label_off_color
+    publish_initial_state: true
+    on_state:
+      - if:
+          condition:
+            - binary_sensor.is_on: widget_sensor_${id}
+          then:
+            - lvgl.widget.update:
+                id: lv_button_${id}
+                bg_color: $button_on_color      
+            - lvgl.widget.update:
+                id: lv_button_${id}_icon
+                text_color: $icon_on_color
+            - lvgl.widget.update:
+                id: lv_button_${id}_label
+                text_color: $label_on_color
+          else:
+            - lvgl.widget.update:
+                id: lv_button_${id}
+                bg_color: $button_off_color      
+            - lvgl.widget.update:
+                id: lv_button_${id}_icon
+                text_color: $icon_off_color
+            - lvgl.widget.update:
+                id: lv_button_${id}_label
+                text_color: $label_off_color
+              

@@ -1,7 +1,6 @@
 ---
 # Page button - define its page in substitutions
             height: ${height}
-            checkable: false
             id: lv_button_${id}
             widgets:
               - label:
@@ -13,6 +12,6 @@
                   align: bottom_left
                   id: lv_button_${id}_label
                   text: $button_${id}_name
-            on_click:
+            on_short_click:
                 then:
                   lvgl.page.show: $button_${id}_page

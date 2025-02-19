@@ -1,7 +1,6 @@
 ---
 # Basic light switch button - define its setting in substitutions
             height: ${height}
-            checkable: true
             id: lv_button_${id}
             widgets:
               - label:
@@ -40,7 +39,7 @@
                         data:
                           entity_id: $button_${id}_device
                           brightness: !lambda return int(x);
-            on_click:
+            on_short_click:
                 - homeassistant.action:
                     action: light.toggle
                     data:

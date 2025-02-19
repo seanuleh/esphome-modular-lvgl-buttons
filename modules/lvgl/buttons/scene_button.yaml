@@ -1,7 +1,6 @@
 ---
 # Scene button - define its scene in substitutions
             height: ${height}
-            checkable: false
             id: lv_button_${id}
             widgets:
               - label:
@@ -13,7 +12,7 @@
                   align: bottom_left
                   id: lv_button_${id}_label
                   text: $button_${id}_name
-            on_click:
+            on_short_click:
                 - homeassistant.action:
                     action: scene.turn_on
                     data:
