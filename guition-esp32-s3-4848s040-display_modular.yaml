@@ -42,32 +42,6 @@ substitutions:
   screen_height: '480px'
   screen_width: '480px'
 
-  # Button 1 is a local relay
-  button_1_name: "Local Light"
-  button_1_id: local_light
-  button_1_icon: $lightbulb
-  button_1_device: "internal_relay_1"
-
-  # Button 2 is a switch (some devcies show up as switches some as lights make sure you use the corresponding file)
-  button_2_name: "Button 2"
-  button_2_id: couch_lamp
-  button_2_icon: $lightbulb
-  button_2_device: "switch.athom_smart_plug_v3_50ebc0_switch"
-
-  # Button 3 is an empty object that requires no settings. It just pushes everything down one button
-
-  # Button 4 is dimmable light
-  button_4_name: "RGB light"
-  button_4_id: rgb_light
-  button_4_icon: $string_lights
-  button_4_device: light.athom_rgb_light_d93662_rgb_light_strip
-
-  # Button 5 is scene
-  button_5_name: "Bedtime"
-  button_5_id: bedtime_scene
-  button_5_icon: $bed
-  button_5_scene: scene.bed_time
-
 esphome:
   name: "guition-esp32-4848s040"
   friendly_name: "Guition480"
@@ -115,7 +89,6 @@ packages:
     vars:
       uid: button_4
       entity_id: light.athom_rgb_light_d93662_rgb_light_strip
-
 
 # -------------------------------------------------------------------------
 # LVGL pages and buttons
