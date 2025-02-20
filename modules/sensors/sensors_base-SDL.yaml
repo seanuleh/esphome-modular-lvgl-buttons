@@ -5,11 +5,6 @@ binary_sensor:
     entity_category: diagnostic
 
 text_sensor:
-  - platform: homeassistant
-    entity_id: weather.forecast_home
-    id: weather_now_condition
-    internal: true
-
   - platform: version
     id: esphome_version
     name: "ESPHome Version"

@@ -47,4 +47,4 @@ output:
     type: float
     write_action:
       - lambda: |-
-          ESP_LOGD("fake_light", "Fake brightness level: %.2f", state);
+          // No operation

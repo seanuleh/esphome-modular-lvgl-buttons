@@ -1,13 +1,16 @@
 ---
-# Dimmer light button state - define its settings in substitutions
+# Dimmer light button state
+# vars:
+#   uid: <unique identifer for the switch. Must match the ID of the button>
+#   entity_id: <Home Assistant entity_id for the object we are controlling>
 sensor:
-  - platform: homeassistant
-    id: button_${id}_device_brightness
-    entity_id: $button_${id}_device
+  - id: brightness_${uid}
+    platform: homeassistant
+    entity_id: ${entity_id}
     attribute: brightness
     on_value:
       - lvgl.slider.update:
-          id: lv_button_${id}_slider
+          id: slider_${uid}
           value: !lambda return x;
 
-<<: !include ./basic_switch_or_light_button_state.yaml
+<<: !include ./switch_or_light_button_state.yaml
