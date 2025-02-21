@@ -1,0 +1,12 @@
+---
+# Swipe navigation
+  on_swipe_right:
+    then:
+      - lvgl.page.next:
+          animation: OUT_RIGHT
+          time: 300ms
+  on_swipe_left:
+    then:
+      - lvgl.page.previous:
+          animation: OUT_LEFT
+          time: 300ms   
