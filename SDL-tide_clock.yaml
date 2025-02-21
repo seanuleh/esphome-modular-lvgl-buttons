@@ -8,10 +8,6 @@ esphome:
   name: tideclock
   friendly_name: "Tide Clock"
 
-external_components:
-  - source: github://pr#8005
-    components: [lvgl]
-
 host:
   mac_address: "62:23:45:AF:B3:08"
 
