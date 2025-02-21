@@ -43,12 +43,6 @@ substitutions:
   screen_height: '480px'
   screen_width: '480px'
 
-  # Button 6 is page
-  button_6_name: "Solar"
-  button_6_id: solar_page
-  button_6_icon: $sunny
-  button_6_page: enphase
-
 esphome:
   name: "guition-esp32-4848s040"
   friendly_name: "Guition480"
@@ -70,7 +64,6 @@ packages:
   images: !include modules/base/images.yaml
   time: !include modules/base/time_sntp.yaml
   sensors: !include modules/sensors/sensors_base.yaml
-
 
   # Harware description file
   hardware: !include modules/hardware/guition-esp32-s3-4848s040.yaml
@@ -205,18 +198,8 @@ lvgl:
       bg_color: black
       bg_opa: cover
       pad_all: 5
-      
-      on_swipe_right:
-        then:
-          - lvgl.page.next:
-              animation: OUT_RIGHT
-              time: 300ms
-      on_swipe_left:
-        then:
-          - lvgl.page.previous:
-              animation: OUT_LEFT
-              time: 300ms
-              
+      <<: !include
+        file: modules/sections/swipe_navigation.yaml
       widgets:
         # Button 1 - Standard (double hight) internal relay button with state updates
         - button: !include
@@ -258,9 +241,9 @@ lvgl:
               height: $button_height_single
               text: Solar
               icon: $sunny
-              page: enphase
+              page: enphase_page
 
-    - id: enphase
+    - id: enphase_page
       width: 480px
       bg_color: white
       <<: !include
