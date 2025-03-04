@@ -49,19 +49,16 @@ esphome:
 
 packages:
   # Generic configuration for ESP32 screens
-  core: !include modules/common/core.yaml
-  wifi: !include modules/common/wifi.yaml
-  colors: !include modules/common/color.yaml
-  fonts: !include modules/common/fonts.yaml
-  images: !include modules/common/images.yaml
+  wifi: !include modules/base/wifi.yaml
+  base: !include modules/base/base.yaml
+  colors: !include modules/base/color.yaml
+  fonts: !include modules/base/fonts.yaml
+  images: !include modules/base/images.yaml
+  time: !include modules/base/time_sntp.yaml
+  sensors: !include modules/sensors/sensors_base.yaml
 
   # Hardware description file
   hardware: !include modules/hardware/sunton-esp32-8048s070.yaml
-
-  # Base settings for LVGL libary
-  time: !include modules/lvgl/base/time_homeassistant.yaml
-  sensors: !include modules/lvgl/base/sensors_base.yaml
-  base: !include modules/lvgl/base/base.yaml
 
   # Tide forcast packages
   tides: !include modules/tides/tide_update.yaml
@@ -140,11 +137,11 @@ script:
 # LVGL pages and buttons
 # -------------------------------------------------------------------------
 lvgl:
-  theme: !include { file: modules/lvgl/base/theme.yaml }
+  theme: !include { file: modules/base/theme.yaml }
   page_wrap: true
 
 # Boot screen
-  top_layer: !include { file: modules/lvgl/screens/boot_screen.yaml }
+  top_layer: !include { file: modules/screens/boot_screen.yaml }
 
 # Main Page
   pages:
