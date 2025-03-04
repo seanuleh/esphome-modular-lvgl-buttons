@@ -54,20 +54,16 @@ host:
 
 packages:
   # Generic configuration for ESP32 screens
-  core: !include modules/common/core.yaml
-# SDL has no Wi-Fi
-# wifi: !include modules/common/wifi.yaml
-  colors: !include modules/common/color.yaml
-  fonts: !include modules/common/fonts.yaml
-  images: !include modules/common/images.yaml
+  # wifi: !include modules/base/wifi.yaml
+  base: !include modules/base/base.yaml
+  colors: !include modules/base/color.yaml
+  fonts: !include modules/base/fonts.yaml
+  images: !include modules/base/images.yaml
+  time: !include modules/base/time_homeassistant.yaml
+  sensors: !include modules/sensors/sensors_base-SDL.yaml
 
   # Harware description file
   hardware: !include modules/hardware/SDL-lvgl.yaml
-
-  # Base settings for LVGL libary
-  time: !include modules/lvgl/base/time_homeassistant.yaml
-  sensors: !include modules/lvgl/base/sensors_base-SDL.yaml
-  base: !include modules/lvgl/base/base.yaml
 
   # Weather packages
   # Build icon set from .svg files
@@ -136,11 +132,11 @@ script:
             return {strftime_buf};
 
 lvgl:
-  theme: !include { file: modules/lvgl/base/theme.yaml }
+  theme: !include { file: modules/base/theme.yaml }
   page_wrap: true
 
  # Boot screen
-  top_layer: !include { file: modules/lvgl/screens/boot_screen.yaml, vars: { height: $screen_height, width: $screen_width  } }
+  top_layer: !include { file: modules/screens/boot_screen.yaml, vars: { height: $screen_height, width: $screen_width  } }
 
 # Main Page
   pages:
