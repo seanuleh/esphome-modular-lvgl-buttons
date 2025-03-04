@@ -11,6 +11,8 @@ substitutions:
   coach_lamp:        "\U000F1020"
   ceiling_fan_light: "\U000F1798"
   bed:               "\U000F02E3"
+  
+  red: "0xFF0000"
 
   icon_font: light40
   text_font: roboto24
@@ -117,6 +119,8 @@ lvgl:
       bg_color: black
       bg_opa: cover
       pad_all: 5
+      <<: !include
+        file: modules/sections/swipe_navigation.yaml      
       widgets:
         # Button 1 - Standard (double hight) light button with state updates
         - button: !include
@@ -151,3 +155,124 @@ lvgl:
               text: RGB light
               icon: $string_lights
               entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/page_button.yaml
+            vars:
+              uid: button_5
+              height: $button_height_single
+              text: RGB red
+              icon: $string_lights
+              page: RGB1
+
+    - id: RGB1
+      layout:
+        type: flex
+        flex_flow: COLUMN_WRAP
+      width: 100%
+      bg_color: black
+      bg_opa: cover
+      pad_all: 5
+      <<: !include
+        file: modules/sections/swipe_navigation.yaml      
+      widgets:
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0xFF0000"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0xFF4500"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0xFF7518"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0xFFBF00"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0xF4A400"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0xFFC72C"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0xFFC000"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0xFFFF00"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0x32CD32"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0x90EE90"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0x008000"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0x93E9BE"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0x40E0D0"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0x4682B4"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0x0000FF"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0x8F00FF"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0xA020F0"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0xE6E6FA"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0xFF69B4"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+        - button: !include
+            file: modules/buttons/color_picker.yaml
+            vars:
+              color: "0xFF1493"
+              entity_id: light.athom_rgb_light_d93662_rgb_light_strip
+                    
