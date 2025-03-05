@@ -14,6 +14,8 @@ substitutions:
 
   icon_font: light40
   text_font: roboto24
+  text_color: black
+  bg_color: white
   button_on_color: "burnt_sienna"
   button_off_color: "very_dark_gray"
   icon_on_color: "yellow"
@@ -24,9 +26,9 @@ substitutions:
   button_height_single: '109px'
   button_height_double: '228px'
   button_width: '150px'
-  touchscreen_idle_timeout: "30s"
+  touchscreen_idle_timeout: "5s"
   touchscreen_daytime_brightness: "100%"
-  touchscreen_nighttime_brightness: "50%"
+  touchscreen_nighttime_brightness: "85%"
   # Boot screen configuration
   boot_screen_delay: 60s
 
@@ -54,7 +56,7 @@ packages:
   colors: !include modules/base/color.yaml
   fonts: !include modules/base/fonts.yaml
   images: !include modules/base/images.yaml
-  time: !include modules/base/time_sntp.yaml
+  time: !include modules/base/time_homeassistant.yaml
   sensors: !include modules/sensors/sensors_base.yaml
 
   # Hardware description file
@@ -90,7 +92,7 @@ packages:
     - &forcast_obj_base
       height: SIZE_CONTENT
       width: SIZE_CONTENT
-      bg_color: gray6
+      bg_color: gray200
       radius: 3
       pad_top: 2
       pad_bottom : 2
@@ -147,13 +149,14 @@ lvgl:
   pages:
       - id: main_page
         width: 100%
-        bg_color: White
+        bg_color: ${bg_color}
         widgets:
           - obj:
               height: SIZE_CONTENT
               width: SIZE_CONTENT
               x:  165
               y: -10
+              bg_opa: TRANSP
               widgets:
                 - image:
                    src: unknown_200
@@ -169,7 +172,7 @@ lvgl:
                   pad_row: 0
                   type: GRID
                   grid_rows: [ content, content, content, content ]
-                  grid_columns: [320 ]
+                  grid_columns: [ 320 ]
                 widgets:
                   - label:
                       height: SIZE_CONTENT
@@ -313,7 +316,7 @@ lvgl:
                     height: 100%
                     width: 100%
                     text_font: roboto24
-                    outline_width: 1
+                    outline_width: 2
                     outline_color: black
                     indicator:
                       opa: TRANSP # get rid of that black dot in the center of the meter
