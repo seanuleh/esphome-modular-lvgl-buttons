@@ -75,6 +75,7 @@ packages:
     file: modules/sensors/local_relay_button_state.yaml
     vars:
       uid: button_1
+      ha_name: Light 1
       entity_id: internal_relay_1
   # Button 2 - Standard light button with state updates
   button_2_state: !include
