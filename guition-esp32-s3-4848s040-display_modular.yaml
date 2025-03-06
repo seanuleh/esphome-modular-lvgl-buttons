@@ -64,7 +64,6 @@ packages:
   time: !include modules/base/time_sntp.yaml
   sensors: !include modules/sensors/sensors_base.yaml
 
-
   # Harware description file
   hardware: !include modules/hardware/guition-esp32-s3-4848s040.yaml
 
@@ -111,7 +110,7 @@ lvgl:
         type: flex
         flex_flow: COLUMN_WRAP
       width: 100%
-      bg_color: black
+      bg_color: white
       bg_opa: cover
       pad_all: 5
       widgets:

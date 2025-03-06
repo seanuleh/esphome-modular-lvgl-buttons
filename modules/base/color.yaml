@@ -11,20 +11,26 @@ color:
       hex: '7ACf38'
 
       # The grays in order of darkness
-    - id: gray1
-      hex: '202020'
-    - id: gray2
-      hex: '404040'
-    - id: gray3
-      hex: '606060'
-    - id: gray4
-      hex: '808080'
-    - id: gray5
-      hex: 'A0A0A0'
-    - id: gray6
-      hex: 'C0C0C0'
-    - id: gray7
+    - id: gray50
+      hex: 'FAFAFA'
+    - id: gray100
+      hex: 'F5F5F5'
+    - id: gray200
+      hex: 'EEEEEE'
+    - id: gray300
       hex: 'E0E0E0'
+    - id: gray400
+      hex: 'BDBDBD'
+    - id: gray500
+      hex: '9E9E9E'
+    - id: gray600
+      hex: '757575'
+    - id: gray700
+      hex: '616161'
+    - id: gray800
+      hex: '424242'
+    - id: gray900
+      hex: '212121'
 
 # The standard RGB color table is already in ESPHome!
 # RGB color table

@@ -11,12 +11,23 @@ image:
     type: RGB565
     transparency: alpha_channel
 
+  - file: assets/high_tide.svg
+    id: high_tide
+    resize: 29x32
+    type: RGB565
+    transparency: alpha_channel
+
+  - file: assets/low_tide.svg
+    id: low_tide
+    resize: 29x32
+    type: RGB565
+    transparency: alpha_channel
+
 font:
   - file: "gfonts://Roboto@700"
     id: roboto30_bold
     size: 30
     bpp: 8
-
 
 sensor:
   - platform: homeassistant
@@ -37,6 +48,11 @@ text_sensor:
 
   - platform: homeassistant
     entity_id: sensor.tides
+    attribute: next_tide_level
+    id: next_tide_level
+
+  - platform: homeassistant
+    entity_id: sensor.tides
     attribute: next_tide_time
     id: next_tide_time
     on_value:
@@ -51,17 +67,32 @@ text_sensor:
                 text:
                    format: "%s"
                    args: [ 'id(next_tide_time).state.c_str()' ]
+            - lvgl.label.update:
+                id: low_tide_height
+                text:
+                   format: "%.2f ft"
+                   args: [ 'id(next_tide_level).state' ]
           else:
             - lvgl.label.update:
                 id: high_tide_label
                 text:
                    format: "%s"
                    args: [ 'id(next_tide_time).state.c_str()' ]
+            - lvgl.label.update:
+                id: high_tide_height
+                text:
+                   format: "%.2f ft"
+                   args: [ 'id(next_tide_level).state' ]
 
   - platform: homeassistant
     entity_id: sensor.tides
     attribute: last_tide_type
     id: last_tide_type
+
+  - platform: homeassistant
+    entity_id: sensor.tides
+    attribute: last_tide_level
+    id: last_tide_level
 
   - platform: homeassistant
     entity_id: sensor.tides
@@ -79,9 +110,19 @@ text_sensor:
                 text:
                    format: "%s"
                    args: [ 'id(last_tide_time).state.c_str()' ]
+            - lvgl.label.update:
+                id: low_tide_height
+                text:
+                   format: "%.2f ft"
+                   args: [ 'id(last_tide_level).state' ]
           else:
             - lvgl.label.update:
                 id: high_tide_label
                 text:
                    format: "%s"
                    args: [ 'id(last_tide_time).state.c_str()' ]
+            - lvgl.label.update:
+                id: high_tide_height
+                text:
+                   format: "%.2f ft"
+                   args: [ 'id(last_tide_level).state' ]

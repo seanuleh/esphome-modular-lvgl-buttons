@@ -93,6 +93,7 @@ packages:
       height: SIZE_CONTENT
       width: SIZE_CONTENT
       bg_color: gray200
+      bg_opa: cover
       radius: 3
       pad_top: 2
       pad_bottom : 2
@@ -390,6 +391,39 @@ lvgl:
                     text: "00:00 am"
                     y: 185
 
+                - obj:
+                       width: SIZE_CONTENT
+                       height: SIZE_CONTENT
+                       align: TOP_LEFT
+                       pad_all: 2
+                       layout:
+                         type: flex
+                         flex_flow: ROW_WRAP
+                         pad_column: 1
+                       widgets:
+                          - image:
+                              src: high_tide
+                          - label:
+                                id: high_tide_height
+                                text_font: roboto24
+                                text: "0.00 ft"
+                - obj:
+                       width: SIZE_CONTENT
+                       height: SIZE_CONTENT
+                       align: BOTTOM_LEFT
+                       pad_all: 2
+                       layout:
+                         type: flex
+                         flex_flow: ROW_WRAP
+                         pad_column: 1
+                       widgets:
+                          - image:
+                              src: low_tide
+                          - label:
+                                id: low_tide_height
+                                text_font: roboto24
+                                text: "-0.00 ft"
+
           # Time display - upper right
           - label:
                 id: time_label
@@ -403,3 +437,4 @@ lvgl:
                 text_align: right
                 text_font: roboto24
                 text: "00:00 am"
+

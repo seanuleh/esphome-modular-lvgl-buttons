@@ -259,7 +259,7 @@ lvgl:
               grid_columns: [ content, content, content, content, content, content, content ]
               pad_column: 8
               pad_row: 5
-              
+
             widgets:
             # Imported from grid
                 - image:

@@ -11,7 +11,7 @@ substitutions:
   coach_lamp:        "\U000F1020"
   ceiling_fan_light: "\U000F1798"
   bed:               "\U000F02E3"
-  
+
   red: "0xFF0000"
 
   icon_font: light40
@@ -120,7 +120,7 @@ lvgl:
       bg_opa: cover
       pad_all: 5
       <<: !include
-        file: modules/sections/swipe_navigation.yaml      
+        file: modules/sections/swipe_navigation.yaml
       widgets:
         # Button 1 - Standard (double hight) light button with state updates
         - button: !include
@@ -173,7 +173,7 @@ lvgl:
       bg_opa: cover
       pad_all: 5
       <<: !include
-        file: modules/sections/swipe_navigation.yaml      
+        file: modules/sections/swipe_navigation.yaml
       widgets:
         - button: !include
             file: modules/buttons/color_picker.yaml
@@ -275,4 +275,4 @@ lvgl:
             vars:
               color: "0xFF1493"
               entity_id: light.athom_rgb_light_d93662_rgb_light_strip
-                    
+

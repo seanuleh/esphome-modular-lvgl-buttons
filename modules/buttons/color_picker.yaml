@@ -7,7 +7,7 @@
   # icon:
   # entity_id:
   # color:
-  
+
 # This function requires this helper scrip in Home Assistant
 #script:
 #  set_light_rgb:
@@ -21,7 +21,7 @@
 #        data:
 #          entity_id: "{{ light_name }}"
 #          rgb_color: ["{{ r }}", "{{ g }}", "{{ b }}"]
-  
+
 
 
 radius: 5px
@@ -35,6 +35,6 @@ on_short_click:
       action: script.set_light_rgb
       data:
         light_name: ${entity_id}
-        color: "${color}"         
+        color: "${color}"
 
 

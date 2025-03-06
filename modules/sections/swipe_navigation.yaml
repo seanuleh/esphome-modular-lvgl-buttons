@@ -9,4 +9,4 @@
     then:
       - lvgl.page.previous:
           animation: OUT_LEFT
-          time: 300ms   
+          time: 300ms

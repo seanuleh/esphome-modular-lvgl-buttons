@@ -2,12 +2,14 @@
     obj:
       border_width: 0
       pad_all: 0
+      bg_opa: TRANSP
       scrollable: false
 #      outline_width: 1
 #      outline_color: red
     label:
       border_width: 0
       scrollable: false
+      text_color: ${text_color}
 #      outline_width: 1
 #      outline_color: red
     image:

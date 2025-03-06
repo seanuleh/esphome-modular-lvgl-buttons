@@ -4,6 +4,9 @@
 esphome:
   min_version: 2024.8.0 # First version with LVGL and SDL
 
+host:
+  mac_address: "62:23:45:AF:B3:06"
+
 display:
   - platform: sdl
     id: my_display
