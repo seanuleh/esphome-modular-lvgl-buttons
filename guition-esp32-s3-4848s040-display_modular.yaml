@@ -123,6 +123,7 @@ lvgl:
               height: $button_height_double
               text: Local Light
               icon: $lightbulb
+              name: Light 1
         # Button 2 - Standard light button with state updates
         - button: !include
             file: modules/buttons/switch_button.yaml
