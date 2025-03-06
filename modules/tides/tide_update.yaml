@@ -40,16 +40,22 @@ sensor:
             id: tide_level
             value: !lambda "return id(tide_percentage).state;"
 
+  - platform: homeassistant
+    entity_id: sensor.tides
+    attribute: next_tide_level
+    id: next_tide_level  
+
+  - platform: homeassistant
+    entity_id: sensor.tides
+    attribute: last_tide_level
+    id: last_tide_level    
+
 text_sensor:
   - platform: homeassistant
     entity_id: sensor.tides
     attribute: next_tide_type
     id: next_tide_type
 
-  - platform: homeassistant
-    entity_id: sensor.tides
-    attribute: next_tide_level
-    id: next_tide_level
 
   - platform: homeassistant
     entity_id: sensor.tides
@@ -88,11 +94,6 @@ text_sensor:
     entity_id: sensor.tides
     attribute: last_tide_type
     id: last_tide_type
-
-  - platform: homeassistant
-    entity_id: sensor.tides
-    attribute: last_tide_level
-    id: last_tide_level
 
   - platform: homeassistant
     entity_id: sensor.tides
