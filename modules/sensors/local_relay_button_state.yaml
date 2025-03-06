@@ -2,10 +2,12 @@
 # Local relay as light or switch
 # vars:
   # uid:
+  # ha_name:
   # entity_id:
 
 light:
   - id: local_light_${uid}
+    name: ${ha_name}
     platform: binary
     output: $entity_id
     on_turn_on:
