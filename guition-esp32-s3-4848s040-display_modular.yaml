@@ -11,10 +11,15 @@ substitutions:
   coach_lamp:        "\U000F1020"
   ceiling_fan_light: "\U000F1798"
   bed:               "\U000F02E3"
+  sunny:             "\U000F05A8"
 
   icon_font: light40
   text_font: roboto24
-  button_on_color: "ep_orange"
+  text_color: white
+  bg_color: black
+  
+  # Button defaults
+  button_on_color: "burnt_sienna"
   button_off_color: "very_dark_gray"
   icon_on_color: "yellow"
   icon_off_color: "gray"
@@ -24,9 +29,12 @@ substitutions:
   button_height_single: '109px'
   button_height_double: '228px'
   button_width: '150px'
+  
+  # Touchscreen Defaults
   touchscreen_idle_timeout: "30s"
   touchscreen_daytime_brightness: "100%"
   touchscreen_nighttime_brightness: "50%"
+
   # Boot screen configuration
   boot_screen_delay: 60s
 

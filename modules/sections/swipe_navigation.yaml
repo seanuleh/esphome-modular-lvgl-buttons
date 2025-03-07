@@ -2,11 +2,13 @@
 # Swipe navigation
   on_swipe_right:
     then:
+      - logger.log: "Right Swipe detected - Sliding page over to the right"
       - lvgl.page.next:
           animation: OUT_RIGHT
           time: 300ms
   on_swipe_left:
     then:
+      - logger.log: "Left Swipe detected - Sliding page over to the left"
       - lvgl.page.previous:
           animation: OUT_LEFT
           time: 300ms

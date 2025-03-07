@@ -1,0 +1,408 @@
+# Substitution variables used through the codebase
+substitutions:
+  lightbulb:         "\U000F0335"
+  ceiling_light:     "\U000F0769"
+  lamp:              "\U000F06B5"
+  floor_lamp:        "\U000F08DD"
+  string_lights:     "\U000F12BA"
+  track_light:       "\U000F0914"
+  bulkhead_light:    "\U000F1A2F"
+  led_strip:         "\U000F07D6"
+  coach_lamp:        "\U000F1020"
+  ceiling_fan_light: "\U000F1798"
+  bed:               "\U000F02E3"
+
+  icon_font: light40
+  text_font: roboto24
+  text_color: black
+  bg_color: white
+  button_on_color: "burnt_sienna"
+  button_off_color: "very_dark_gray"
+  icon_on_color: "yellow"
+  icon_off_color: "gray"
+  label_on_color: "white"
+  label_off_color: "gray"
+  button_text_color: "white"
+  button_height_single: '109px'
+  button_height_double: '228px'
+  button_width: '150px'
+  touchscreen_idle_timeout: "30s"
+  touchscreen_daytime_brightness: "100%"
+  touchscreen_nighttime_brightness: "50%"
+  # Boot screen configuration
+  boot_screen_delay: 60s
+
+  # Set Night mode  at Mightnight
+  screen_night_hour: '0'
+  screen_night_minute: '0'
+
+  # Set Day mode at 5:30am
+  screen_day_hour: '5'
+  screen_day_minute: '30'
+
+  # Screen Size
+  screen_height: '480px'
+  screen_width: '800px'
+  sdl_height: '480'
+  sdl_width: '800'
+
+esphome:
+  name: "tideweather"
+  friendly_name: "tideweather"
+  comment: "Tide and weather screen"
+
+packages:
+  # Generic configuration for ESP32 screens
+# SDL has no Wi-Fi
+# wifi: !include modules/base/wifi.yaml
+  base: !include modules/base/base.yaml
+  colors: !include modules/base/color.yaml
+  fonts: !include modules/base/fonts.yaml
+  images: !include modules/base/images.yaml
+  time: !include modules/base/time_homeassistant.yaml
+  sensors: !include modules/sensors/sensors_base-SDL.yaml
+
+  # Harware description file
+  hardware: !include modules/hardware/SDL-lvgl.yaml
+
+  # Tide forcast packages
+  tides: !include modules/tides/tide_update.yaml
+
+  # Weather packages
+  # Build icon set from .svg files
+  weather_icons_80: !include
+    file: modules/weather/weather_icons.yaml
+    vars:
+      size: 80
+  # Display weather forcast using icon set (defined above)
+  weather_forcast_80: !include
+    file: modules/weather/weather_forecast.yaml
+    vars:
+      size: 80
+  # Big icons for today weather
+  weather_icons_200: !include
+    file: modules/weather/weather_icons.yaml
+    vars:
+      size: 200
+  # Get todays weather and display it
+  weather_today_200: !include
+    file: modules/weather/weather_today.yaml
+    vars:
+      size: 200
+
+# Styles for Weather forcast
+.forcast_styles:
+    - &forcast_obj_base
+      height: SIZE_CONTENT
+      width: SIZE_CONTENT
+      bg_color: gray8
+      radius: 3
+      pad_top: 2
+      pad_bottom : 2
+      layout:
+        type: flex
+        flex_flow: COLUMN
+        flex_align_cross: center
+        flex_align_track: center
+        pad_column: 0
+        pad_row: 2
+
+    - &forcast_label_base
+      text_font: roboto24
+      height: SIZE_CONTENT
+
+    - &forcast_label_base_lo
+      height: SIZE_CONTENT
+      text_font: roboto20
+      text_color: dodgerblue
+
+    - &forcast_image_base
+      height: SIZE_CONTENT
+
+script:
+  - id: time_update
+    then:
+      - lvgl.label.update:
+          id: week_day
+          text: !lambda 'return id(system_time).now().strftime("%A");'  # Weekday
+      - lvgl.label.update:
+          id: month_day
+          text: !lambda |- # Month Day
+            auto time = id(system_time).now();
+            int day = time.day_of_month;
+            char strftime_buf[64];
+            snprintf(strftime_buf, sizeof(strftime_buf), "%s %d", time.strftime("%B").c_str(), day);
+            return {strftime_buf};
+      - lvgl.label.update:
+          id: time_label
+          text: !lambda 'return id(system_time).now().strftime("%l:%M %P");' # The format %I:%M %p will display the time in a 12-hour format with "am" or "pm" included
+
+
+# -------------------------------------------------------------------------
+# LVGL pages and buttons
+# -------------------------------------------------------------------------
+lvgl:
+  theme: !include { file: modules/base/theme.yaml }
+  page_wrap: true
+
+# Boot screen
+  top_layer: !include { file: modules/screens/boot_screen.yaml }
+
+# Main Page
+  pages:
+      - id: main_page
+        width: 100%
+        bg_color: ${bg_color}
+        widgets:
+          - obj:
+              height: SIZE_CONTENT
+              width: SIZE_CONTENT
+              x:  165
+              y: -10
+              bg_opa: TRANSP
+              widgets:
+                - image:
+                   src: unknown_200
+                   id: weather_condition_icon
+          - obj:
+                width: 320
+                height: 300
+                x: +2
+                pad_all: 0
+                bg_opa: TRANSP
+                layout:
+                  pad_column: 0
+                  pad_row: 0
+                  type: GRID
+                  grid_rows: [ content, content, content, content ]
+                  grid_columns: [320 ]
+                widgets:
+                  - label:
+                      height: SIZE_CONTENT
+                      width: SIZE_CONTENT
+                      text: "Wednesday"
+                      id: week_day
+                      text_font: roboto48
+                      text_align: LEFT
+                      grid_cell_row_pos: 0
+                      grid_cell_column_pos: 0
+                  - label:
+                      text: "September 19"
+                      id: month_day
+                      text_font: roboto24
+                      text_align: LEFT
+                      grid_cell_row_pos: 1
+                      grid_cell_column_pos: 0
+                  - label:
+                      text: "100°"
+                      id: weather_temperature_today
+                      text_font: roboto72
+                      text_align: LEFT
+                      grid_cell_row_pos: 2
+                      grid_cell_column_pos: 0
+                  - label:
+                      width: 320
+                      height: 90
+                      text: "Generic weather forecast: Weather will be lovely today. Very Sunny. You will love it."
+                      id: weather_condition_today
+                      long_mode: wrap
+                      scrollable: true
+                      text_font: roboto20
+                      text_align: LEFT
+                      grid_cell_row_pos: 3
+                      grid_cell_column_pos: 0
+
+          - obj:
+              y: +306
+              width: SIZE_CONTENT
+              height: SIZE_CONTENT
+              layout:
+                type: GRID
+                grid_rows: [ content ]
+                grid_columns: [ 80, 80, 80, 80 ]
+                pad_column: 4
+                pad_row: 0
+              widgets:
+                  - obj:
+                      <<: *forcast_obj_base
+                      grid_cell_row_pos: 0
+                      grid_cell_column_pos: 0
+                      widgets:
+                          - label:
+                              id: forecast_day_0
+                              <<: *forcast_label_base
+                              text: ???
+                          - image:
+                              id: forecast_condition_icon_0
+                              <<: *forcast_label_base
+                              src: unknown_80
+                          - label:
+                              id: forecast_temperature_hi_0
+                              <<: *forcast_label_base
+                              text: "---°"
+                          - label:
+                              id: forecast_temperature_lo_0
+                              <<: *forcast_label_base_lo
+                              text: "---°"
+                  - obj:
+                      <<: *forcast_obj_base
+                      grid_cell_row_pos: 0
+                      grid_cell_column_pos: 1
+                      widgets:
+                          - label:
+                              id: forecast_day_1
+                              <<: *forcast_label_base
+                              text: ???
+                          - image:
+                              id: forecast_condition_icon_1
+                              <<: *forcast_label_base
+                              src: unknown_80
+                          - label:
+                              id: forecast_temperature_hi_1
+                              <<: *forcast_label_base
+                              text: "---°"
+                          - label:
+                              id: forecast_temperature_lo_1
+                              <<: *forcast_label_base_lo
+                              text: "---°"
+                  - obj:
+                      <<: *forcast_obj_base
+                      grid_cell_row_pos: 0
+                      grid_cell_column_pos: 2
+                      widgets:
+                          - label:
+                              id: forecast_day_2
+                              <<: *forcast_label_base
+                              text: ???
+                          - image:
+                              id: forecast_condition_icon_2
+                              <<: *forcast_label_base
+                              src: unknown_80
+                          - label:
+                              id: forecast_temperature_hi_2
+                              <<: *forcast_label_base
+                              text: "---°"
+                          - label:
+                              id: forecast_temperature_lo_2
+                              <<: *forcast_label_base_lo
+                              text: "---°"
+                  - obj:
+                      <<: *forcast_obj_base
+                      grid_cell_row_pos: 0
+                      grid_cell_column_pos: 3
+                      widgets:
+                          - label:
+                              id: forecast_day_3
+                              <<: *forcast_label_base
+                              text: ???
+                          - image:
+                              id: forecast_condition_icon_3
+                              <<: *forcast_label_base
+                              src: unknown_80
+                          - label:
+                              id: forecast_temperature_hi_3
+                              <<: *forcast_label_base
+                              text: "---°"
+                          - label:
+                              id: forecast_temperature_lo_3
+                              <<: *forcast_label_base_lo
+                              text: "---°"
+
+          - obj:
+              height: 480
+              width: 480
+              bg_opa: TRANSP
+              align: TOP_RIGHT
+              pad_all: 4
+              widgets:
+                - meter:
+                    height: 100%
+                    width: 100%
+                    text_font: roboto24
+                    outline_width: 1
+                    outline_color: black
+                    indicator:
+                      opa: TRANSP # get rid of that black dot in the center of the meter
+                    scales:
+                        - range_from: 1
+                          range_to: 100
+                          angle_range: 360
+                          rotation: 270
+                          indicators:
+                            - image:
+                                id: tide_level
+                                src: tide_pointer
+                                pivot_x: 44
+                                pivot_y: 44
+                                value: 0
+                          ticks:
+                            count: 0
+                        - range_from: 5
+                          range_to: 1
+                          angle_range: 120
+                          rotation: 300
+                          ticks:
+                            width: 1
+                            count: 5
+                            major:
+                              label_gap: 25
+                              stride: 1
+                              width: 2
+                              length: 20
+                        - range_from: 5
+                          range_to: 1
+                          angle_range: 120
+                          rotation: 120
+                          ticks:
+                            width: 1
+                            count: 5
+                            major:
+                              label_gap: 25
+                              stride: 1
+                              width: 2
+                              length: 20
+
+                - label:
+                    align: center
+                    width: 100%
+                    text_align: center
+                    text_font: roboto24
+                    text: "High Tide"
+                    y: -215
+                - label:
+                    id: high_tide_label
+                    align: center
+                    width: 100%
+                    text_align: center
+                    text_font: roboto30_bold
+                    text: "00:00 am"
+                    y: -185
+                - label:
+                    align: center
+                    width: 100%
+                    text_align: center
+                    text_font: roboto24
+                    text: "Low Tide"
+                    y: 215
+                - label:
+                    id: low_tide_label
+                    align: center
+                    width: 100%
+                    text_align: center
+                    text_font: roboto30_bold
+                    text: "00:00 am"
+                    y: 185
+
+          # Time display - upper right
+          - label:
+                id: time_label
+                width: SIZE_CONTENT
+                height: SIZE_CONTENT
+                pad_all: 3
+                bg_opa: cover
+                bg_color: burnt_sienna
+                text_color: white
+                align: TOP_RIGHT
+                text_align: right
+                text_font: roboto24
+                text: "00:00 am"
