@@ -20,6 +20,7 @@
     button:
       text_font: $text_font
       checkable: false
+      press_lock: false
       scroll_on_focus: true
       radius: 25px
       width: $button_width

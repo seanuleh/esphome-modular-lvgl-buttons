@@ -2,7 +2,7 @@
 # Hardware configuration file
 
 esphome:
-  min_version: 2024.11.0
+  min_version: 2025.2.0
   platformio_options:
     board_build.flash_mode: dio
 
@@ -37,18 +37,16 @@ output:
     id: gpio_backlight_pwm
     frequency: 100Hz
 
-  # Built in 240v relay
+  # Built in 240v relay - Some versions of this switch have 3 relays
   - id: internal_relay_1
     platform: gpio
     pin: 40
-
-  # Some versions of this switch have 3 relays
+  - id: internal_relay_2
+    platform: gpio
+    pin: 2    
   - id: internal_relay_3
     platform: gpio
     pin: 1
-  - id: internal_relay_2
-    platform: gpio
-    pin: 2
 
 light:
   - platform: monochromatic
@@ -74,17 +72,17 @@ touchscreen:
   display: my_display
   transform:
     mirror_x: false
-  on_touch:
-    - logger.log:
-          format: Touch at (%d, %d)
-          args: [touch.x, touch.y]
-    - lambda: |-
-          ESP_LOGI("cal", "x=%d, y=%d, x_raw=%d, y_raw=%0d",
-              touch.x,
-              touch.y,
-              touch.x_raw,
-              touch.y_raw
-              );
+  # on_touch:
+    # - logger.log:
+          # format: Touch at (%d, %d)
+          # args: [touch.x, touch.y]
+    # - lambda: |-
+          # ESP_LOGI("cal", "x=%d, y=%d, x_raw=%d, y_raw=%0d",
+              # touch.x,
+              # touch.y,
+              # touch.x_raw,
+              # touch.y_raw
+              # );
 
 # -------------------------------------------
 # Display st7701s spi

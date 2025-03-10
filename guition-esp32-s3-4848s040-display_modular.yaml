@@ -11,9 +11,12 @@ substitutions:
   coach_lamp:        "\U000F1020"
   ceiling_fan_light: "\U000F1798"
   bed:               "\U000F02E3"
+  sunny:             "\U000F05A8"
 
   icon_font: light40
   text_font: roboto24
+  text_color: white
+  bg_color: black
   button_on_color: "ep_orange"
   button_off_color: "very_dark_gray"
   icon_on_color: "yellow"
@@ -71,6 +74,7 @@ packages:
   # Any button that has real time updates needs a section here
 
   # Button 1 - Local relay button with state updates
+  # ha_name - will show up as a control in Home Assistant
   button_1_state: !include
     file: modules/sensors/local_relay_button_state.yaml
     vars:
@@ -123,7 +127,6 @@ lvgl:
               height: $button_height_double
               text: Local Light
               icon: $lightbulb
-              name: Light 1
         # Button 2 - Standard light button with state updates
         - button: !include
             file: modules/buttons/switch_button.yaml

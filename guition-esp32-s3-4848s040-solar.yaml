@@ -17,7 +17,7 @@ substitutions:
   text_font: roboto24
   text_color: white
   bg_color: black  
-  button_on_color: "burnt_sienna"
+  button_on_color: "ep_orange"
   button_off_color: "very_dark_gray"
   icon_on_color: "yellow"
   icon_off_color: "gray"
@@ -74,10 +74,12 @@ packages:
   # Any button that has real time updates needs a section here
 
   # Button 1 - Local relay button with state updates
+  # ha_name will show up as a control in Home Assistant
   button_1_state: !include
     file: modules/sensors/local_relay_button_state.yaml
     vars:
       uid: button_1
+      ha_name: Light 1
       entity_id: internal_relay_1
   # Button 2 - Standard light button with state updates
   button_2_state: !include
@@ -183,14 +185,14 @@ lvgl:
   theme: !include { file: modules/base/theme.yaml }
   page_wrap: true
 
-# Boot screen
+  # Boot screen
   top_layer: !include
     file: modules/screens/boot_screen.yaml
     vars:
       height: $screen_height
       width: $screen_width
 
-# Main Page
+  # Main Page
   pages:
     - id: main_page
       layout:
@@ -203,7 +205,6 @@ lvgl:
       <<: !include
         file: modules/sections/swipe_navigation.yaml
       widgets:
-        # Button 1 - Standard (double hight) internal relay button with state updates
         - button: !include
             file: modules/buttons/local_relay_button.yaml
             vars:
@@ -211,8 +212,6 @@ lvgl:
               height: $button_height_double
               text: Local Light
               icon: $lightbulb
-              ha_name: Light 1
-        # Button 2 - Standard light button with state updates
         - button: !include
             file: modules/buttons/switch_button.yaml
             vars:
@@ -221,13 +220,11 @@ lvgl:
               text: Button 2
               icon: $lightbulb
               entity_id: "switch.athom_smart_plug_v3_50ebc0_switch"
-        # Button 3 - Empty button moves the buttons below it down one
         - button: !include
             file: modules/buttons/transparent_empty_button.yaml
             vars:
               uid: empty_3
               height: $button_height_single
-        # Button 4 - Dimming (double hight) light button with state updates
         - button: !include
             file: modules/buttons/dimmer_light_button.yaml
             vars:
@@ -236,7 +233,6 @@ lvgl:
               text: RGB light
               icon: $string_lights
               entity_id: light.athom_rgb_light_d93662_rgb_light_strip
-        # Button 5 - Change page to solar
         - button: !include
             file: modules/buttons/page_button.yaml
             vars:
@@ -255,107 +251,107 @@ lvgl:
         - obj:
             width: 480px
             height: 116px
-            pad_left: 8
+            pad_left: 4
             layout:
               type: grid
-              grid_rows: [ fr(1), fr(1)]
+              grid_rows: [ fr(1), fr(1) ]
               grid_columns: [ content, content, content, content, content, content, content ]
-              pad_column: 8
+              pad_column: 4
               pad_row: 5
-
             widgets:
-            # Imported from grid
-                - image:
-                    grid_cell_row_pos: 0
-                    grid_cell_column_pos: 0
-                    pad_top: 10
-                    src: grid_icon
-                - obj:
-                    grid_cell_row_pos: 0
-                    grid_cell_column_pos: 1
-                    width: 90
-                    height: 50
-                    layout:
-                        type: FLEX
-                        flex_flow: ROW_WRAP
-                        flex_align_cross: end
-                        flex_align_track: center
-                        pad_column: 3
-                        pad_row: 1
-                    widgets:
-                      - label:
-                          id: daily_imported_watts
-                          text_font: ep22
-                          text: 888.8
-                      - label:
-                          id: imported_units
-                          text_font: ep14
-                          text: kWh
-                          pad_bottom: 2
-                      - label:
-                          text_font: ep14
-                          text: Imported
-
+# Imported            
+              - image:
+                  grid_cell_row_pos: 0
+                  grid_cell_column_pos: 0
+                  pad_top: 10
+                  src: grid_icon
+              - obj:
+                  grid_cell_row_pos: 0
+                  grid_cell_column_pos: 1
+                  width: 110
+                  height: 50
+                  layout:
+                    type: FLEX
+                    flex_flow: ROW_WRAP
+                    flex_align_cross: end
+                    flex_align_track: center
+                    pad_column: 3
+                    pad_row: 1
+                  widgets:
+                    - label:
+                        id: daily_imported_watts
+                        text_font: ep28
+                        text_color: black
+                        text: 888.8
+                    - label:
+                        id: daily_imported_watts_units
+                        text_font: ep14
+                        text_color: black
+                        text: kWh
+                        pad_bottom: 2
+                    - label:
+                        text_font: ep14
+                        text_color: black
+                        text: Imported
             # Consumed
-                - image:
-                    grid_cell_row_pos: 0
-                    grid_cell_column_pos: 2
-                    pad_top: 20
-                    pad_left: 6
-                    pad_right: 6
-                    src: arrow_right_gray
-                - obj:
-                    grid_cell_row_pos: 0
-                    grid_cell_column_pos: 3
-                    width: 120
-                    height: 110
-                    layout:
-                        type: FLEX
-                        flex_flow: ROW_WRAP
-                        pad_column: 3
-                        pad_row: 1
-                        flex_align_main: center
-                        flex_align_cross: end
-                        flex_align_track: center
-                    widgets:
-                      - image:
-                          pad_left: 25
-                          pad_right: 25
-                          pad_bottom: 4
-                          src: house_icon
-                      - label:
-                          id: daily_consumption_watts
-                          text_color: ep_orange
-                          text_font: ep22
-                          text: 888.8
-                      - label:
-                          id: consumed_unit
-                          text_color: ep_orange
-                          text_font: ep14
-                          text: kWh
-                          pad_bottom: 2
-
-                      - label:
-                          text_font: ep14
-                          text: Consumed
-
-            # Exported to Grid
-                - image:
+              - image:
+                  grid_cell_row_pos: 0
+                  grid_cell_column_pos: 2
+                  pad_top: 20
+                  pad_left: 6
+                  pad_right: 6
+                  src: arrow_right_gray
+              - obj:
+                  grid_cell_row_pos: 0
+                  grid_cell_column_pos: 3
+                  width: 120
+                  height: 110
+                  layout:
+                    type: FLEX
+                    flex_flow: ROW_WRAP
+                    pad_column: 3
+                    pad_row: 1
+                    flex_align_main: center
+                    flex_align_cross: end
+                    flex_align_track: center
+                  widgets:
+                    - image:
+                        pad_left: 25
+                        pad_right: 25
+                        pad_bottom: 4
+                        src: house_icon
+                    - label:
+                        id: daily_consumption_watts
+                        text_color: ep_orange
+                        text_font: ep28
+                        text: 888.8
+                    - label:
+                        id: daily_consumption_watts_unit
+                        text_color: ep_orange
+                        text_font: ep14
+                        text: kWh
+                        pad_bottom: 2
+                    - label:
+                        text_font: ep14
+                        text_color: black
+                        text: Consumed
+            # Exported
+              - image:
                     grid_cell_row_pos: 0
                     grid_cell_column_pos: 4
                     pad_top: 20
                     pad_left: 6
                     pad_right: 6
                     src: arrow_right_gray
-                - image:
+              - image:
                     grid_cell_row_pos: 0
                     grid_cell_column_pos: 5
                     pad_top: 10
                     src: grid_icon
-                - obj:
+              - obj:
                     grid_cell_row_pos: 0
                     grid_cell_column_pos: 6
-                    width: 90
+                    width: 110
                     height: 50
                     layout:
                         type: FLEX
@@ -367,80 +363,73 @@ lvgl:
                     widgets:
                       - label:
                           id: daily_exported_watts
-                          text_font: ep22
+                          text_font: ep28
+                          text_color: black
                           text: 888.8
                       - label:
-                          id: exported_unit
-                          text_color: ep_orange
+                          id: daily_exported_watts_unit
                           text_font: ep14
+                          text_color: black
                           text: kWh
                           pad_bottom: 2
                       - label:
                           text_font: ep14
-                          text: Exported
-
-             # Produced
-                - image:
-                    grid_cell_row_pos: 1
-                    grid_cell_column_pos: 0
-                    pad_top: 10
-                    pad_bottom: 2
-                    pad_right: 2
-                    src: produced_icon
-                - obj:
-                    grid_cell_row_pos: 1
-                    grid_cell_column_pos: 1
-                    width: 90
-                    height: 50
-                    layout:
-                        type: FLEX
-                        flex_flow: ROW_WRAP
-                        flex_align_cross: end
-                        flex_align_track: center
-                        pad_column: 3
-                        pad_row: 1
-                    widgets:
-                      - label:
-                          id: daily_solar_production_watts
-                          text_font: ep22
-                          text_color: ep_blue
-                          text: 888.8
-                      - label:
-                          text_font: ep14
-                          text_color: ep_blue
-                          text: kWh
-                          pad_bottom: 2
-
-                      - label:
-                          text_font: ep14
-                          text: Produced
-                - image:
-                    grid_cell_row_pos: 1
-                    grid_cell_column_pos: 2
-                    pad_left: 6
-                    pad_right: 6
-                    pad_top: 20
-                    src: arrow_right_blue
-
-
-         # Net Imported
-                - obj:
+                          text_color: black
+                          text: Exported                        
+         # Produced               
+              - image:
+                  grid_cell_row_pos: 1
+                  grid_cell_column_pos: 0
+                  pad_top: 10
+                  pad_bottom: 2
+                  pad_right: 2
+                  src: produced_icon
+              - obj:
+                  grid_cell_row_pos: 1
+                  grid_cell_column_pos: 1
+                  width: 110
+                  height: 50
+                  layout:
+                    type: FLEX
+                    flex_flow: ROW_WRAP
+                    flex_align_cross: end
+                    flex_align_track: center
+                    pad_column: 3
+                    pad_row: 1
+                  widgets:
+                    - label:
+                        id: daily_solar_production_watts
+                        text_font: ep28
+                        text_color: ep_blue
+                        text: 888.8
+                    - label:
+                        id: daily_solar_production_watts_label
+                        text_font: ep14
+                        text_color: ep_blue
+                        text: kWh
+                        pad_bottom: 2
+                    - label:
+                        text_font: ep14
+                        text_color: black
+                        text: Produced
+         # Net Imported           
+              - obj:
                     grid_cell_row_pos: 1
                     grid_cell_column_pos: 4
                     bg_opa: TRANSP
                     width: 25
 
-                - image:
+              - image:
                     id: daily_net_watts_icon
                     grid_cell_row_pos: 1
                     grid_cell_column_pos: 5
                     pad_top: 10
-                    src: up_arrow
+                    src: up_arrow  
 
-                - obj:
+              - obj:
                     grid_cell_row_pos: 1
                     grid_cell_column_pos: 6
-                    width: 90
+                    width: 110
                     height: 50
                     layout:
                         type: FLEX
@@ -452,18 +441,23 @@ lvgl:
                     widgets:
                       - label:
                           id: daily_net_watts
-                          text_font: ep22
+                          text_font: ep28
+                          text_color: black
                           text: 888.8
                       - label:
+                          id: daily_net_watts_units
                           text_font: ep14
+                          text_color: black
                           text: kWh
                           pad_bottom: 2
                       - label:
                           text_font: ep14
-                          text: Net Imported
+                          text_color: black
+                          text: Net Imported        
       on_click:
         then:
           lvgl.page.show: main_page
+
 
 #-------------------------------------------
 # Graphics and Fonts
@@ -520,8 +514,8 @@ image:
 
 font:
   - file: "modules/assets/epVisuelt-Regular.ttf"
-    id: ep22
-    size: 22
+    id: ep28
+    size: 28
     bpp: 8
 
   - file: "modules/assets/epVisuelt-Regular.ttf"
