@@ -13,13 +13,13 @@ image:
     type: RGB565
     transparency: alpha_channel
 
-  - file: assets/produced_icon.svg
+  - file: modules/assets/produced_icon.svg
     id: produced_icon_80px
     resize: 80x80
     type: RGB565
     transparency: alpha_channel
 
-  - file: assets/grid_ok.svg
+  - file: modules/assets/grid_ok.svg
     id: grid_ok_30px
     resize: 30x30
     type: RGB565

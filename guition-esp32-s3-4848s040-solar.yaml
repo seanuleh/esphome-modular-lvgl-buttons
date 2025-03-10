@@ -16,9 +16,7 @@ substitutions:
   icon_font: light40
   text_font: roboto24
   text_color: white
-  bg_color: black
-  
-  # Button defaults
+  bg_color: black  
   button_on_color: "burnt_sienna"
   button_off_color: "very_dark_gray"
   icon_on_color: "yellow"
@@ -29,12 +27,9 @@ substitutions:
   button_height_single: '109px'
   button_height_double: '228px'
   button_width: '150px'
-  
-  # Touchscreen Defaults
   touchscreen_idle_timeout: "30s"
   touchscreen_daytime_brightness: "100%"
   touchscreen_nighttime_brightness: "50%"
-
   # Boot screen configuration
   boot_screen_delay: 60s
 
@@ -216,6 +211,7 @@ lvgl:
               height: $button_height_double
               text: Local Light
               icon: $lightbulb
+              ha_name: Light 1
         # Button 2 - Standard light button with state updates
         - button: !include
             file: modules/buttons/switch_button.yaml
@@ -480,55 +476,55 @@ image:
     transparency: alpha_channel
 
 
-  - file: assets/house.svg
+  - file: modules/assets/house.svg
     id: house_icon
     resize: 30x30
     type: RGB565
     transparency: alpha_channel
 
-  - file: assets/grid_icon.svg
+  - file: modules/assets/grid_icon.svg
     id: grid_icon
     resize: 30x30
     type: RGB565
     transparency: alpha_channel
 
-  - file: assets/produced_icon.svg
+  - file: modules/assets/produced_icon.svg
     id: produced_icon
     resize: 30x30
     type: RGB565
     transparency: alpha_channel
 
-  - file: assets/down_arrow.svg
+  - file: modules/assets/down_arrow.svg
     id: down_arrow
     resize: 30x30
     type: RGB565
     transparency: alpha_channel
 
-  - file: assets/up_arrow.svg
+  - file: modules/assets/up_arrow.svg
     id: up_arrow
     resize: 30x30
     type: RGB565
     transparency: alpha_channel
 
-  - file: assets/arrow_right_gray.svg
+  - file: modules/assets/arrow_right_gray.svg
     id: arrow_right_gray
     resize: 15x10
     type: RGB565
     transparency: alpha_channel
 
-  - file: assets/arrow_right_blue.svg
+  - file: modules/assets/arrow_right_blue.svg
     id: arrow_right_blue
     resize: 15x10
     type: RGB565
     transparency: alpha_channel
 
 font:
-  - file: "assets/epVisuelt-Regular.ttf"
+  - file: "modules/assets/epVisuelt-Regular.ttf"
     id: ep22
     size: 22
     bpp: 8
 
-  - file: "assets/epVisuelt-Regular.ttf"
+  - file: "modules/assets/epVisuelt-Regular.ttf"
     id: ep14
     size: 14
     bpp: 8

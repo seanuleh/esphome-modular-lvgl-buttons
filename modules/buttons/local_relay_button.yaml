@@ -19,6 +19,4 @@ widgets:
       id: label_${uid}
       text: ${text}
 on_short_click:
-    then:
-      - logger.log: "Short click detected - switching on local light"
-      - light.toggle: local_light_${uid}
+    light.toggle: local_light_${uid}

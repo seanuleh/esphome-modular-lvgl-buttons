@@ -72,17 +72,19 @@ touchscreen:
   platform: gt911
   id: my_touchscreen
   display: my_display
-  # on_touch:
-    # - logger.log:
-          # format: Touch at (%d, %d)
-          # args: [touch.x, touch.y]
-    # - lambda: |-
-          # ESP_LOGI("cal", "x=%d, y=%d, x_raw=%d, y_raw=%0d",
-              # touch.x,
-              # touch.y,
-              # touch.x_raw,
-              # touch.y_raw
-              # );
+  transform:
+    mirror_x: false
+  on_touch:
+    - logger.log:
+          format: Touch at (%d, %d)
+          args: [touch.x, touch.y]
+    - lambda: |-
+          ESP_LOGI("cal", "x=%d, y=%d, x_raw=%d, y_raw=%0d",
+              touch.x,
+              touch.y,
+              touch.x_raw,
+              touch.y_raw
+              );
 
 # -------------------------------------------
 # Display st7701s spi
@@ -100,6 +102,7 @@ display:
     spi_mode: MODE3
     data_rate: 2MHz
     color_order: RGB
+    invert_colors: False
     dimensions:
       width: 480
       height: 480
