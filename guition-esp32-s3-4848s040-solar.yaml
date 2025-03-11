@@ -69,6 +69,9 @@ packages:
 
   # Harware description file
   hardware: !include modules/hardware/guition-esp32-s3-4848s040.yaml
+  
+  # Extra code for pages
+  solar: !include modules/solar/sensors_assets_solar.yaml
 
   # This section will Update button and relay state from Home Assistant
   # Any button that has real time updates needs a section here
@@ -94,89 +97,6 @@ packages:
       uid: button_4
       entity_id: light.athom_rgb_light_d93662_rgb_light_strip
 
-sensor:
-  - platform: homeassistant
-    id: daily_net_import
-    entity_id: sensor.daily_net_import
-    internal: true
-    on_value:
-      then:
-        - lvgl.label.update:
-            id: daily_imported_watts
-            text:
-              format: "%.1f"
-              args: [ 'id(daily_net_import).state' ]
-
-  - platform: homeassistant
-    id: daily_net_export
-    entity_id: sensor.daily_net_export
-    internal: true
-    on_value:
-      then:
-        - lvgl.label.update:
-            id: daily_exported_watts
-            text:
-              format: "%.1f"
-              args: [ 'id(daily_net_export).state' ]
-
-  - platform: homeassistant
-    id: daily_solar_energy_production
-    entity_id: sensor.daily_solar_energy_production
-    internal: true
-    on_value:
-      then:
-        - lvgl.label.update:
-            id: daily_solar_production_watts
-            text:
-              format: "%.1f"
-              args: [ 'id(daily_solar_energy_production).state' ]
-
-  - platform: homeassistant
-    id: daily_consumption
-    entity_id: sensor.envoy_122030047695_energy_consumption_today
-    internal: true
-    on_value:
-      then:
-        - lvgl.label.update:
-            id: daily_consumption_watts
-            text:
-              format: "%.1f"
-              args: [ 'id(daily_consumption).state' ]
-
-  - platform: combination
-    id: daily_net_sum
-    type: linear
-    name: "Daily net sum"
-    internal: true
-    sources:
-      - source: daily_net_import
-        coeffecient: 1.0
-      - source: daily_net_export
-        coeffecient: -1.0
-    on_value:
-      then:
-        - lvgl.label.update:
-            id: daily_net_watts
-            text:
-              format: "%.1f"
-              args: [ 'id(daily_net_sum).state' ]
-        - if:
-            condition:
-              lambda: return (id(daily_net_sum).state < 0);
-            then:
-              - lvgl.widget.update:
-                  id: daily_net_watts
-                  text_color: ep_blue
-              - lvgl.image.update:
-                  id: daily_net_watts_icon
-                  src: up_arrow
-            else:
-              - lvgl.widget.update:
-                  id: daily_net_watts
-                  text_color: ep_orange
-              - lvgl.image.update:
-                  id: daily_net_watts_icon
-                  src: down_arrow
 
 # -------------------------------------------------------------------------
 # LVGL pages and buttons
@@ -459,66 +379,3 @@ lvgl:
           lvgl.page.show: main_page
 
 
-#-------------------------------------------
-# Graphics and Fonts
-#-------------------------------------------
-image:
-  - file: https://esphome.io/_static/logo-text-on-light.svg
-    id: boot_logo
-    resize: 460x90
-    type: RGB565
-    transparency: alpha_channel
-
-
-  - file: modules/assets/house.svg
-    id: house_icon
-    resize: 30x30
-    type: RGB565
-    transparency: alpha_channel
-
-  - file: modules/assets/grid_icon.svg
-    id: grid_icon
-    resize: 30x30
-    type: RGB565
-    transparency: alpha_channel
-
-  - file: modules/assets/produced_icon.svg
-    id: produced_icon
-    resize: 30x30
-    type: RGB565
-    transparency: alpha_channel
-
-  - file: modules/assets/down_arrow.svg
-    id: down_arrow
-    resize: 30x30
-    type: RGB565
-    transparency: alpha_channel
-
-  - file: modules/assets/up_arrow.svg
-    id: up_arrow
-    resize: 30x30
-    type: RGB565
-    transparency: alpha_channel
-
-  - file: modules/assets/arrow_right_gray.svg
-    id: arrow_right_gray
-    resize: 15x10
-    type: RGB565
-    transparency: alpha_channel
-
-  - file: modules/assets/arrow_right_blue.svg
-    id: arrow_right_blue
-    resize: 15x10
-    type: RGB565
-    transparency: alpha_channel
-
-font:
-  - file: "modules/assets/epVisuelt-Regular.ttf"
-    id: ep28
-    size: 28
-    bpp: 8
-
-  - file: "modules/assets/epVisuelt-Regular.ttf"
-    id: ep14
-    size: 14
-    bpp: 8

@@ -1,0 +1,17 @@
+---
+# ESPHome can not send RGB arrays to Home Assistant. You need this helper.
+# Include this in your configuration.yaml
+#
+script:
+  set_light_rgb:
+    alias: 'ESPHome RGB light helper script'
+    sequence:
+      - variables:
+          r: "{{ color[2:4] | int(0,16) }}"
+          g: "{{ color[4:6] | int(0,16) }}"
+          b: "{{ color[6:8] | int(0,16) }}"
+      - service: light.turn_on
+        data:
+          entity_id: "{{ light_name }}"
+          rgb_color: ["{{ r }}", "{{ g }}", "{{ b }}"]
+

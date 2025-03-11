@@ -1,0 +1,40 @@
+---
+# Home Assistant Solar and Energy stats for ESPHome
+# Include this in your configuration.yaml
+#
+sensor:
+  - platform: template
+    sensors:
+      envoy_lifetime_net_energy_consumption_kwh:
+        friendly_name: "Lifetime Net Energy Consumption in kWh"
+        unit_of_measurement: 'kWh'
+        value_template: >-
+          {{ states('sensor.envoy_122030047695_lifetime_net_energy_consumption') | float * 1000.0 }}
+  - platform: template
+    sensors:
+      envoy_lifetime_net_energy_production_kwh:
+        friendly_name: "Lifetime Net Energy Production in kWh"
+        unit_of_measurement: 'kWh'
+        value_template: >-
+          {{ states('sensor.envoy_122030047695_lifetime_net_energy_production') | float * 1000.0 }}
+  - platform: template
+    sensors:
+      envoy_lifetime_energy_production_kwh:
+        friendly_name: "Lifetime Energy Production in kWh"
+        unit_of_measurement: 'kWh'
+        value_template: >-
+          {{ states('sensor.envoy_122030047695_lifetime_energy_production') | float * 1000.0 }}
+
+utility_meter:
+  daily_net_import:
+    source: sensor.envoy_lifetime_net_energy_consumption_kwh
+    name: daily_net_import
+    cycle: daily
+  daily_net_export:
+    source: sensor.envoy_lifetime_net_energy_production_kwh
+    name: daily_net_export
+    cycle: daily
+  daily_solar_energy_production:
+    source: sensor.envoy_lifetime_energy_production_kwh
+    name: daily_solar_energy_production
+    cycle: daily  
