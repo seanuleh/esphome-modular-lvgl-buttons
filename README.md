@@ -1,7 +1,8 @@
 # Modular easy button screen for ESPHome + LVGL on cheap touchscreen devices
 
 ## Supported Devices
-* Guition `ESP32-4848s040` 4.0" with capacitive touch 120v/220v relays and built in power supply + USB-C [AliExpress Link](https://www.aliexpress.us/item/3256806436431838.html).
+* Guition `ESP32-4848s040` 4.0" with capacitive touch 120v/220v relays and built in power supply + USB-C [AliExpress Link](https://www.aliexpress.com/item/3256806436431838.html).
+* Guition `ESP32-jc4827w543C` 4.3" with capactivive touch and USB-C  [AliExpress Link](https://www.aliexpress.com/item/3256806543342794.html).
 * Sunton `ESP32-8048S043` 4.3" with capactivive touch and USB-C [AliExpress Link](https://www.aliexpress.com/item/1005004788147691.html).
 * Sunton `ESP32-8048S050` 5.0" with capactivive touch and USB-C [AliExpress Link](https://www.aliexpress.com/item/1005004952694042.html).
 * Sunton `ESP32-8048s070` 7.0" with capactivive touch and USB-C [AliExpress Link](https://www.aliexpress.com/item/3256807882909237.html).

@@ -1,4 +1,4 @@
-# guiton-esp32-jc4827w543 480px X 272px Smart Screen
+# guiton-esp32-jc4827w543C 480px X 272px Smart Screen
 # Hardware configuration file
 # https://github.com/profi-max/JC4827W543_4.3inch_ESP32S3_board/tree/main
 
@@ -27,10 +27,22 @@ psram:
 preferences:
   flash_write_interval: 5min
 
-power_supply:
-  id: backlight_id
-  pin: 1
-  enable_on_boot: true
+# -------------------------------------------
+# Internal outputs
+# -------------------------------------------
+output:
+  # Backlight LED
+  - platform: ledc
+    pin: 1
+    id: gpio_backlight_pwm
+    frequency: 100Hz
+
+light:
+  - platform: monochromatic
+    output: gpio_backlight_pwm
+    name: Display Backlight
+    id: display_backlight
+    restore_mode: ALWAYS_ON  
   
 #-------------------------------------------
 # Touchscreen gt911 i2c
@@ -42,11 +54,13 @@ i2c:
 touchscreen:
   - platform: gt911
     id: my_touchscreen
-    interrupt_pin: 3
+    interrupt_pin:
+      number: 3
+      ignore_strapping_warning: true
     reset_pin: 38
 
 #-------------------------------------------
-# Display ST3401A
+# Display NV3041A
 #-------------------------------------------
 spi:
   id: quad_spi
@@ -68,7 +82,7 @@ display:
       number: 45
       ignore_strapping_warning: true
     invert_colors: true
-#    brightness: 50
+    rotation: 180
     init_sequence: 
       - [0xff,0xa5]
       - [0x36,0xc0]
