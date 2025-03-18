@@ -1,7 +1,8 @@
+# 2.8" Round Display Development Board, 480×480
+# waveshare-esp32-s3-touch-lcd-2.8c
+
 esphome:
-  min_version: 2024.11.0
-  platformio_options:
-    build_flags: "-DBOARD_HAS_PSRAM"
+  min_version: 2025.2.0
 
 esp32:
   board: esp32-s3-devkitc-1
@@ -22,7 +23,13 @@ psram:
   speed: 80MHz
 
 preferences:
-  flash_write_interval: 1min
+  flash_write_interval: 5min
+  
+# PCA9554 GPIO extender
+pca9554:
+  - id: p_c_a
+    address: 0x20
+    i2c_id: i2c_bus  
 
 # Backlight PWM output and light component
 output:
@@ -30,7 +37,8 @@ output:
   - platform: ledc
     pin: GPIO06
     id: GPIO06
-    frequency: 100Hz
+    frequency: 2000Hz
+    channel: 0
 
 light:
   - platform: monochromatic
@@ -38,72 +46,62 @@ light:
     name: Display Backlight
     id: display_backlight
     restore_mode: ALWAYS_ON
+    gamma_correct: 1
 
 #-------------------------------------------
 # Touchscreen GT911 i2c
 #-------------------------------------------
-
-# I2C bus configuration
 i2c:
   - id: i2c_bus
     sda: GPIO15
     scl: GPIO07
-    scan: true
 
 # GT911 Touchscreen Controller
 touchscreen:
   - platform: gt911
     id: my_touchscreen
-    display: my_display
     i2c_id: i2c_bus
     reset_pin:
       pca9554: p_c_a
       number: 1
     interrupt_pin: GPIO16
-    on_touch:
-      - logger.log:
-          format: Touch at (%d, %d)
-          args: [touch.x, touch.y]
-      - lambda: |-
-          ESP_LOGI("cal", "x=%d, y=%d, x_raw=%d, y_raw=%0d",
-              touch.x,
-              touch.y,
-              touch.x_raw,
-              touch.y_raw
-              );
+    # on_update:
+        # - lvgl.label.update:
+            # id: coord_text
+            # text: !lambda return str_sprintf("Touch points:\n id=%d x=%d, y=%d", touches[0].id, touches[0].x, touches[0].y);
+        # - lambda: |-
+            # for (auto touch: touches)  {
+                # if (touch.state <= 2) {
+                  # ESP_LOGI("Touch points:", "id=%d x=%d, y=%d", touch.id, touch.x, touch.y);
+                # }
+            # }
 
 #-------------------------------------------
 # Display ST7701S spi
 #-------------------------------------------
-
-# SPI bus configuration
 spi:
   - id: spi_lcd
     clk_pin: GPIO02
     mosi_pin: GPIO01
     interface: spi3
 
-# PCA9554 GPIO extender for display reset
-pca9554:
-  - id: p_c_a
-    address: 0x20
-    i2c_id: i2c_bus
-
 display:
   - platform: st7701s
     id: my_display
-    update_interval: never
     spi_id: spi_lcd
     spi_mode: MODE1
     color_order: bgr
     auto_clear_enabled: false
+    # show_test_card: true
     dimensions:
       width: 480
       height: 480
-    cs_pin: GPIO42
+    cs_pin:
+      pca9554: p_c_a
+      number: 2
     reset_pin:
       pca9554: p_c_a
-      number: 3
+      number: 0
     de_pin: GPIO40
     hsync_pin: GPIO38
     vsync_pin: GPIO39
@@ -145,13 +143,15 @@ display:
       - [ 0xED, 0xFF, 0x10, 0xAF, 0x76, 0x54, 0x2B, 0xCF, 0xFF, 0xFF, 0xFC, 0xB2, 0x45, 0x67, 0xFA, 0x01, 0xFF ]
       - [ 0xEF, 0x08, 0x08, 0x08, 0x45, 0x3F, 0x54 ]
       - [ 0xFF, 0x77, 0x01, 0x00, 0x00, 0x00 ]
+      - delay 120ms
       - [ 0x11 ]
       - delay 120ms
       - [ 0x3A, 0x66 ]
       - [ 0x36, 0x00 ]
       - [ 0x35, 0x00 ]
+      - [ 0x20 ]
+      - delay 120ms
       - [ 0x29 ]
-
     data_pins:
       red:
         - 46       #r1
