@@ -128,7 +128,6 @@ class NOAATidesAndCurrentsSensor(Entity):
             self.attr["tide_percentage"] = (elapsed_time / predicted_period) * 50
         else:
             self.attr["tide_percentage"] = ((elapsed_time / predicted_period) * 50) + 50
-        
 
     @property
     def extra_state_attributes(self):
@@ -155,10 +154,20 @@ class NOAATidesAndCurrentsSensor(Entity):
                     self.attr["next_tide_type"] = "High"
                     self.attr["last_tide_type"] = "Low"
                     self.attr["high_tide_level"] = row.predicted_wl
+                    self.attr["next_tide_level"] = row.predicted_wl  # Adding next tide level
                 elif row.hi_lo == "L":
                     self.attr["next_tide_type"] = "Low"
                     self.attr["last_tide_type"] = "High"
                     self.attr["low_tide_level"] = row.predicted_wl
+                    self.attr["next_tide_level"] = row.predicted_wl  # Adding next tide level
+
+                # Adding last tide level based on most_recent index
+                last_tide_row = self.data.loc[most_recent]
+                if last_tide_row.hi_lo == "H":
+                    self.attr["last_tide_level"] = last_tide_row.predicted_wl
+                elif last_tide_row.hi_lo == "L":
+                    self.attr["last_tide_level"] = last_tide_row.predicted_wl
+
                 self.update_tide_factor_from_attr()
                 self.update_tide_percentage_from_attr()
                 return self.attr
@@ -176,7 +185,7 @@ class NOAATidesAndCurrentsSensor(Entity):
                     next_tide = "High"
                 if row.hi_lo == "L":
                     next_tide = "Low"
-                tide_time = index.strftime("%-I:%M %p")
+                tide_time = index.strftime("%-I:%M %p").lower()
                 return f"{next_tide} tide at {tide_time}"
 
     def noaa_coops_update(self):
