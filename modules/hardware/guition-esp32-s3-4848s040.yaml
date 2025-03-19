@@ -3,6 +3,9 @@
 
 esphome:
   min_version: 2025.2.0
+  project:
+    name: "Guiton.ESP32-S3-4848S040"
+    version: "1.0"
   platformio_options:
     board_build.flash_mode: dio
 

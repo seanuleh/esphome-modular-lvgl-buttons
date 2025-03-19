@@ -3,6 +3,9 @@
 
 esphome:
   min_version: 2025.2.0
+  project:
+    name: "Sunton.ESP32-S3-8048S070"
+    version: "1.0"    
 
 esp32:
   board: esp32-s3-devkitc-1
@@ -35,14 +38,14 @@ pca9554:
 output:
     # Backlight LED
   - platform: ledc
+    id: gpio_backlight_pwm
     pin: GPIO06
-    id: GPIO06
     frequency: 2000Hz
     channel: 0
 
 light:
   - platform: monochromatic
-    output: GPIO06
+    output: gpio_backlight_pwm
     name: Display Backlight
     id: display_backlight
     restore_mode: ALWAYS_ON

@@ -21,7 +21,7 @@ psram:
   mode: octal
 
 preferences:
-  flash_write_interval: 1min
+  flash_write_interval: 5min
 
 power_supply:
   - id: lcd_pwr

@@ -61,7 +61,7 @@ packages:
   wifi: !include modules/base/wifi.yaml
   base: !include modules/base/base.yaml
   colors: !include modules/base/color.yaml
-  fonts: !include modules/base/fonts.yaml
+  fonts: !include modules/base/fonts_lite.yaml
   images: !include modules/base/images.yaml
   time: !include modules/base/time_sntp.yaml
   sensors: !include modules/sensors/sensors_base.yaml
