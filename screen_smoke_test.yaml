@@ -20,6 +20,6 @@ wifi:
 
 packages:
   # Harware description file
-  hardware: !include modules/hardware/guiton-esp32-jc4827w543.yaml
+  hardware: !include modules/hardware/sunton-esp32-2432s028R.yaml
 
 lvgl:
