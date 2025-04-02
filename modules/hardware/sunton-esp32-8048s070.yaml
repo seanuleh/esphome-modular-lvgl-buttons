@@ -1,8 +1,9 @@
-# Sunton 7" ESP32-S3-8048S070 480px X 800px Smart Screen
+# Sunton 7" ESP32-S3-8048S070c 480px X 800px Smart Screen with Capacitive Touch Controller 
+# This file is for v1.1 or greater of this screen. the version is right next to the SD card slot.
 # Hardware configuration file
 
 esphome:
-  min_version: 2025.2.2
+  min_version: 2025.3.0
   project:
     name: "Sunton.ESP32-S3-8048S070"
     version: "1.0"
@@ -39,8 +40,7 @@ i2s_audio:
     i2s_lrclk_pin:
       number: 18
     i2s_bclk_pin:
-      number: 19
-      allow_other_uses: true
+      number: 0
 
 speaker:
   - platform: i2s_audio
@@ -48,6 +48,7 @@ speaker:
     dac_type: external
     i2s_dout_pin: GPIO17
     sample_rate: 48000
+    buffer_duration: 600ms
   - platform: mixer
     id: mixer_speaker_id
     output_speaker: speaker_id
@@ -60,6 +61,7 @@ speaker:
   - platform: resampler
     id: announcement_spk_resampling_input
     output_speaker: announcement_spk_mixer_input
+    
 media_player:
   - platform: speaker
     name: "Media Player"
@@ -80,7 +82,6 @@ output:
     pin: 2
     frequency: 1220
 
-
 light:
   - platform: monochromatic # Define a monochromatic, dimmable light for the backlight
     output: gpio_backlight_pwm
@@ -95,7 +96,6 @@ i2c:
   - id: bus_a
     sda:
       number: 19
-      allow_other_uses: true
     scl:
       number: 20
 

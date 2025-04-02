@@ -14,6 +14,7 @@ substitutions:
 
   icon_font: light40
   text_font: roboto24
+  text_color: black  
   button_on_color: "ep_orange"
   button_off_color: "very_dark_gray"
   icon_on_color: "yellow"
