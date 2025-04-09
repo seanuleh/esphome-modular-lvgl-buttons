@@ -1,19 +1,4 @@
 ---
-sun:
-  latitude: !secret latitude
-  longitude: !secret longitude
-  on_sunset:
-    - elevation: -3.5°
-      then:
-        - select.set:
-            id: brightness_mode
-            option: "Evening"
-  on_sunrise:
-    - then:
-        - select.set:
-            id: brightness_mode
-            option: "Day"
-
 time:
   - platform: homeassistant
     id: system_time
@@ -25,21 +10,7 @@ time:
             - text_sensor.template.publish:
                 id: device_last_restart
                 state: !lambda 'return id(system_time).now().strftime("%a %d %b %Y - %I:%M:%S %p");'
-    on_time:
-      - seconds: 0
-        minutes: $screen_night_minute
-        hours: $screen_night_hour
-        then:
-          - select.set:
-              id: brightness_mode
-              option: "Night"
-      - seconds: 0
-        minutes: $screen_day_minute
-        hours: $screen_day_hour
-        then:
-          - select.set:
-              id: brightness_mode
-              option: "Evening"
+    on_time:                
       - minutes: '*'
         seconds: 0
         then:

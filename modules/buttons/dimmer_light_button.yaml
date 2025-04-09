@@ -32,10 +32,10 @@ widgets:
       knob:
         bg_color: white
         radius: 2px
-        pad_left: -3px
-        pad_right: -3px
-        pad_top: -18px
-        pad_bottom: -18px
+        pad_left: 0
+        pad_right: 0
+        pad_top: 0
+        pad_bottom: 0
       indicator:
         radius: 0px
         bg_color: gray

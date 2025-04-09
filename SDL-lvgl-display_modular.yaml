@@ -12,10 +12,9 @@ substitutions:
   ceiling_fan_light: "\U000F1798"
   bed:               "\U000F02E3"
 
-  red: "0xFF0000"
-
   icon_font: light40
   text_font: roboto24
+  text_color: black
   button_on_color: "burnt_sienna"
   button_off_color: "very_dark_gray"
   icon_on_color: "yellow"
@@ -46,6 +45,12 @@ substitutions:
   sdl_height: '480'
   sdl_width: '480'
 
+# This will not be needed in the next release  
+# external_components:
+  # - source: github://pr#8530
+    # components: [lvgl]
+    # refresh: 1h 
+
 esphome:
   name: "sdl-lvgl"
   friendly_name: "SDL test system"
@@ -66,11 +71,13 @@ packages:
 # SDL has no Wi-Fi
 # wifi: !include modules/base/wifi.yaml
   base: !include modules//base/base.yaml
+  touchscreen: !include modules//base/touchscreen.yaml
   colors: !include modules/base/color.yaml
   fonts: !include modules/base/fonts.yaml
   images: !include modules/base/images.yaml
   time: !include modules/base/time_homeassistant.yaml
   sensors: !include modules/sensors/sensors_base-SDL.yaml
+  theme_style: !include modules/base/theme_style.yaml
 
   # Harware description file
   hardware: !include modules/hardware/SDL-lvgl.yaml
@@ -99,8 +106,6 @@ packages:
 
 # LVGL pages and buttons
 lvgl:
-  theme: !include { file: modules/base/theme.yaml }
-  page_wrap: true
 
 # Boot screen
   top_layer: !include
@@ -116,9 +121,7 @@ lvgl:
         type: flex
         flex_flow: COLUMN_WRAP
       width: 100%
-      bg_color: black
-      bg_opa: cover
-      pad_all: 5
+      styles: page_style
       <<: !include
         file: modules/sections/swipe_navigation.yaml
       widgets:
@@ -163,15 +166,33 @@ lvgl:
               text: RGB red
               icon: $string_lights
               page: RGB1
+              
+        - button:
+            height: $button_height_single
+            id: button_6
+            widgets:
+              - label:
+                  text_font: $icon_font
+                  align: top_left
+                  id: icon_button_6
+                  text: $lightbulb
+              - label:
+                  align: bottom_left
+                  id: label_button_6
+                  text: "dark/light"
+            # on_short_click:
+                # then:
+                  # - lvgl.style.update:
+                      # id: page_style
+                      # bg_color: white
+                  # - lvgl.widget.redraw:
 
     - id: RGB1
       layout:
         type: flex
         flex_flow: COLUMN_WRAP
       width: 100%
-      bg_color: black
-      bg_opa: cover
-      pad_all: 5
+      styles: page_style
       <<: !include
         file: modules/sections/swipe_navigation.yaml
       widgets:

@@ -59,15 +59,26 @@ script:
 
 packages:
   # Generic configuration for ESP32 screens
+  # If you need Wi-Fi include this
   wifi: !include modules/base/wifi.yaml
+  # Basic ESP 32 stuff
   base: !include modules/base/base.yaml
+  # If you have a touch screen include this
+  touchscreen: !include modules/base/touchscreen.yaml
+  # If your touch screen has a backlight include this
+  backlight: !include modules/base/backlignt.yaml
+  # All the colors
   colors: !include modules/base/color.yaml
+  # Fonts you need
   fonts: !include modules/base/fonts.yaml
+  # Your Images
   images: !include modules/base/images.yaml
-  time: !include modules/base/time_sntp.yaml
+  # Some basic sensors
   sensors: !include modules/sensors/sensors_base.yaml
+  # Styles + Themes
+  theme_style: !include modules/base/theme_style.yaml
 
-  # Harware description file
+  # Harware description file - for your board
   hardware: !include modules/hardware/guition-esp32-s3-4848s040.yaml
 
   # This section will Update button and relay state from Home Assistant
@@ -79,7 +90,7 @@ packages:
     file: modules/sensors/local_relay_button_state.yaml
     vars:
       uid: button_1
-      ha_name: Light 1
+      ha_name: Relay 1
       entity_id: internal_relay_1
   # Button 2 - Standard light button with state updates
   button_2_state: !include
@@ -98,9 +109,6 @@ packages:
 # LVGL pages and buttons
 # -------------------------------------------------------------------------
 lvgl:
-  theme: !include { file: modules/base/theme.yaml }
-  page_wrap: true
-
 # Boot screen
   top_layer: !include
     file: modules/screens/boot_screen.yaml
@@ -115,9 +123,7 @@ lvgl:
         type: flex
         flex_flow: COLUMN_WRAP
       width: 100%
-      bg_color: white
-      bg_opa: cover
-      pad_all: 5
+      styles: page_style
       widgets:
         # Button 1 - Standard (double hight) internal relay button with state updates
         - button: !include
