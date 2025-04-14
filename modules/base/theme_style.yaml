@@ -40,8 +40,8 @@ lvgl:
 
 select:
   - platform: template
-    name: "Theme"
-    id: brightness_mode
+    name: "Current Theme"
+    id: current_theme
     icon: mdi:theme-light-dark
     optimistic: true
     options:
@@ -50,19 +50,19 @@ select:
     initial_option: Light
     on_value:
       then:
-        - lvgl.resume
-        - lvgl.widget.redraw
         - if:
             condition:
-              - lambda: 'return id(brightness_mode).state == "Dark";'
+              - lambda: 'return id(current_theme).state == "Dark";'
             then:
               - lvgl.style.update:
                   id: page_style
-                  text_color: black
+                  bg_color: black
+              - lvgl.widget.redraw                  
         - if:
             condition:
-              - lambda: 'return id(brightness_mode).state == "Light";'
+              - lambda: 'return id(current_theme).state == "Light";'
             then:
               - lvgl.style.update:
                   id: page_style
-                  text_color: white
+                  bg_color: white
+              - lvgl.widget.redraw

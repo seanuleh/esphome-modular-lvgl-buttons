@@ -44,7 +44,7 @@ substitutions:
   # Screen Size
   screen_height: '480px'
   screen_width: '480px'
-
+  
 esphome:
   name: "guition-esp32-4848s040"
   friendly_name: "Guition480"

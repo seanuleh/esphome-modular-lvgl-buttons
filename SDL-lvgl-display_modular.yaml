@@ -45,12 +45,6 @@ substitutions:
   sdl_height: '480'
   sdl_width: '480'
 
-# This will not be needed in the next release  
-# external_components:
-  # - source: github://pr#8530
-    # components: [lvgl]
-    # refresh: 1h 
-
 esphome:
   name: "sdl-lvgl"
   friendly_name: "SDL test system"
@@ -70,14 +64,20 @@ packages:
   # Generic configuration for ESP32 screens
 # SDL has no Wi-Fi
 # wifi: !include modules/base/wifi.yaml
-  base: !include modules//base/base.yaml
-  touchscreen: !include modules//base/touchscreen.yaml
+  # Basic ESP 32 stuff
+  base: !include modules/base/base.yaml
+  # If you have a touch screen include this
+  touchscreen: !include modules/base/touchscreen.yaml
+  # All the colors
   colors: !include modules/base/color.yaml
+  # Fonts you need
   fonts: !include modules/base/fonts.yaml
+  # Your Images
   images: !include modules/base/images.yaml
-  time: !include modules/base/time_homeassistant.yaml
+  # Some basic sensors
   sensors: !include modules/sensors/sensors_base-SDL.yaml
-  theme_style: !include modules/base/theme_style.yaml
+  # Styles + Themes
+  theme_style: !include modules/base/theme_style.yaml  
 
   # Harware description file
   hardware: !include modules/hardware/SDL-lvgl.yaml
