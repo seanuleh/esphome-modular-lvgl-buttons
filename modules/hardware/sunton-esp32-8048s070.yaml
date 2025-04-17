@@ -1,9 +1,10 @@
 # Sunton 7" ESP32-S3-8048S070c 480px X 800px Smart Screen with Capacitive Touch Controller 
 # This file is for v1.1 or greater of this screen. the version is right next to the SD card slot.
+#
 # Hardware configuration file
 
 esphome:
-  min_version: 2025.3.0
+  min_version: 2025.4.0
   project:
     name: "Sunton.ESP32-S3-8048S070"
     version: "1.0"

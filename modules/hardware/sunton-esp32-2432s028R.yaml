@@ -1,13 +1,17 @@
 # sunton-esp32-2432s028R
+#
 # Hardware configuration file
 
 esphome:
-  min_version: 2025.2.2
+  min_version: 2025.4.0
 
 esp32:
   board: esp32dev
   framework:
     type: arduino
+    
+preferences:
+  flash_write_interval: 5min    
     
 lvgl:
   buffer_size: 25%    

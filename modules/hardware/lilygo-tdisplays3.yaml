@@ -1,7 +1,9 @@
 # lilygo tdisplays3 170px * 320px Smart Screen
+#
 # Hardware configuration file
 
 esphome:
+  min_version: 2025.4.0
   platformio_options:
     build_unflags: -Werror=all
     board_build.flash_mode: dio

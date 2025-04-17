@@ -2,7 +2,7 @@
 # Hardware configuration file
 
 esphome:
-  min_version: 2024.8.0 # First version with LVGL and SDL
+  min_version: 2025.4.0
 
 host:
   mac_address: "62:23:45:AF:B3:06"

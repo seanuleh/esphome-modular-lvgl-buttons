@@ -1,9 +1,10 @@
 # guiton-esp32-jc4827w543C 4.3-inch IPS 480*272 Smart Screen
-# Hardware configuration file
 # https://github.com/profi-max/JC4827W543_4.3inch_ESP32S3_board/tree/main
+#
+# Hardware configuration file
 
 esphome:
-  min_version: 2025.2.0
+  min_version: 2025.4.0
   project:
     name: "Guiton.ESP32-jc4827w543C"
     version: "1.0"

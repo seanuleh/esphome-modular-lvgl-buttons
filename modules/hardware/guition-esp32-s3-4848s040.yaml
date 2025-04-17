@@ -1,8 +1,9 @@
 # Guition ESP32-S3-4848S040 480px X 480px Smart Screen
+#
 # Hardware configuration file
 
 esphome:
-  min_version: 2025.2.0
+  min_version: 2025.4.0
   project:
     name: "Guiton.ESP32-S3-4848S040"
     version: "1.0"
