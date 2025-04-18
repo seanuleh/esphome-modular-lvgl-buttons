@@ -1,4 +1,4 @@
-# sunton-esp32-2432s028R
+ # sunton-esp32-2432s028R
 #
 # Hardware configuration file
 
@@ -8,7 +8,7 @@ esphome:
 esp32:
   board: esp32dev
   framework:
-    type: arduino
+    type: esp-idf
     
 preferences:
   flash_write_interval: 5min    

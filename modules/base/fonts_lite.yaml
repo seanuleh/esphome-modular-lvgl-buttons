@@ -1,5 +1,10 @@
 font:
   - file: "gfonts://Roboto"
+    id: roboto12
+    size: 12
+    bpp: 8
+    
+  - file: "gfonts://Roboto"
     id: roboto20
     size: 20
     bpp: 8
