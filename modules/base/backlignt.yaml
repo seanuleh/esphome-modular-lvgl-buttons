@@ -50,27 +50,9 @@ lvgl:
     timeout: $touchscreen_idle_timeout
     then:
       - logger.log: "LVGL is idle"
-      - if:
-          condition:
-            - lambda: 'return id(brightness_mode).state == "Day";'
-          then:
-            - light.turn_on:
-                id: display_backlight
-                brightness: ${touchscreen_daytime_brightness}
-      - if:
-          condition:
-            - lambda: 'return id(brightness_mode).state == "Evening";'
-          then:
-            - light.turn_on:
-                id: display_backlight
-                brightness: ${touchscreen_nighttime_brightness}
-      - if:
-          condition:
-            - lambda: 'return id(brightness_mode).state == "Night";'
-          then:
-            - light.turn_off: display_backlight
-            - lvgl.pause:
-                show_snow: true
+      - lvgl.page.show: main_page
+      - light.turn_off: display_backlight
+      - lvgl.pause:
 
 # Wake on screen touch
 touchscreen:
@@ -79,27 +61,7 @@ touchscreen:
         - logger.log: "LVGL is active"
         - lvgl.resume
         - lvgl.widget.redraw
-        - if:
-            condition:
-              - lambda: 'return id(brightness_mode).state == "Day";'
-            then:
-              - light.turn_on:
-                  id: display_backlight
-                  brightness: ${touchscreen_daytime_brightness}
-        - if:
-            condition:
-              - lambda: 'return id(brightness_mode).state == "Evening";'
-            then:
-              - light.turn_on:
-                  id: display_backlight
-                  brightness: ${touchscreen_nighttime_brightness}
-        - if:
-            condition:
-              - lambda: 'return id(brightness_mode).state == "Night";'
-            then:
-              - light.turn_on:
-                  id: display_backlight
-                  brightness: ${touchscreen_nighttime_brightness}
+        - light.turn_on: display_backlight
 
 select:
   - platform: template

@@ -109,16 +109,31 @@ packages:
   theme_style: !include modules/base/theme_style.yaml
   hardware: !include modules/hardware/guition-esp32-s3-4848s040.yaml
 
-  button_sean_cover_state: !include
+  btn_sean_cover_office: !include
     file: modules/sensors/cover_state.yaml
     vars:
-      uid: button_sean_cover
+      uid: btn_sean_cover_office
+      entity_id: cover.sean_s_office_blind
+
+  btn_sean_cover_blinds: !include
+    file: modules/sensors/cover_state.yaml
+    vars:
+      uid: btn_sean_cover_blinds
+      entity_id: cover.sean_s_office_blind
+
+  btn_living_cover_blinds: !include
+    file: modules/sensors/cover_state.yaml
+    vars:
+      uid: btn_living_cover_blinds
       entity_id: cover.living_room_blind
 
+  btn_master_cover_blinds: !include
+    file: modules/sensors/cover_state.yaml
+    vars:
+      uid: btn_master_cover_blinds
+      entity_id: cover.master_bedroom_blind
 
-# -------------------------------------------------------------------------
 # LVGL pages and buttons
-# -------------------------------------------------------------------------
 lvgl:
   top_layer: !include
     file: modules/screens/header_footer.yaml
@@ -129,24 +144,115 @@ lvgl:
     - id: main_page
       layout:
         type: flex
-        flex_flow: COLUMN_WRAP
+        flex_flow: ROW_WRAP
       styles: page_style
-      width: 100%
+      width: $screen_width
       bg_color: $bg_color
       bg_opa: cover
       widgets:
         - obj: !include
             file: modules/screens/header_title_object.yaml
             vars:
-              title: Home
+              title: Office
         - button: !include
             file: modules/buttons/cover_blind_button.yaml
             vars:
-              uid: button_sean_cover
+              uid: btn_sean_cover_office
               height: $button_height_double
-              text: Living Room
+              text: Blinds
+              icon: $mdi_blinds
+              entity_id: cover.sean_s_office_blind
+    - id: blinds_page
+      layout:
+        type: flex
+        flex_flow: ROW_WRAP
+        flex_align_cross: CENTER
+        flex_align_main: CENTER
+      styles: page_style
+      width: $screen_width
+      bg_color: $bg_color
+      bg_opa: cover
+      widgets:
+        - obj: !include
+            file: modules/screens/header_title_object.yaml
+            vars:
+              title: Blinds
+        - button: !include
+            file: modules/buttons/cover_blind_button.yaml
+            vars:
+              uid: btn_sean_cover_blinds
+              height: $button_height_double
+              text: Office
+              icon: $mdi_blinds
+              entity_id: cover.sean_s_office_blind
+        - button: !include
+            file: modules/buttons/cover_blind_button.yaml
+            vars:
+              uid: btn_living_cover_blinds
+              height: $button_height_double
+              text: Living
               icon: $mdi_blinds
               entity_id: cover.living_room_blind
+        - button: !include
+            file: modules/buttons/cover_blind_button.yaml
+            vars:
+              uid: btn_master_cover_blinds
+              height: $button_height_double
+              text: Master
+              icon: $mdi_blinds
+              entity_id: cover.master_bedroom_blind
+        - button:
+            id: open_all_blinds
+            height: $button_height_single
+            widgets:
+              - label:
+                  id: open_all_blinds_label
+                  align: CENTER
+                  text: $mdi_blinds_open
+                  text_font: $icon_font
+              - label:
+                  align: bottom_mid
+                  id: open_all_blinds_text_label
+                  text: "Open All"
+            on_press:
+              - homeassistant.action:
+                  action: cover.open_cover
+                  data:
+                    entity_id: cover.master_bedroom_blind
+              - homeassistant.action:
+                  action: cover.open_cover
+                  data:
+                    entity_id: cover.living_room_blind
+              - homeassistant.action:
+                  action: cover.open_cover
+                  data:
+                    entity_id: cover.sean_s_office_blind
+        - button:
+            id: close_all_blinds
+            height: $button_height_single
+            widgets:
+              - label:
+                  id: close_all_blinds_label
+                  align: CENTER
+                  text: $mdi_blinds
+                  text_font: $icon_font
+              - label:
+                  align: bottom_mid
+                  id: close_all_blinds_text_label
+                  text: "Close All"
+            on_press:
+              - homeassistant.action:
+                  action: cover.close_cover
+                  data:
+                    entity_id: cover.master_bedroom_blind
+              - homeassistant.action:
+                  action: cover.close_cover
+                  data:
+                    entity_id: cover.living_room_blind
+              - homeassistant.action:
+                  action: cover.close_cover
+                  data:
+                    entity_id: cover.sean_s_office_blind
     - id: about_page
       layout:
         type: flex
@@ -184,3 +290,15 @@ lvgl:
         - label:
             id: wifi_signal_db_percent_label
             text: "WiFi Strength: Not Connected"
+        - button:
+            id: reset_connection
+            widgets:
+              - label:
+                  id: reset_connection_label
+                  align: CENTER
+                  text: $mdi_restart
+                  text_font: $icon_font
+            on_press:
+              - wifi.disable:
+              - delay: 3s
+              - wifi.enable:
