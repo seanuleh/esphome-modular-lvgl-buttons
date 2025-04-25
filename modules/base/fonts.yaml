@@ -69,6 +69,7 @@ font:
       "\U000F1011",  # mdi_blinds_open
       "\U000F1A2D",  # mdi_blinds_vertical
       "\U000F1A2E",  # mdi_blinds_vertical_closed
+      "\U000F0709",  # mdi_restart
     ]
 
   # http://materialdesignicons.com/cdn/7.4.47/
@@ -96,5 +97,6 @@ font:
       "\U000F1011",  # mdi_blinds_open
       "\U000F1A2D",  # mdi_blinds_vertical
       "\U000F1A2E",  # mdi_blinds_vertical_closed
+      "\U000F0709",  # mdi_restart
     ]
 
