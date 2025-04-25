@@ -36,7 +36,20 @@ lvgl:
     - id: page_style 
       bg_color: black
       bg_opa: cover
-      pad_all: 5
+      pad_left: 5
+      pad_right: 5
+      pad_top: 0
+      pad_bottom: $footer_height
+    - id: header_footer
+      bg_color: 0x444444
+      bg_grad_color: 0x444444
+      bg_grad_dir: VER
+      bg_opa: COVER
+      border_width: 0
+      radius: 0
+      pad_all: 0
+      border_color: 0x333333
+      text_color: 0xFFFFFF
 
 select:
   - platform: template

@@ -1,10 +1,5 @@
 ---
 esphome:
-  on_boot:
-    priority: -100
-    then:
-      - delay: $boot_screen_delay
-      - lvgl.widget.hide: boot_screen
 
 api:
 
