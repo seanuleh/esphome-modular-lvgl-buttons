@@ -63,6 +63,12 @@ font:
       "\U000F02E3",  # mdi-bed
       "\U000F05A8",  # mdi-white-balance-sunny
       "\U000F00DF",  # mdi-brightness-6
+      "\U000F00AC",  # mdi_blinds
+      "\U000F1A2B",  # mdi_blinds_horizontal
+      "\U000F1A2C",  # mdi_blinds_horizontal_closed
+      "\U000F1011",  # mdi_blinds_open
+      "\U000F1A2D",  # mdi_blinds_vertical
+      "\U000F1A2E",  # mdi_blinds_vertical_closed
     ]
 
   # http://materialdesignicons.com/cdn/7.4.47/
@@ -84,5 +90,11 @@ font:
       "\U000F02E3",  # mdi-bed
       "\U000F05A8",  # mdi-white-balance-sunny
       "\U000F00DF",  # mdi-brightness-6    
+      "\U000F00AC",  # mdi_blinds
+      "\U000F1A2B",  # mdi_blinds_horizontal
+      "\U000F1A2C",  # mdi_blinds_horizontal_closed
+      "\U000F1011",  # mdi_blinds_open
+      "\U000F1A2D",  # mdi_blinds_vertical
+      "\U000F1A2E",  # mdi_blinds_vertical_closed
     ]
 

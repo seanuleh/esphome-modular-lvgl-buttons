@@ -13,7 +13,6 @@ substitutions:
   ceiling_fan_light: "\U000F1798"
   bed:               "\U000F02E3"
 
-  # mdi_white_balance_sunny
   bg_color: black
   icon_font: light40
   text_font: roboto24
@@ -31,32 +30,22 @@ substitutions:
   touchscreen_idle_timeout: "30s"
   touchscreen_daytime_brightness: "100%"
   touchscreen_nighttime_brightness: "50%"
-  # Boot screen configuration
   boot_screen_delay: 5s
   header_height: 20px
   footer_height: 30px
-
-  # Set Night mode  at Mightnight
   screen_night_hour: '0'
   screen_night_minute: '0'
-
-  # Set Day mode at 5:30am
   screen_day_hour: '5'
   screen_day_minute: '30'
-
-  # Screen Size
   screen_height: '480px'
   screen_width: '480px'
   sdl_height: '480'
   sdl_width: '480'
 
 esphome:
-  name: "sdl-lvgl"
-  friendly_name: "SDL test system"
-  comment: "SDL test 480px * 480px Smart Screen"
-
-host:
-  mac_address: "62:23:45:AF:B3:06"
+  name: "desktop-dash"
+  friendly_name: "desktop-dash"
+  comment: "Sean Bedroom Desktop Dash"
 
 api:
   on_client_connected:
@@ -73,15 +62,24 @@ api:
           - lvgl.widget.hide: lbl_hastatus
 
 time:
-  - platform: homeassistant
+  - platform: sntp        
     id: sntp_time
+    timezone: Australia/Melbourne
+    servers:
+     - 0.pool.ntp.org
+     - 1.pool.ntp.org
+     - 2.pool.ntp.org
+    on_time_sync:
+      - script.execute: time_update
+    on_time:
+      - minutes: '*'
+        seconds: 0
+        then:
+          - script.execute: time_update
 
-# Time update script - This is run once per second. Use it to update any time related labels.
 script:
   - id: time_update
     then:
-      - lambda: |-
-          // No operation
       - lvgl.label.update:
           id: display_time
           text: !lambda |-
@@ -97,19 +95,19 @@ script:
 
 packages:
   # Generic configuration for ESP32 screens
-# SDL has no Wi-Fi
-# wifi: !include modules/base/wifi.yaml
+  wifi: !include 
+    file: modules/base/wifi.yaml
+    vars:
+      use_address: 192.168.68.66
   base: !include modules/base/base.yaml
   touchscreen: !include modules/base/touchscreen.yaml
+  backlight: !include modules/base/backlignt.yaml
   colors: !include modules/base/color.yaml
   fonts: !include modules/base/fonts.yaml
   images: !include modules/base/images.yaml
-  sensors: !include modules/sensors/sensors_base-SDL.yaml
-  theme_style: !include modules/base/theme_style.yaml  
-  hardware: !include modules/hardware/SDL-lvgl.yaml
-
-  # This section will Update button and relay state from Home Assistant
-  # Any button that has real time updates needs a section here
+  sensors: !include modules/sensors/sensors_base.yaml
+  theme_style: !include modules/base/theme_style.yaml
+  hardware: !include modules/hardware/guition-esp32-s3-4848s040.yaml
 
   button_sean_cover_state: !include
     file: modules/sensors/cover_state.yaml
@@ -117,7 +115,10 @@ packages:
       uid: button_sean_cover
       entity_id: cover.living_room_blind
 
+
+# -------------------------------------------------------------------------
 # LVGL pages and buttons
+# -------------------------------------------------------------------------
 lvgl:
   top_layer: !include
     file: modules/screens/header_footer.yaml

@@ -1,0 +1,13 @@
+---
+align: top_mid
+styles: header_footer
+outline_width: 0
+id: stats_${title}
+width: 100%
+height: $header_height
+widgets:
+  - label:
+      text: "${title}"
+      align: CENTER
+      text_align: CENTER
+      text_color: 0xFFFFFF

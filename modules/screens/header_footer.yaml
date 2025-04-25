@@ -1,0 +1,49 @@
+---
+# Header Footer
+    widgets:
+      - obj:
+          align: top_mid
+          styles: header_footer
+          outline_width: 0
+          id: top_layer_header
+          width: 100%
+          height: $header_height
+          widgets:
+            - label:
+                id: lbl_hastatus
+                hidden: true
+                align: top_right
+                text_align: right
+                text: "\uF1EB"
+            - label:
+                text_font: roboto14
+                text: "00:00 am"
+                id: display_time
+                align: top_left
+                text_align: left
+      - buttonmatrix:
+          align: bottom_mid
+          styles: header_footer
+          outline_width: 0
+          id: top_layer_footer
+          items:
+            styles: header_footer
+          width: 100%
+          height: $footer_height
+          rows:
+            - buttons:
+              - id: page_prev
+                text: "\uF053"
+                on_press:
+                  then:
+                    lvgl.page.previous:
+              - id: page_home
+                text: "\uF015"
+                on_press:
+                  then:
+                    lvgl.page.show: main_page
+              - id: page_next
+                text: "\uF054"
+                on_press:
+                  then:
+                    lvgl.page.next:
