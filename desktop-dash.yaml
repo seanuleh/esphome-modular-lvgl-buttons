@@ -61,6 +61,9 @@ api:
         then:
           - lvgl.widget.hide: lbl_hastatus
 
+mqtt:
+  broker: 192.168.68.99
+
 time:
   - platform: sntp        
     id: sntp_time
@@ -162,6 +165,40 @@ lvgl:
               text: Blinds
               icon: $mdi_blinds
               entity_id: cover.sean_s_office_blind
+        - button:
+            id: switch_to_pc
+            height: $button_height_single
+            widgets:
+              - label:
+                  id: switch_to_pc_label
+                  align: CENTER
+                  text: $mdi_desktop_tower
+                  text_font: $icon_font
+              - label:
+                  align: bottom_mid
+                  id: switch_to_pc_text_label
+                  text: "PC"
+            on_press:
+              - mqtt.publish:
+                  topic: monitor/input
+                  payload: "pc"
+        - button:
+            id: switch_to_mac
+            height: $button_height_single
+            widgets:
+              - label:
+                  id: switch_to_mac_label
+                  align: CENTER
+                  text: $mdi_laptop
+                  text_font: $icon_font
+              - label:
+                  align: bottom_mid
+                  id: switch_to_mac_text_label
+                  text: "Mac"
+            on_press:
+              - mqtt.publish:
+                  topic: monitor/input
+                  payload: "mac"
     - id: blinds_page
       layout:
         type: flex

@@ -70,6 +70,8 @@ font:
       "\U000F1A2D",  # mdi_blinds_vertical
       "\U000F1A2E",  # mdi_blinds_vertical_closed
       "\U000F0709",  # mdi_restart
+      "\U000F0322",  # mdi_laptop
+      "\U000F01C5",  # mdi_desktop_tower
     ]
 
   # http://materialdesignicons.com/cdn/7.4.47/
@@ -98,5 +100,7 @@ font:
       "\U000F1A2D",  # mdi_blinds_vertical
       "\U000F1A2E",  # mdi_blinds_vertical_closed
       "\U000F0709",  # mdi_restart
+      "\U000F0322",  # mdi_laptop
+      "\U000F01C5",  # mdi_desktop_tower
     ]
 
