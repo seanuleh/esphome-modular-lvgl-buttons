@@ -24,9 +24,9 @@ substitutions:
   label_on_color: "white"
   label_off_color: "gray"
   button_text_color: "white"
-  button_height_single: '109px'
-  button_height_double: '228px'
-  button_width: '150px'
+  button_height_single: '135px'
+  button_height_double: '270px'
+  button_width: '151px'
   touchscreen_idle_timeout: "30s"
   touchscreen_daytime_brightness: "100%"
   touchscreen_nighttime_brightness: "50%"
@@ -62,7 +62,7 @@ api:
           - lvgl.widget.hide: lbl_hastatus
 
 mqtt:
-  broker: 192.168.68.99
+  broker: 192.168.1.99
 
 time:
   - platform: sntp        
@@ -101,7 +101,7 @@ packages:
   wifi: !include 
     file: modules/base/wifi.yaml
     vars:
-      use_address: 192.168.68.66
+      use_address: 192.168.1.61
   base: !include modules/base/base.yaml
   touchscreen: !include modules/base/touchscreen.yaml
   backlight: !include modules/base/backlignt.yaml
@@ -199,6 +199,20 @@ lvgl:
               - mqtt.publish:
                   topic: monitor/input
                   payload: "mac"
+        # - button:
+        #     id: spotify_button
+        #     height: $button_height_single
+        #     width: 468px
+        #     widgets:
+        #       - label:
+        #           id: blank_button_label
+        #           align: CENTER
+        #           text: $mdi_laptop
+        #           text_font: $icon_font
+        #       - label:
+        #           align: bottom_mid
+        #           id: blank_button_text_label
+        #           text: "SPOTIFY"
     - id: blinds_page
       layout:
         type: flex

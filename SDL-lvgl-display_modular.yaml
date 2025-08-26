@@ -24,9 +24,9 @@ substitutions:
   label_on_color: "white"
   label_off_color: "gray"
   button_text_color: "white"
-  button_height_single: '109px'
-  button_height_double: '228px'
-  button_width: '150px'
+  button_height_single: '135px'
+  button_height_double: '270px'
+  button_width: '151px'
   touchscreen_idle_timeout: "30s"
   touchscreen_daytime_brightness: "100%"
   touchscreen_nighttime_brightness: "50%"
@@ -200,6 +200,46 @@ lvgl:
             #   - mqtt.publish:
             #       topic: monitor/input
             #       payload: "mac"
+        # - button:
+        #     id: blank_button_1
+        #     height: $button_height_single
+        #     widgets:
+        #       - label:
+        #           id: blank_button_1_label
+        #           align: CENTER
+        #           text: $mdi_laptop
+        #           text_font: $icon_font
+        #       - label:
+        #           align: bottom_mid
+        #           id: blank_button_1_text_label
+        #           text: "Light 1"
+        # - button:
+        #     id: blank_button_2
+        #     height: $button_height_single
+        #     widgets:
+        #       - label:
+        #           id: blank_button_2_label
+        #           align: CENTER
+        #           text: $mdi_laptop
+        #           text_font: $icon_font
+        #       - label:
+        #           align: bottom_mid
+        #           id: blank_button_2_text_label
+        #           text: "Light 2"
+        - button:
+            id: spotify_button
+            height: $button_height_single
+            width: 468px
+            widgets:
+              - label:
+                  id: blank_button_label
+                  align: CENTER
+                  text: $mdi_laptop
+                  text_font: $icon_font
+              - label:
+                  align: bottom_mid
+                  id: blank_button_text_label
+                  text: "SPOTIFY"
     - id: blinds_page
       layout:
         type: flex
