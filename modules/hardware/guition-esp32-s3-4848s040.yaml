@@ -75,7 +75,9 @@ touchscreen:
   id: my_touchscreen
   display: my_display
   transform:
-    mirror_x: false
+    swap_xy: true
+    mirror_x: true
+    mirror_y: false
   # on_touch:
     # - logger.log:
           # format: Touch at (%d, %d)
@@ -99,6 +101,7 @@ spi:
 display:
   - platform: st7701s
     id: my_display
+    rotation: 270
     update_interval: never
     auto_clear_enabled: False
     spi_mode: MODE3

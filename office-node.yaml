@@ -1,0 +1,55 @@
+esphome:
+  name: office-node
+  friendly_name: office-node
+  on_boot:
+    priority: 250
+    then:
+      - delay: 15s
+      - lambda: |-
+          id(ble_tracker).set_scan_continuous(true); 
+          id(ble_tracker).start_scan();
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  port: 6053
+  reboot_timeout: 15min
+  
+ota:
+  platform: esphome
+  
+wifi:
+  ssid: "elsayed_IoT"
+  password: "0421214455"
+  use_address: 192.168.1.146
+  output_power: "8.5"
+  manual_ip:
+    static_ip: 192.168.1.146
+    gateway: 192.168.1.1
+    subnet: 255.255.252.0
+
+esp32_ble_tracker:
+  id: ble_tracker
+  scan_parameters:
+    continuous: false
+
+bluetooth_proxy:
+  active: true
+    
+sensor:
+  - platform: xiaomi_lywsd03mmc
+    mac_address: "A4:C1:38:2D:A9:EE"
+    bindkey: "eef418daf699a0c188f3bfd17e4565d9"
+    temperature:
+      name: "Office Temperature"
+    humidity:
+      name: "Office Humidity"
+    battery_level:
+      name: "Office Battery Level"
