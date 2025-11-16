@@ -72,6 +72,9 @@ font:
       "\U000F0709",  # mdi_restart
       "\U000F0322",  # mdi_laptop
       "\U000F01C5",  # mdi_desktop_tower
+      "\U000F037A",  # monitor_multiple
+      "\U000F1876",  # monitor_small
+      "\U000F0379",  # monitor_standard
     ]
 
   # http://materialdesignicons.com/cdn/7.4.47/
@@ -102,5 +105,8 @@ font:
       "\U000F0709",  # mdi_restart
       "\U000F0322",  # mdi_laptop
       "\U000F01C5",  # mdi_desktop_tower
+      "\U000F037A",  # monitor_multiple
+      "\U000F1876",  # monitor_small
+      "\U000F0379",  # monitor_standard
     ]
 

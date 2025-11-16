@@ -12,14 +12,10 @@ substitutions:
   coach_lamp:        "\U000F1020"
   ceiling_fan_light: "\U000F1798"
   bed:               "\U000F02E3"
-  mdi_monitor_multiple: "\U000F037A"
-  mdi_monitor_small:    "\U000F1876"
-  mdi_monitor:          "\U000F0379"
 
   bg_color: black
   icon_font: light40
   text_font: roboto24
-  text_font_small: roboto18
   text_color: white
   button_on_color: "burnt_sienna"
   button_off_color: "very_dark_gray"
@@ -151,7 +147,7 @@ lvgl:
     - id: main_page
       layout:
         type: flex
-        flex_flow: COLUMN
+        flex_flow: ROW_WRAP
       styles: page_style
       width: $screen_width
       bg_color: $bg_color
@@ -161,157 +157,110 @@ lvgl:
             file: modules/screens/header_title_object.yaml
             vars:
               title: Office
-        - obj:
-            width: 100%
-            height: 70px
-            align: CENTER
-            layout:
-              type: flex
-              flex_flow: ROW_WRAP
-              flex_align_main: CENTER
-              flex_align_cross: CENTER
-            widgets:
-              - button: !include
-                  file: modules/buttons/cover_blind_slider.yaml
-                  vars:
-                    uid: btn_sean_cover_office
-                    width: 100%
-                    height: 70px # Single height for bar
-                    text: Blinds
-                    icon: $mdi_blinds
-                    entity_id: cover.sean_s_office_blind
-        - obj:
-            width: 100%
+        - button: !include
+            file: modules/buttons/cover_blind_button.yaml
+            vars:
+              uid: btn_sean_cover_office
+              height: $button_height_double
+              text: Blinds
+              icon: $mdi_blinds
+              entity_id: cover.sean_s_office_blind
+        - button:
+            id: switch_to_pc
             height: $button_height_single
-            align: CENTER
-            layout:
-              type: flex
-              flex_flow: ROW_WRAP
-              flex_align_main: CENTER
-              flex_align_cross: CENTER
-            widgets:
-              - button:
-                  id: switch_to_pc
-                  height: $button_height_single
-                  widgets:
-                    - label:
-                        id: switch_to_pc_label
-                        align: CENTER
-                        text: $mdi_desktop_tower
-                        text_font: $icon_font
-                    - label:
-                        align: bottom_mid
-                        id: switch_to_pc_text_label
-                        text: "PC"
-                  on_press:
-                    - homeassistant.service:
-                        service: button.press
-                        data:
-                          entity_id: button.5950x_displayultrawideonly
-                    - mqtt.publish:
-                        topic: monitor/input
-                        payload: "pc"
-              - button:
-                  id: switch_to_mac
-                  height: $button_height_single
-                  widgets:
-                    - label:
-                        id: switch_to_mac_label
-                        align: CENTER
-                        text: $mdi_laptop
-                        text_font: $icon_font
-                    - label:
-                        align: bottom_mid
-                        id: switch_to_mac_text_label
-                        text: "Mac"
-                  on_press:
-                    - mqtt.publish:
-                        topic: monitor/input
-                        payload: "mac"
-                    - homeassistant.service:
-                        service: button.press
-                        data:
-                          entity_id: button.5950x_displayoledonly
-        - obj:
-            align: CENTER
-            styles: header_footer
-            outline_width: 0
-            id: label_pc_monitor_mode
-            width: 100%
-            height: $header_height
             widgets:
               - label:
-                  text: "PC Monitor"
+                  id: switch_to_pc_label
                   align: CENTER
-                  text_align: CENTER
-                  text_color: 0xFFFFFF
-        - obj:
-            width: 100%
+                  text: $mdi_desktop_tower
+                  text_font: $icon_font
+              - label:
+                  align: bottom_mid
+                  id: switch_to_pc_text_label
+                  text: "PC"
+            on_press:
+              - homeassistant.service:
+                  service: button.press
+                  data:
+                    entity_id: button.5950x_displayultrawideonly
+              - mqtt.publish:
+                  topic: monitor/input
+                  payload: "pc"
+        - button:
+            id: switch_to_mac
             height: $button_height_single
-            align: CENTER
-            layout:
-              type: flex
-              flex_flow: ROW_WRAP
-              flex_align_main: CENTER
-              flex_align_cross: CENTER
             widgets:
-              - button:
-                  id: switch_to_dualscreen
-                  height: $button_height_single
-                  widgets:
-                    - label:
-                        id: switch_to_dualscreen_label
-                        align: CENTER
-                        text: $mdi_monitor_multiple
-                        text_font: $icon_font
-                    - label:
-                        align: bottom_mid
-                        id: switch_to_dualscreen_text_label
-                        text: "Dual Screen"
-                        text_font: $text_font_small
-                  on_press:
-                    - homeassistant.service:
-                        service: button.press
-                        data:
-                          entity_id: button.5950x_displayultrawideonly
-              - button:
-                  id: switch_to_oled
-                  height: $button_height_single
-                  widgets:
-                    - label:
-                        id: switch_to_oled_label
-                        align: CENTER
-                        text: $mdi_monitor_small
-                        text_font: $icon_font
-                    - label:
-                        align: bottom_mid
-                        id: switch_to_oled_text_label
-                        text: "OLED Only"
-                        text_font: $text_font_small
-                  on_press:
-                    - homeassistant.service:
-                        service: button.press
-                        data:
-                          entity_id: button.5950x_displayoledonly
-              - button:
-                  id: switch_to_ultrawide
-                  height: $button_height_single
-                  widgets:
-                    - label:
-                        id: switch_to_ultrawide_label
-                        align: CENTER
-                        text: $mdi_monitor
-                        text_font: $icon_font
-                    - label:
-                        align: bottom_mid
-                        id: switch_to_ultrawide_text_label
-                        text: "Ultrawide Only"
-                        text_font: $text_font_small
-                  on_press:
-                    - homeassistant.service:
-                        service: button.press
-                        data:
-                          entity_id: button.5950x_displayultrawideonly
+              - label:
+                  id: switch_to_mac_label
+                  align: CENTER
+                  text: $mdi_laptop
+                  text_font: $icon_font
+              - label:
+                  align: bottom_mid
+                  id: switch_to_mac_text_label
+                  text: "Mac"
+            on_press:
+              - mqtt.publish:
+                  topic: monitor/input
+                  payload: "mac"
+              - homeassistant.service:
+                  service: button.press
+                  data:
+                    entity_id: button.5950x_displayoledonly
+        - button:
+            id: switch_to_dualscreen
+            height: $button_height_single
+            widgets:
+              - label:
+                  id: switch_to_dualscreen_label
+                  align: CENTER
+                  text: $mdi_monitor_speaker_off # Example icon
+                  text_font: $icon_font
+              - label:
+                  align: bottom_mid
+                  id: switch_to_dualscreen_text_label
+                  text: "Dual Screen"
+            on_press:
+              - homeassistant.service:
+                  service: button.press
+                  data:
+                    entity_id: button.5950x_displayultrawideonly
+        - button:
+            id: switch_to_oled
+            height: $button_height_single
+            widgets:
+              - label:
+                  id: switch_to_oled_label
+                  align: CENTER
+                  text: $mdi_monitor_speaker_off
+                  text_font: $icon_font
+              - label:
+                  align: bottom_mid
+                  id: switch_to_oled_text_label
+                  text: "OLED Only"
+            on_press:
+              - homeassistant.service:
+                  service: button.press
+                  data:
+                    entity_id: button.5950x_displayoledonly
+        - button:
+            id: switch_to_ultrawide
+            height: $button_height_single
+            widgets:
+              - label:
+                  id: switch_to_ultrawide_label
+                  align: CENTER
+                  text: $mdi_monitor_speaker_off # Example icon
+                  text_font: $icon_font
+              - label:
+                  align: bottom_mid
+                  id: switch_to_ultrawide_text_label
+                  text: "Ultrawide Only"
+            on_press:
+              - homeassistant.service:
+                  service: button.press
+                  data:
+                    entity_id: button.5950x_displayultrawideonly
     - id: blinds_page
       layout:
         type: flex
