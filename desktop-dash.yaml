@@ -273,7 +273,7 @@ lvgl:
                     - homeassistant.service:
                         service: button.press
                         data:
-                          entity_id: button.5950x_displayultrawideonly
+                          entity_id: button.5950x_displaydualscreen
               - button:
                   id: switch_to_oled
                   height: $button_height_single
