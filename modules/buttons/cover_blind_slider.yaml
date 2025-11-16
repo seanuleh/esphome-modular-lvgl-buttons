@@ -1,0 +1,53 @@
+---
+# Blind Cover Slider Button
+# vars:
+  # uid:
+  # height:
+  # text:
+  # icon:
+  # entity_id:
+height: ${height}
+width: ${width}
+id: button_${uid}
+widgets:
+  - slider:
+      animated: true
+      align: center
+      id: slider_${uid}
+      # x: 0
+      # y: 0
+      radius: 25px
+      width: ${width}
+      height: ${height}
+      pad_all: 0px
+      knob:
+        bg_opa: TRANSP
+      indicator:
+        radius: 0px
+        bg_color: $button_off_color
+        bg_grad_color: $button_on_color
+        bg_grad_dir: VER
+      on_release:
+        - homeassistant.action:
+            action: cover.set_cover_position
+            data:
+              entity_id: ${entity_id}
+              position: !lambda return int(x);
+  - label:
+      text_font: $icon_font
+      align: top_left
+      id: icon_${uid}
+      text: ${icon}
+  - label:
+      align: center
+      id: label_${uid}_pos
+      text: NaN
+  - label:
+      align: bottom_left
+      id: label_${uid}
+      text: ${text}
+on_short_click:
+    - homeassistant.action:
+        action: cover.togger
+        data:
+          entity_id: ${entity_id}
