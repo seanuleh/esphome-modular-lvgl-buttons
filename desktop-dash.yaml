@@ -207,7 +207,7 @@ lvgl:
                     - homeassistant.service:
                         service: button.press
                         data:
-                          entity_id: button.5950x_displayultrawideonly
+                          entity_id: button.9800x3d_displayultrawideonly
                     - mqtt.publish:
                         topic: monitor/input
                         payload: "pc"
@@ -231,7 +231,7 @@ lvgl:
                     - homeassistant.service:
                         service: button.press
                         data:
-                          entity_id: button.5950x_displayoledonly
+                          entity_id: button.9800x3d_displayoledonly
         - obj:
             align: CENTER
             styles: header_footer
@@ -273,7 +273,7 @@ lvgl:
                     - homeassistant.service:
                         service: button.press
                         data:
-                          entity_id: button.5950x_displaydualscreen
+                          entity_id: button.9800x3d_displaydualscreen
               - button:
                   id: switch_to_oled
                   height: $button_height_single
@@ -292,7 +292,7 @@ lvgl:
                     - homeassistant.service:
                         service: button.press
                         data:
-                          entity_id: button.5950x_displayoledonly
+                          entity_id: button.9800x3d_displayoledonly
               - button:
                   id: switch_to_ultrawide
                   height: $button_height_single
@@ -311,7 +311,7 @@ lvgl:
                     - homeassistant.service:
                         service: button.press
                         data:
-                          entity_id: button.5950x_displayultrawideonly
+                          entity_id: button.9800x3d_displayultrawideonly
     - id: blinds_page
       layout:
         type: flex
