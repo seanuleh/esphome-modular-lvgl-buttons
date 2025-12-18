@@ -12,21 +12,23 @@ substitutions:
   coach_lamp:        "\U000F1020"
   ceiling_fan_light: "\U000F1798"
   bed:               "\U000F02E3"
-  # mdi_monitor_multiple: "\U000F037A"
-  # mdi_monitor_small:    "\U000F1876"
-  # mdi_monitor:          "\U000F0379"
+  mdi_monitor_multiple: "\U000F037A"
+  mdi_monitor_small:    "\U000F1876"
+  mdi_monitor:          "\U000F0379"
+  mdi_radiobox_marked: "\U000F043E"
+  mdi_radiobox_blank:  "\U000F043D"
 
   bg_color: black
   icon_font: light40
   text_font: roboto24
   text_font_small: roboto18
   text_color: white
-  button_on_color: "burnt_sienna"
-  button_off_color: "very_dark_gray"
+  button_on_color: burnt_sienna
+  button_off_color: very_dark_gray
   icon_on_color: "yellow"
   icon_off_color: "gray"
-  label_on_color: "white"
-  label_off_color: "gray"
+  label_on_color: white
+  label_off_color: gray
   button_text_color: "white"
   button_height_single: '135px'
   button_height_double: '270px'
@@ -65,8 +67,57 @@ api:
         then:
           - lvgl.widget.hide: lbl_hastatus
 
+color:
+  # - id: white
+  #   red: 100%
+  #   green: 100%
+  #   blue: 100%
+  # - id: gray
+  #   red: 50%
+  #   green: 50%
+  #   blue: 50%
+
 mqtt:
   broker: 192.168.1.99
+#   on_message:
+#     - topic: monitor/input/state
+#       then:
+#         - text_sensor.template.publish:
+#             id: monitor_input_state
+#             state: !lambda 'return x;'
+#     - topic: monitor/kvm_usb/state
+#       then:
+#         - text_sensor.template.publish:
+#             id: kvm_input_state
+#             state: !lambda 'return x;'
+
+# text_sensor:
+#   - platform: template
+#     name: "Monitor Input State"
+#     id: monitor_input_state
+#     internal: true
+#     on_value:
+#       - if:
+#           condition: { lambda: 'return x == "pc";' }
+#           then:
+#             - lvgl.label.update: { id: lbl_monitor_pc_icon, text: $mdi_radiobox_marked }
+#             - lvgl.label.update: { id: lbl_monitor_mac_icon, text: $mdi_radiobox_blank }
+#           else:
+#             - lvgl.label.update: { id: lbl_monitor_pc_icon, text: $mdi_radiobox_blank }
+#             - lvgl.label.update: { id: lbl_monitor_mac_icon, text: $mdi_radiobox_marked }
+#   - platform: template
+#     name: "KVM Input State"
+#     id: kvm_input_state
+#     internal: true
+#     on_value:
+#       - if:
+#           condition: { lambda: 'return x == "pc";' }
+#           then:
+#             - lvgl.label.update: { id: lbl_kvm_pc_icon, text: $mdi_radiobox_marked }
+#             - lvgl.label.update: { id: lbl_kvm_mac_icon, text: $mdi_radiobox_blank }
+#           else:
+#             - lvgl.label.update: { id: lbl_kvm_pc_icon, text: $mdi_radiobox_blank }
+#             - lvgl.label.update: { id: lbl_kvm_mac_icon, text: $mdi_radiobox_marked }
 
 time:
   - platform: sntp        
@@ -182,7 +233,6 @@ lvgl:
                     entity_id: cover.sean_s_office_blind
         - obj:
             width: 100%
-            height: $button_height_single
             align: CENTER
             layout:
               type: flex
@@ -190,61 +240,182 @@ lvgl:
               flex_align_main: CENTER
               flex_align_cross: CENTER
             widgets:
-              - button:
-                  id: switch_to_pc
+              - obj:
+                  width: 100%
                   height: $button_height_single
+                  layout: 
+                    type: grid
+                    grid_column_align: STRETCH
+                    grid_row_align: CENTER
+                    grid_columns: [33%, 33%, 33%]
+                    grid_rows: [fr(1), fr(1), fr(1), fr(1)]
                   widgets:
+                    # Row 0
                     - label:
-                        id: switch_to_pc_label
-                        align: CENTER
-                        text: $mdi_desktop_tower
-                        text_font: $icon_font
+                        text: "0,0"
+                        text_align: CENTER
+                        grid_cell_row_pos: 0
+                        grid_cell_column_pos: 0
+                        border_width: 1
+                        border_color: white
+                        grid_cell_x_align: STRETCH
+                    - label: 
+                        text: "0,1" 
+                        text_align: CENTER
+                        grid_cell_row_pos: 0
+                        grid_cell_column_pos: 1
+                        border_width: 1
+                        border_color: white
+                        grid_cell_x_align: STRETCH
                     - label:
-                        align: bottom_mid
-                        id: switch_to_pc_text_label
-                        text: "PC"
-                  on_press:
-                    - homeassistant.service:
-                        service: button.press
-                        data:
-                          entity_id: button.9800x3d_displayultrawideonly
-                    - mqtt.publish:
-                        topic: monitor/input
-                        payload: "pc"
-              - button:
-                  id: switch_to_mac
-                  height: $button_height_single
-                  widgets:
+                        text: "0,2"
+                        text_align: CENTER
+                        grid_cell_row_pos: 0
+                        grid_cell_column_pos: 2
+                        border_width: 1
+                        border_color: white
+                        grid_cell_x_align: STRETCH
+                    # Row 1
                     - label:
-                        id: switch_to_mac_label
-                        align: CENTER
-                        text: $mdi_laptop
-                        text_font: $icon_font
+                        text: "1,0"
+                        text_align: CENTER
+                        grid_cell_row_pos: 1
+                        grid_cell_column_pos: 0
+                        border_width: 1
+                        border_color: white
+                        grid_cell_x_align: STRETCH
+                    - label: 
+                        text: "1,1" 
+                        text_align: CENTER
+                        grid_cell_row_pos: 1
+                        grid_cell_column_pos: 1
+                        border_width: 1
+                        border_color: white
+                        grid_cell_x_align: STRETCH
                     - label:
-                        align: bottom_mid
-                        id: switch_to_mac_text_label
-                        text: "Mac"
-                  on_press:
-                    - mqtt.publish:
-                        topic: monitor/input
-                        payload: "mac"
-                    - homeassistant.service:
-                        service: button.press
-                        data:
-                          entity_id: button.9800x3d_displayoledonly
-        - obj:
-            align: CENTER
-            styles: header_footer
-            outline_width: 0
-            id: label_pc_monitor_mode
-            width: 100%
-            height: $header_height
-            widgets:
-              - label:
-                  text: "PC Monitor"
-                  align: CENTER
-                  text_align: CENTER
-                  text_color: 0xFFFFFF
+                        text: "1,2"
+                        text_align: CENTER
+                        grid_cell_row_pos: 1
+                        grid_cell_column_pos: 2
+                        border_width: 1
+                        border_color: white
+                        grid_cell_x_align: STRETCH
+                    # Row 2
+                    - label: 
+                        text: "2,0" 
+                        text_align: CENTER
+                        grid_cell_row_pos: 2
+                        grid_cell_column_pos: 0
+                        border_width: 1
+                        border_color: white
+                        grid_cell_x_align: STRETCH
+                    - label:
+                        text: "2,1"
+                        text_align: CENTER
+                        grid_cell_row_pos: 2
+                        grid_cell_column_pos: 1
+                        border_width: 1
+                        border_color: white
+                        grid_cell_x_align: STRETCH
+                    - label: 
+                        text: "2,2"
+                        text_align: CENTER
+                        grid_cell_row_pos: 2
+                        grid_cell_column_pos: 2
+                        border_width: 1
+                        border_color: white
+                        grid_cell_x_align: STRETCH
+                    # Row 3
+                    - label: 
+                        text: "3,0" 
+                        text_align: CENTER
+                        grid_cell_row_pos: 3
+                        grid_cell_column_pos: 0
+                        border_width: 1
+                        border_color: white
+                        grid_cell_x_align: STRETCH
+                    - label:
+                        text: "3,1"
+                        text_align: CENTER
+                        grid_cell_row_pos: 3
+                        grid_cell_column_pos: 1
+                        border_width: 1
+                        border_color: white
+                        grid_cell_x_align: STRETCH
+                    - label: 
+                        text: "3,2" 
+                        text_align: CENTER
+                        grid_cell_row_pos: 3
+                        grid_cell_column_pos: 2
+                        border_width: 1
+                        border_color: white
+                        grid_cell_x_align: STRETCH
+                    # Row 2
+                    - label: 
+                        text: "4,0" 
+                        text_align: CENTER
+                        grid_cell_row_pos: 4
+                        grid_cell_column_pos: 0
+                        border_width: 1
+                        border_color: white
+                        grid_cell_x_align: STRETCH
+                    - label:
+                        text: "4,1"
+                        text_align: CENTER
+                        grid_cell_row_pos: 4
+                        grid_cell_column_pos: 1
+                        border_width: 1
+                        border_color: white
+                        grid_cell_x_align: STRETCH
+                    - label: 
+                        text: "4,2"
+                        text_align: CENTER
+                        grid_cell_row_pos: 4
+                        grid_cell_column_pos: 2
+                        border_width: 1
+                        border_color: white
+                        grid_cell_x_align: STRETCH
+
+                    # # Monitor Row
+                    # - label: { text: "Monitor", width: 100px }
+                    # - button: # PC Button
+                    #     id: btn_monitor_pc
+                    #     width: 100px
+                    #     height: 55px
+                    #     bg_opa: TRANSP
+                    #     shadow_opa: TRANSP
+                    #     on_press:
+                    #       - mqtt.publish: { topic: "monitor/input", payload: "pc" }
+                    #     widgets: [{ label: { id: lbl_monitor_pc_icon, text: $mdi_radiobox_blank, text_font: $icon_font, align: CENTER } }]
+                    # - button: # MAC Button
+                    #     id: btn_monitor_mac
+                    #     width: 100px
+                    #     height: 55px
+                    #     bg_opa: TRANSP
+                    #     shadow_opa: TRANSP
+                    #     on_press:
+                    #       - mqtt.publish: { topic: "monitor/input", payload: "mac" }
+                    #     widgets: [{ label: { id: lbl_monitor_mac_icon, text: $mdi_radiobox_marked, text_font: $icon_font, align: CENTER } }]
+                    # # KVM Row
+                    # - label: { text: "KVM", width: 100px }
+                    # - button: # PC Button
+                    #     id: btn_kvm_pc
+                    #     width: 100px
+                    #     height: 55px
+                    #     bg_opa: TRANSP
+                    #     shadow_opa: TRANSP
+                    #     on_press:
+                    #       - mqtt.publish: { topic: "monitor/kvm_usb/set", payload: "pc" }
+                    #     widgets: [{ label: { id: lbl_kvm_pc_icon, text: $mdi_radiobox_blank, text_font: $icon_font, align: CENTER } }]
+                    # - button: # MAC Button
+                    #     id: btn_kvm_mac
+                    #     width: 100px
+                    #     height: 55px
+                    #     bg_opa: TRANSP
+                    #     shadow_opa: TRANSP
+                    #     on_press:
+                    #       - mqtt.publish: { topic: "monitor/kvm_usb/set", payload: "mac" }
+                    #     widgets: [{ label: { id: lbl_kvm_mac_icon, text: $mdi_radiobox_marked, text_font: $icon_font, align: CENTER } }]
         - obj:
             width: 100%
             height: $button_height_single
