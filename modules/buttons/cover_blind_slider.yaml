@@ -9,6 +9,7 @@
 height: ${height}
 width: ${width}
 id: button_${uid}
+pad_all: 0px
 widgets:
   - slider:
       animated: true
@@ -23,29 +24,36 @@ widgets:
       knob:
         bg_opa: TRANSP
       indicator:
-        radius: 0px
+        pad_all: 0px
+        radius: 25px
         bg_color: $button_off_color
         bg_grad_color: $button_on_color
-        bg_grad_dir: VER
+        bg_grad_dir: HOR
       on_release:
         - homeassistant.action:
             action: cover.set_cover_position
             data:
               entity_id: ${entity_id}
               position: !lambda return int(x);
-  - label:
-      text_font: $icon_font
-      align: top_left
-      id: icon_${uid}
-      text: ${icon}
+
+  # This label sits in the absolute center to show the position number
   - label:
       align: center
       id: label_${uid}_pos
       text: NaN
+
   - label:
-      align: bottom_left
+      id: icon_${uid}
+      align: LEFT_MID    # Vertically center and align to the left
+      x: 20px     # Add 20px of padding from the left edge
+      text_font: $icon_font
+      text: ${icon}
+  - label:
       id: label_${uid}
+      align: LEFT_MID    # Also vertically center and align to the left...
+      x: 65px     # ...but push it 65px from the edge to sit next to the icon
       text: ${text}
+
 on_short_click:
     - homeassistant.action:
         action: cover.togger

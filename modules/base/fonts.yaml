@@ -75,6 +75,10 @@ font:
       "\U000F037A",  # monitor_multiple
       "\U000F1876",  # monitor_small
       "\U000F0379",  # monitor_standard
+      "\U000F0553",  # mdi-usb
+      "\U000F1483",  # monitor_share
+      "\U000F043E",  # mdi_radiobox_marked
+      "\U000F043D",  # mdi_radiobox_blank
     ]
 
   # http://materialdesignicons.com/cdn/7.4.47/
@@ -108,5 +112,9 @@ font:
       "\U000F037A",  # monitor_multiple
       "\U000F1876",  # monitor_small
       "\U000F0379",  # monitor_standard
+      "\U000F0553",  # mdi-usb
+      "\U000F1483",  # monitor_share
+      "\U000F043E",  # mdi_radiobox_marked
+      "\U000F043D",  # mdi_radiobox_blank
     ]
 
