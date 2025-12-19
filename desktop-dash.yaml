@@ -247,32 +247,92 @@ lvgl:
                     entity_id: cover.sean_s_office_blind
         - obj:
             width: 100%
-            height: 190px
+            height: 340px
             layout: 
               type: flex
               flex_flow: COLUMN
               flex_align_main: SPACE_BETWEEN
               flex_align_cross: CENTER
             widgets:
-              # ROW 0
+              # PC Power Label
               - obj:
                   width: 100%
-                  height: 25%
+                  height: 25px
+                  radius: 10
+                  bg_color: $button_off_color
+                  bg_opa: COVER
+                  layout:
+                    type: grid
+                    grid_columns: ['100%']
+                    grid_rows: ['100%']
+                  widgets:
+                    - label: 
+                        text: "PC Power"
+                        text_font: roboto18
+                        text_color: white
+                        grid_cell_row_pos: 0
+                        grid_cell_column_pos: 0
+                        grid_cell_x_align: CENTER
+                        grid_cell_y_align: CENTER
+              # PC Power Buttons
+              - obj:
+                  width: 100%
+                  height: 40px
+                  radius: 10
+                  layout:
+                    type: grid
+                    grid_columns: ['50%', '50%']
+                    grid_rows: ['100%']
+                  widgets:
+                    - button:
+                        grid_cell_row_pos: 0
+                        grid_cell_column_pos: 0
+                        bg_opa: TRANSP
+                        grid_cell_x_align: CENTER
+                        grid_cell_y_align: CENTER
+                        on_press:
+                          - mqtt.publish: { topic: "power/9800x3d/set", payload: "on" }
+                        widgets: [{ label: { text: $mdi_power_plug, text_font: $icon_font, align: CENTER } }]
+                    - button:
+                        grid_cell_row_pos: 0
+                        grid_cell_column_pos: 1
+                        bg_opa: TRANSP
+                        grid_cell_x_align: CENTER
+                        grid_cell_y_align: CENTER
+                        on_press:
+                          - mqtt.publish: { topic: "power/9800x3d/set", payload: "off" }
+                        widgets: [{ label: { text: $mdi_power_plug_off, text_font: $icon_font, align: CENTER } }]
+              # Input Matrix Grid
+              - obj:
+                  width: 100%
+                  height: 25px
+                  bg_color: $button_off_color
+                  bg_opa: COVER
                   layout:
                     type: grid
                     grid_columns: ['33%', '33%', '33%']
                     grid_rows: ['100%']
                   widgets:
                     - label:
+                        text: "MUX"
+                        text_font: roboto18
+                        text_color: white
+                        grid_cell_row_pos: 0
+                        grid_cell_column_pos: 0
+                        grid_cell_x_align: CENTER
+                        grid_cell_y_align: CENTER
+                    - label:
                         text: "PC"
-                        text_font: roboto24
+                        text_font: roboto18
+                        text_color: white
                         grid_cell_row_pos: 0
                         grid_cell_column_pos: 1
                         grid_cell_x_align: CENTER
                         grid_cell_y_align: CENTER
                     - label: 
                         text: "Mac" 
-                        text_font: roboto24
+                        text_font: roboto18
+                        text_color: white
                         grid_cell_row_pos: 0
                         grid_cell_column_pos: 2
                         grid_cell_x_align: CENTER
@@ -280,9 +340,7 @@ lvgl:
               # Monitor Input Row
               - obj:
                   width: 100%
-                  height: 25%
-                  bg_color: $button_off_color
-                  bg_opa: COVER
+                  height: 50px
                   radius: 10
                   layout:
                     type: grid
@@ -298,6 +356,7 @@ lvgl:
                         grid_cell_y_align: CENTER
                     - button:
                         id: btn_monitor_pc
+                        bg_opa: TRANSP
                         grid_cell_row_pos: 0
                         grid_cell_column_pos: 1
                         grid_cell_x_align: CENTER
@@ -307,6 +366,7 @@ lvgl:
                         widgets: [{ label: { id: lbl_monitor_pc_icon, text: $mdi_radiobox_blank, text_font: $icon_font_small, align: CENTER } }]
                     - button:
                         id: btn_monitor_mac
+                        bg_opa: TRANSP
                         on_press:
                           - mqtt.publish: { topic: "monitor/input", payload: "mac" }
                         widgets: [{ label: { id: lbl_monitor_mac_icon, text: $mdi_radiobox_blank, text_font: $icon_font_small, align: CENTER } }]
@@ -317,7 +377,7 @@ lvgl:
               # Monitor KVM Row
               - obj:
                   width: 100%
-                  height: 25%
+                  height: 50px
                   radius: 10
                   layout:
                     type: grid
@@ -327,6 +387,7 @@ lvgl:
                     - label: 
                         text: $mdi_monitor_share
                         text_font: $icon_font
+                        bg_opa: TRANSP
                         grid_cell_row_pos: 0
                         grid_cell_column_pos: 0
                         grid_cell_x_align: CENTER
@@ -354,9 +415,7 @@ lvgl:
               # USB Switch Row
               - obj:
                   width: 100%
-                  height: 25%
-                  bg_color: $button_off_color
-                  bg_opa: COVER
+                  height: 50px
                   radius: 10
                   layout:
                     type: grid
@@ -366,6 +425,7 @@ lvgl:
                     - label: 
                         text: $mdi_usb
                         text_font: $icon_font
+                        bg_opa: TRANSP
                         grid_cell_row_pos: 0
                         grid_cell_column_pos: 0
                         grid_cell_x_align: CENTER
@@ -374,88 +434,241 @@ lvgl:
                         id: btn_usb_switch_pc
                         grid_cell_row_pos: 0
                         grid_cell_column_pos: 1
+                        bg_opa: TRANSP
                         grid_cell_x_align: CENTER
                         grid_cell_y_align: CENTER
                         on_press:
                           - mqtt.publish: { topic: "usbswitch/output/set", payload: "pc" }
                         widgets: [{ label: { id: lbl_usbswitch_pc_icon, text: $mdi_radiobox_blank, text_font: $icon_font_small, align: CENTER } }]
                     - button:
+                        grid_cell_row_pos: 0
+                        grid_cell_column_pos: 2
+                        bg_opa: TRANSP
+                        grid_cell_x_align: CENTER
+                        grid_cell_y_align: CENTER
                         id: btn_usb_switch_mac
                         on_press:
                           - mqtt.publish: { topic: "usbswitch/output/set", payload: "mac" }
                         widgets: [{ label: { id: lbl_usbswitch_mac_icon, text: $mdi_radiobox_blank, text_font: $icon_font_small, align: CENTER } }]
+              # Desktop Monitor Title
+              - obj:
+                  width: 100%
+                  height: 25px
+                  bg_color: $button_off_color
+                  bg_opa: COVER
+                  radius: 10
+                  layout:
+                    type: grid
+                    grid_columns: ['100%']
+                    grid_rows: ['100%']
+                  widgets:
+                    - label: 
+                        text: "PC Monitor"
+                        text_font: roboto18
+                        text_color: white
+                        grid_cell_row_pos: 0
+                        grid_cell_column_pos: 0
+                        grid_cell_x_align: CENTER
+                        grid_cell_y_align: CENTER
+              # Desktop Monitor Buttons
+              - obj:
+                  width: 100%
+                  height: 50px
+                  radius: 10
+                  layout:
+                    type: grid
+                    grid_columns: ['33%', '33%', '33%']
+                    grid_rows: ['100%']
+                  widgets:
+                    - button:
+                        id: switch_to_dualscreen
+                        bg_opa: TRANSP
+                        grid_cell_row_pos: 0
+                        grid_cell_column_pos: 0
+                        grid_cell_x_align: CENTER
+                        grid_cell_y_align: CENTER
+                        widgets:
+                          - label:
+                              id: switch_to_dualscreen_label
+                              align: CENTER
+                              text: $mdi_monitor_multiple
+                              text_font: $icon_font
+                        on_press:
+                          - homeassistant.service:
+                              service: button.press
+                              data:
+                                entity_id: button.9800x3d_displaydualscreen
+                    - button:
+                        id: switch_to_oled
+                        bg_opa: TRANSP
+                        grid_cell_row_pos: 0
+                        grid_cell_column_pos: 1
+                        grid_cell_x_align: CENTER
+                        grid_cell_y_align: CENTER
+                        widgets:
+                          - label:
+                              id: switch_to_oled_label
+                              align: CENTER
+                              text: $mdi_monitor_small
+                              text_font: $icon_font
+                        on_press:
+                          - homeassistant.service:
+                              service: button.press
+                              data:
+                                entity_id: button.9800x3d_displayoledonly
+                    - button:
+                        id: switch_to_ultrawide
+                        bg_opa: TRANSP
                         grid_cell_row_pos: 0
                         grid_cell_column_pos: 2
                         grid_cell_x_align: CENTER
                         grid_cell_y_align: CENTER
+                        widgets:
+                          - label:
+                              id: switch_to_ultrawide_label
+                              align: CENTER
+                              text: $mdi_monitor
+                              text_font: $icon_font
+                        on_press:
+                          - homeassistant.service:
+                              service: button.press
+                              data:
+                                entity_id: button.9800x3d_displayultrawideonly
+              # Desktop Monitor Labels
+              - obj:
+                  width: 100%
+                  height: 20px
+                  radius: 10
+                  layout:
+                    type: grid
+                    grid_columns: ['33%', '33%', '33%']
+                    grid_rows: ['100%']
+                  widgets:
+                    - button:
+                        id: switch_to_dualscreen_btn_label
+                        bg_opa: TRANSP
+                        grid_cell_row_pos: 0
+                        grid_cell_column_pos: 0
+                        grid_cell_x_align: CENTER
+                        grid_cell_y_align: CENTER
+                        widgets:
+                          - label:
+                              align: CENTER
+                              id: switch_to_dualscreen_text_label
+                              text: "Dual Screen"
+                              text_font: roboto18
+                              text_color: white
+                        on_press:
+                          - homeassistant.service:
+                              service: button.press
+                              data:
+                                entity_id: button.9800x3d_displaydualscreen
+                    - button:
+                        id: switch_to_oled_btn_label
+                        bg_opa: TRANSP
+                        grid_cell_row_pos: 0
+                        grid_cell_column_pos: 1
+                        grid_cell_x_align: CENTER
+                        grid_cell_y_align: CENTER
+                        widgets:
+                          - label:
+                              align: CENTER
+                              id: switch_to_oled_text_label
+                              text: "OLED"
+                              text_font: roboto18
+                              text_color: white
+                        on_press:
+                          - homeassistant.service:
+                              service: button.press
+                              data:
+                                entity_id: button.9800x3d_displayoledonly
+                    - button:
+                        id: switch_to_ultrawide_btn_label
+                        bg_opa: TRANSP
+                        grid_cell_row_pos: 0
+                        grid_cell_column_pos: 2
+                        grid_cell_x_align: CENTER
+                        grid_cell_y_align: CENTER
+                        widgets:
+                          - label:
+                              align: CENTER
+                              id: switch_to_ultrawide_text_label
+                              text: "Ultrawide"
+                              text_font: roboto18
+                              text_color: white
+                        on_press:
+                          - homeassistant.service:
+                              service: button.press
+                              data:
+                                entity_id: button.9800x3d_displayultrawideonly
 
-        - obj:
-            width: 100%
-            height: $button_height_single
-            align: CENTER
-            layout:
-              type: flex
-              flex_flow: ROW_WRAP
-              flex_align_main: CENTER
-              flex_align_cross: CENTER
-            widgets:
-              - button:
-                  id: switch_to_dualscreen
-                  height: $button_height_single
-                  widgets:
-                    - label:
-                        id: switch_to_dualscreen_label
-                        align: CENTER
-                        text: $mdi_monitor_multiple
-                        text_font: $icon_font
-                    - label:
-                        align: bottom_mid
-                        id: switch_to_dualscreen_text_label
-                        text: "Dual Screen"
-                        text_font: $text_font_small
-                  on_press:
-                    - homeassistant.service:
-                        service: button.press
-                        data:
-                          entity_id: button.9800x3d_displaydualscreen
-              - button:
-                  id: switch_to_oled
-                  height: $button_height_single
-                  widgets:
-                    - label:
-                        id: switch_to_oled_label
-                        align: CENTER
-                        text: $mdi_monitor_small
-                        text_font: $icon_font
-                    - label:
-                        align: bottom_mid
-                        id: switch_to_oled_text_label
-                        text: "OLED Only"
-                        text_font: $text_font_small
-                  on_press:
-                    - homeassistant.service:
-                        service: button.press
-                        data:
-                          entity_id: button.9800x3d_displayoledonly
-              - button:
-                  id: switch_to_ultrawide
-                  height: $button_height_single
-                  widgets:
-                    - label:
-                        id: switch_to_ultrawide_label
-                        align: CENTER
-                        text: $mdi_monitor
-                        text_font: $icon_font
-                    - label:
-                        align: bottom_mid
-                        id: switch_to_ultrawide_text_label
-                        text: "Ultrawide Only"
-                        text_font: $text_font_small
-                  on_press:
-                    - homeassistant.service:
-                        service: button.press
-                        data:
-                          entity_id: button.9800x3d_displayultrawideonly
+        # - obj:
+        #     width: 100%
+        #     height: $button_height_single
+        #     align: CENTER
+        #     layout:
+        #       type: flex
+        #       flex_flow: ROW_WRAP
+        #       flex_align_main: CENTER
+        #       flex_align_cross: CENTER
+        #     widgets:
+        #       - button:
+        #           id: switch_to_dualscreen
+        #           height: $button_height_single
+        #           widgets:
+        #             - label:
+        #                 id: switch_to_dualscreen_label
+        #                 align: CENTER
+        #                 text: $mdi_monitor_multiple
+        #                 text_font: $icon_font
+        #             - label:
+        #                 align: bottom_mid
+        #                 id: switch_to_dualscreen_text_label
+        #                 text: "Dual Screen"
+        #                 text_font: $text_font_small
+        #           on_press:
+        #             - homeassistant.service:
+        #                 service: button.press
+        #                 data:
+        #                   entity_id: button.9800x3d_displaydualscreen
+        #       - button:
+        #           id: switch_to_oled
+        #           height: $button_height_single
+        #           widgets:
+        #             - label:
+        #                 id: switch_to_oled_label
+        #                 align: CENTER
+        #                 text: $mdi_monitor_small
+        #                 text_font: $icon_font
+        #             - label:
+        #                 align: bottom_mid
+        #                 id: switch_to_oled_text_label
+        #                 text: "OLED Only"
+        #                 text_font: $text_font_small
+        #           on_press:
+        #             - homeassistant.service:
+        #                 service: button.press
+        #                 data:
+        #                   entity_id: button.9800x3d_displayoledonly
+        #       - button:
+        #           id: switch_to_ultrawide
+        #           height: $button_height_single
+        #           widgets:
+        #             - label:
+        #                 id: switch_to_ultrawide_label
+        #                 align: CENTER
+        #                 text: $mdi_monitor
+        #                 text_font: $icon_font
+        #             - label:
+        #                 align: bottom_mid
+        #                 id: switch_to_ultrawide_text_label
+        #                 text: "Ultrawide Only"
+        #                 text_font: $text_font_small
+        #           on_press:
+        #             - homeassistant.service:
+        #                 service: button.press
+        #                 data:
+        #                   entity_id: button.9800x3d_displayultrawideonly
     - id: blinds_page
       layout:
         type: flex
