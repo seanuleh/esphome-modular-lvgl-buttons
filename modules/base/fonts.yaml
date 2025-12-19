@@ -79,6 +79,8 @@ font:
       "\U000F1483",  # monitor_share
       "\U000F043E",  # mdi_radiobox_marked
       "\U000F043D",  # mdi_radiobox_blank
+      "\U000F06A5",  # mdi_power_plug
+      "\U000F06A6",  # mdi_power_plug_off
     ]
 
   # http://materialdesignicons.com/cdn/7.4.47/
@@ -116,5 +118,7 @@ font:
       "\U000F1483",  # monitor_share
       "\U000F043E",  # mdi_radiobox_marked
       "\U000F043D",  # mdi_radiobox_blank
+      "\U000F06A5",  # mdi_power_plug
+      "\U000F06A6",  # mdi_power_plug_off
     ]
 
