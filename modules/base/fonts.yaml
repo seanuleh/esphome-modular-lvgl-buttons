@@ -81,6 +81,9 @@ font:
       "\U000F043D",  # mdi_radiobox_blank
       "\U000F06A5",  # mdi_power_plug
       "\U000F06A6",  # mdi_power_plug_off
+      "\U000F0902",  # mdi_power_off
+      "\U000F0903",  # mdi_power_on
+      "\U000F0425",  # mdi_power
     ]
 
   # http://materialdesignicons.com/cdn/7.4.47/
@@ -120,5 +123,8 @@ font:
       "\U000F043D",  # mdi_radiobox_blank
       "\U000F06A5",  # mdi_power_plug
       "\U000F06A6",  # mdi_power_plug_off
+      "\U000F0902",  # mdi_power_off
+      "\U000F0903",  # mdi_power_on
+      "\U000F0425",  # mdi_power
     ]
 

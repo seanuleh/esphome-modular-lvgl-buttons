@@ -92,6 +92,21 @@ mqtt:
             id: usbswitch_output_state
             state: !lambda 'return x;'
 
+binary_sensor:
+  - platform: homeassistant
+    id: seanpc_status
+    entity_id: binary_sensor.seanpc_status
+    on_state:
+      then:
+        - lvgl.label.update:
+            id: seanpc_status_icon
+            # We re-run the color logic here
+            text_color: !lambda |-
+              if (x) {
+                return lv_color_hex(0x4CAF50);
+              } else {
+                return lv_color_hex(0xF44336);
+              }
 text_sensor:
   - platform: template
     name: "Monitor Input State"
@@ -254,45 +269,56 @@ lvgl:
               flex_align_main: SPACE_BETWEEN
               flex_align_cross: CENTER
             widgets:
-              # PC Power Label
-              - obj:
-                  width: 100%
-                  height: 25px
-                  radius: 10
-                  bg_color: $button_off_color
-                  bg_opa: COVER
-                  layout:
-                    type: grid
-                    grid_columns: ['100%']
-                    grid_rows: ['100%']
-                  widgets:
-                    - label: 
-                        text: "PC Power"
-                        text_font: roboto18
-                        text_color: white
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 0
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
               # PC Power Buttons
               - obj:
                   width: 100%
-                  height: 40px
+                  height: 65px
                   radius: 10
                   layout:
                     type: grid
-                    grid_columns: ['50%', '50%']
+                    grid_columns: ['33%', '33%', '33%']
                     grid_rows: ['100%']
                   widgets:
-                    - button:
+                    - obj:
                         grid_cell_row_pos: 0
                         grid_cell_column_pos: 0
-                        bg_opa: TRANSP
+                        layout:
+                          type: flex
+                          flex_flow: ROW
+                          flex_align_main: START
+                          flex_align_cross: CENTER
                         grid_cell_x_align: CENTER
                         grid_cell_y_align: CENTER
-                        on_press:
-                          - mqtt.publish: { topic: "power/9800x3d/set", payload: "on" }
-                        widgets: [{ label: { text: $mdi_power_plug, text_font: $icon_font, align: CENTER } }]
+                        pad_all: 0
+                        widgets:
+                          - label:
+                              id: seanpc_status_icon
+                              text: $mdi_power
+                              text_font: $icon_font
+                              text_color: !lambda "return id(seanpc_status).state ? lv_color_hex(0x4CAF50) : lv_color_hex(0xF44336);"
+                          - obj:
+                              width: 60%
+                              height: 100%
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: COLUMN
+                                flex_align_main: CENTER
+                                flex_align_cross: START
+                              widgets:
+                                - label:
+                                    text: "SeanPC"
+                                    text_font: roboto18
+                                    # Forces the text to take up less vertical space
+                                    height: 18px 
+                                - label:
+                                    id: seanpc_status_text
+                                    text: !lambda |-
+                                      return id(seanpc_status).state ? std::string("ON") : std::string("OFF");
+                                    text_color: !lambda |-
+                                      return id(seanpc_status).state ? lv_color_hex(0x4CAF50) : lv_color_hex(0xF44336);
+                                    text_font: roboto18
+                                    height: 18px
                     - button:
                         grid_cell_row_pos: 0
                         grid_cell_column_pos: 1
@@ -300,8 +326,23 @@ lvgl:
                         grid_cell_x_align: CENTER
                         grid_cell_y_align: CENTER
                         on_press:
-                          - mqtt.publish: { topic: "power/9800x3d/set", payload: "off" }
-                        widgets: [{ label: { text: $mdi_power_plug_off, text_font: $icon_font, align: CENTER } }]
+                          - homeassistant.service:
+                              service: rest_command.upsnap_wake
+                              data:
+                                device_id: "ihbgmfc7e5v83gj"
+                        widgets: [{ label: { text: $mdi_power_on, text_font: $icon_font, align: CENTER } }]
+                    - button:
+                        grid_cell_row_pos: 0
+                        grid_cell_column_pos: 2
+                        bg_opa: TRANSP
+                        grid_cell_x_align: CENTER
+                        grid_cell_y_align: CENTER
+                        on_press:
+                          - homeassistant.service:
+                              service: rest_command.upsnap_shutdown
+                              data:
+                                device_id: "ihbgmfc7e5v83gj"
+                        widgets: [{ label: { text: $mdi_power_off, text_font: $icon_font, align: CENTER } }]
               # Input Matrix Grid
               - obj:
                   width: 100%
@@ -362,13 +403,13 @@ lvgl:
                         grid_cell_x_align: CENTER
                         grid_cell_y_align: CENTER
                         on_press:
-                          - mqtt.publish: { topic: "monitor/input", payload: "pc" }
+                          - mqtt.publish: { topic: "monitor/input/set", payload: "pc" }
                         widgets: [{ label: { id: lbl_monitor_pc_icon, text: $mdi_radiobox_blank, text_font: $icon_font_small, align: CENTER } }]
                     - button:
                         id: btn_monitor_mac
                         bg_opa: TRANSP
                         on_press:
-                          - mqtt.publish: { topic: "monitor/input", payload: "mac" }
+                          - mqtt.publish: { topic: "monitor/input/set", payload: "mac" }
                         widgets: [{ label: { id: lbl_monitor_mac_icon, text: $mdi_radiobox_blank, text_font: $icon_font_small, align: CENTER } }]
                         grid_cell_row_pos: 0
                         grid_cell_column_pos: 2

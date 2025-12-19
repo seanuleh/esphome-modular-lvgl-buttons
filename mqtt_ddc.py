@@ -6,7 +6,7 @@ import subprocess
 # -------- CONFIG --------
 MQTT_BROKER = "192.168.1.99"
 MQTT_PORT = 1883
-MQTT_TOPIC_VIDEO_SET = "monitor/input"
+MQTT_TOPIC_VIDEO_SET = "monitor/input/set"
 MQTT_TOPIC_VIDEO_STATE = "monitor/input/state"
 MQTT_TOPIC_KVM_SET = "monitor/kvm_usb/set"
 MQTT_TOPIC_KVM_STATE = "monitor/kvm_usb/state"
