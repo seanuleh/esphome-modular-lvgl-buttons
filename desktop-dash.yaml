@@ -89,7 +89,7 @@ mqtt:
         - text_sensor.template.publish:
             id: kvm_input_state
             state: !lambda 'return x;'
-    - topic: usbswitch/output/state
+    - topic: usb_switch/device/state
       then:
         - text_sensor.template.publish:
             id: usbswitch_output_state
@@ -398,7 +398,7 @@ lvgl:
               # PC Power Buttons
               - obj:
                   width: 100%
-                  height: 65px
+                  height: 60px
                   radius: 10
                   layout:
                     type: grid
@@ -561,7 +561,7 @@ lvgl:
               # Input Matrix Grid
               - obj:
                   width: 100%
-                  height: 25px
+                  height: 30px
                   bg_color: $button_off_color
                   bg_opa: COVER
                   layout:
@@ -577,22 +577,38 @@ lvgl:
                         grid_cell_column_pos: 0
                         grid_cell_x_align: CENTER
                         grid_cell_y_align: CENTER
-                    - label:
-                        text: "PC"
-                        text_font: roboto18
-                        text_color: white
+                    - button:
+                        id: btn_all_pc
                         grid_cell_row_pos: 0
                         grid_cell_column_pos: 1
+                        bg_opa: TRANSP
                         grid_cell_x_align: CENTER
                         grid_cell_y_align: CENTER
-                    - label: 
-                        text: "Mac" 
-                        text_font: roboto18
-                        text_color: white
+                        on_press:
+                          - mqtt.publish: { topic: "monitor/input/set", payload: "pc" }
+                          - mqtt.publish: { topic: "usb_switch/device/set", payload: "pc" }
+                        widgets:
+                          - label:
+                              text: "PC"
+                              text_font: roboto18
+                              text_color: white
+                              align: CENTER
+                    - button:
+                        id: btn_all_mac
                         grid_cell_row_pos: 0
                         grid_cell_column_pos: 2
+                        bg_opa: TRANSP
                         grid_cell_x_align: CENTER
                         grid_cell_y_align: CENTER
+                        on_press:
+                          - mqtt.publish: { topic: "monitor/input/set", payload: "mac" }
+                          - mqtt.publish: { topic: "usb_switch/device/set", payload: "mac" }
+                        widgets:
+                          - label:
+                              text: "Mac"
+                              text_font: roboto18
+                              text_color: white
+                              align: CENTER
               # Monitor Input Row
               - obj:
                   width: 100%
@@ -630,6 +646,44 @@ lvgl:
                         grid_cell_column_pos: 2
                         grid_cell_x_align: CENTER
                         grid_cell_y_align: CENTER
+              # USB Switch Row
+              - obj:
+                  width: 100%
+                  height: 50px
+                  radius: 10
+                  layout:
+                    type: grid
+                    grid_columns: ['33%', '33%', '33%']
+                    grid_rows: ['100%']
+                  widgets:
+                    - label: 
+                        text: $mdi_usb
+                        text_font: $icon_font
+                        bg_opa: TRANSP
+                        grid_cell_row_pos: 0
+                        grid_cell_column_pos: 0
+                        grid_cell_x_align: CENTER
+                        grid_cell_y_align: CENTER
+                    - button:
+                        id: btn_usb_switch_pc
+                        grid_cell_row_pos: 0
+                        grid_cell_column_pos: 1
+                        bg_opa: TRANSP
+                        grid_cell_x_align: CENTER
+                        grid_cell_y_align: CENTER
+                        on_press:
+                          - mqtt.publish: { topic: "usb_switch/device/set", payload: "pc" }
+                        widgets: [{ label: { id: lbl_usbswitch_pc_icon, text: $mdi_radiobox_blank, text_font: $icon_font_small, align: CENTER } }]
+                    - button:
+                        grid_cell_row_pos: 0
+                        grid_cell_column_pos: 2
+                        bg_opa: TRANSP
+                        grid_cell_x_align: CENTER
+                        grid_cell_y_align: CENTER
+                        id: btn_usb_switch_mac
+                        on_press:
+                          - mqtt.publish: { topic: "usb_switch/device/set", payload: "mac" }
+                        widgets: [{ label: { id: lbl_usbswitch_mac_icon, text: $mdi_radiobox_blank, text_font: $icon_font_small, align: CENTER } }]
               # Monitor KVM Row
               - obj:
                   width: 100%
@@ -668,44 +722,6 @@ lvgl:
                         grid_cell_column_pos: 2
                         grid_cell_x_align: CENTER
                         grid_cell_y_align: CENTER
-              # USB Switch Row
-              - obj:
-                  width: 100%
-                  height: 50px
-                  radius: 10
-                  layout:
-                    type: grid
-                    grid_columns: ['33%', '33%', '33%']
-                    grid_rows: ['100%']
-                  widgets:
-                    - label: 
-                        text: $mdi_usb
-                        text_font: $icon_font
-                        bg_opa: TRANSP
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 0
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                    - button:
-                        id: btn_usb_switch_pc
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 1
-                        bg_opa: TRANSP
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                        on_press:
-                          - mqtt.publish: { topic: "usbswitch/output/set", payload: "pc" }
-                        widgets: [{ label: { id: lbl_usbswitch_pc_icon, text: $mdi_radiobox_blank, text_font: $icon_font_small, align: CENTER } }]
-                    - button:
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 2
-                        bg_opa: TRANSP
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                        id: btn_usb_switch_mac
-                        on_press:
-                          - mqtt.publish: { topic: "usbswitch/output/set", payload: "mac" }
-                        widgets: [{ label: { id: lbl_usbswitch_mac_icon, text: $mdi_radiobox_blank, text_font: $icon_font_small, align: CENTER } }]
               # Desktop Monitor Title
               - obj:
                   width: 100%
