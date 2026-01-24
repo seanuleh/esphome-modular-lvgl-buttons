@@ -1,0 +1,42 @@
+esphome:
+  name: "remote-test"
+  on_boot:
+    priority: -100
+    then:
+      - script.execute: send_and_sleep
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+logger:
+  level: DEBUG
+  baud_rate: 115200
+  hardware_uart: UART0
+
+script:
+  - id: send_and_sleep
+    then:
+      - delay: 100ms  # Wait for WiFi/ESP-NOW to be ready
+      - logger.log: "Sending ESP-NOW..."
+      - espnow.send:
+          address: B0:CB:D8:E3:2A:C4
+          data: "AC_POWER"
+          on_sent:
+            - logger.log: "ESP-NOW sent!"
+            - delay: 50ms
+            - deep_sleep.enter: deep_sleep_1
+          on_error:
+            - logger.log: "ESP-NOW failed!"
+            - delay: 50ms
+            - deep_sleep.enter: deep_sleep_1
+
+espnow:
+  channel: 10
+  peers:
+    - "B0:CB:D8:E3:2A:C4"
+
+deep_sleep:
+  id: deep_sleep_1
+  sleep_duration: 5s
