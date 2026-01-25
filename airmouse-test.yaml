@@ -1,17 +1,26 @@
 esphome:
-  name: "aurmouse-test"
-  libraries:
-    - "ESP32 BLE Mouse"
+  name: "airmouse-test"
 
 esp32:
   board: esp32-s3-devkitc-1
   framework:
     type: arduino
 
+external_components:
+  - source:
+      type: local
+      path: custom_components
+
+esp32_ble:
+
+ble_mouse:
+  id: my_mouse
+  name: "ESPHome AirMouse"
+
 # Set up I2C for the MPU6050
 i2c:
-  sda: 8
-  scl: 9
+  sda: 4
+  scl: 5
   scan: true
 
 captive_portal:
@@ -38,23 +47,14 @@ sensor:
     gyro_y:
       id: "gyro_y"
       name: "Gyro Y"
-      # MOVE THE TRIGGER HERE
       on_value:
         then:
-          - lambda: |-
-              static BleMouse bleMouse("ESPHome AirMouse", "Google", 100);
-              if (!bleMouse.isConnected()) {
-                bleMouse.begin();
-              } else {
+          - ble_mouse.move:
+              id: my_mouse
+              x: !lambda |-
                 float sensitivity = 0.5;
-                
-                // We use the ID system to get BOTH values even though 
-                // we are technically inside the gyro_y trigger.
-                signed char mouse_x = (id(gyro_y).state) * sensitivity;
-                signed char mouse_y = (id(gyro_x).state) * sensitivity;
-                
-                if (abs(mouse_x) > 1 || abs(mouse_y) > 1) {
-                  bleMouse.move(mouse_x, mouse_y);
-                }
-              }
+                return (int8_t)((id(gyro_y).state) * sensitivity);
+              y: !lambda |-
+                float sensitivity = 0.5;
+                return (int8_t)((id(gyro_x).state) * sensitivity);
     update_interval: 20ms

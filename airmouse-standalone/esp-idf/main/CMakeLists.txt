@@ -1,0 +1,13 @@
+idf_component_register(
+    SRCS
+        "main.c"
+        "mpu6050.c"
+        "ble_hid_mouse.c"
+    INCLUDE_DIRS
+        "."
+    REQUIRES
+        driver
+        nvs_flash
+        bt
+        esp_event
+)
