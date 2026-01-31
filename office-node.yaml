@@ -6,7 +6,7 @@ esphome:
     then:
       - delay: 15s
       - lambda: |-
-          id(ble_tracker).set_scan_continuous(true); 
+          id(ble_tracker).set_scan_continuous(true);
           id(ble_tracker).start_scan();
 
 esp32:
