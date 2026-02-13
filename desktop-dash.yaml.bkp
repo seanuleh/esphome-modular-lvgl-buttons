@@ -371,7 +371,6 @@ lvgl:
             width: 100%
             height: 70px
             align: CENTER
-            scrollbar_mode: "OFF"
             layout:
               type: flex
               flex_flow: ROW_WRAP
@@ -390,8 +389,7 @@ lvgl:
         - obj:
             width: 100%
             height: 340px
-            scrollbar_mode: "OFF"
-            layout:
+            layout: 
               type: flex
               flex_flow: COLUMN
               flex_align_main: SPACE_BETWEEN
@@ -402,7 +400,6 @@ lvgl:
                   width: 100%
                   height: 60px
                   radius: 10
-                  scrollbar_mode: "OFF"
                   layout:
                     type: grid
                     grid_columns: ['33%', '33%', '33%']  # Changed from ['50%', '50%'] to 3 columns
@@ -430,7 +427,6 @@ lvgl:
                               pad_all: 0
                               bg_opa: TRANSP
                               clickable: false
-                              scrollbar_mode: "OFF"
                               layout:
                                 type: flex
                                 flex_flow: ROW
@@ -443,12 +439,11 @@ lvgl:
                                     text_font: $icon_font
                                     text_color: !lambda "return id(seanpc_status).state ? lv_color_hex(0x4CAF50) : lv_color_hex(0xF44336);"
                                 - obj:
-                                    width: 80px
+                                    width: 80px 
                                     height: 100%
                                     pad_all: 0
                                     bg_opa: TRANSP
                                     clickable: false
-                                    scrollbar_mode: "OFF"
                                     layout:
                                       type: flex
                                       flex_flow: COLUMN
@@ -471,7 +466,6 @@ lvgl:
                         width: 100%
                         height: 100%
                         bg_opa: TRANSP
-                        scrollbar_mode: "OFF"
                         widgets:
                           - spinner:
                               id: seanpc_spinner
@@ -524,7 +518,6 @@ lvgl:
                               pad_right: 5  # Padding from the right edge
                               bg_opa: TRANSP
                               clickable: false
-                              scrollbar_mode: "OFF"
                               layout:
                                 type: flex
                                 flex_flow: ROW
@@ -537,7 +530,6 @@ lvgl:
                                     pad_all: 0
                                     bg_opa: TRANSP
                                     clickable: false
-                                    scrollbar_mode: "OFF"
                                     layout:
                                       type: flex
                                       flex_flow: COLUMN
@@ -572,7 +564,6 @@ lvgl:
                   height: 30px
                   bg_color: $button_off_color
                   bg_opa: COVER
-                  scrollbar_mode: "OFF"
                   layout:
                     type: grid
                     grid_columns: ['33%', '33%', '33%']
@@ -623,7 +614,6 @@ lvgl:
                   width: 100%
                   height: 50px
                   radius: 10
-                  scrollbar_mode: "OFF"
                   layout:
                     type: grid
                     grid_columns: ['33%', '33%', '33%']
@@ -661,7 +651,6 @@ lvgl:
                   width: 100%
                   height: 50px
                   radius: 10
-                  scrollbar_mode: "OFF"
                   layout:
                     type: grid
                     grid_columns: ['33%', '33%', '33%']
@@ -700,7 +689,6 @@ lvgl:
                   width: 100%
                   height: 50px
                   radius: 10
-                  scrollbar_mode: "OFF"
                   layout:
                     type: grid
                     grid_columns: ['33%', '33%', '33%']
@@ -741,7 +729,6 @@ lvgl:
                   bg_color: $button_off_color
                   bg_opa: COVER
                   radius: 10
-                  scrollbar_mode: "OFF"
                   layout:
                     type: grid
                     grid_columns: ['100%']
@@ -760,7 +747,6 @@ lvgl:
                   width: 100%
                   height: 50px
                   radius: 10
-                  scrollbar_mode: "OFF"
                   layout:
                     type: grid
                     grid_columns: ['33%', '33%', '33%']
@@ -825,7 +811,6 @@ lvgl:
                   width: 100%
                   height: 20px
                   radius: 10
-                  scrollbar_mode: "OFF"
                   layout:
                     type: grid
                     grid_columns: ['33%', '33%', '33%']
