@@ -1,4 +1,3 @@
-# Substitution variables used through the codebase
 substitutions:
   <<: !include modules/base/mdi_glyph_substitutions.yaml
   lightbulb:         "\U000F0335"
@@ -13,19 +12,21 @@ substitutions:
   ceiling_fan_light: "\U000F1798"
   bed:               "\U000F02E3"
 
-  bg_color: black
+  # Charcoal theme
+  bg_color: charcoal_deep
   icon_font: light40
   icon_font_small: light24
   text_font: roboto24
   text_font_small: roboto18
-  text_color: white
-  button_on_color: burnt_sienna
-  button_off_color: very_dark_gray
-  icon_on_color: "yellow"
-  icon_off_color: "gray"
-  label_on_color: white
-  label_off_color: gray
-  button_text_color: "white"
+  text_color: "0xEEEEEE"
+  button_on_color: accent_crimson
+  button_off_color: charcoal
+  icon_on_color: "0xEEEEEE"
+  icon_off_color: "0x555555"
+  label_on_color: "0xEEEEEE"
+  label_off_color: "0x777777"
+  button_text_color: "0xEEEEEE"
+
   button_height_single: '135px'
   button_height_double: '270px'
   button_width: '151px'
@@ -33,7 +34,7 @@ substitutions:
   touchscreen_daytime_brightness: "100%"
   touchscreen_nighttime_brightness: "50%"
   boot_screen_delay: 5s
-  header_height: 20px
+  header_height: 30px
   footer_height: 30px
   screen_night_hour: '0'
   screen_night_minute: '0'
@@ -66,16 +67,6 @@ api:
         then:
           - lvgl.widget.hide: lbl_hastatus
 
-color:
-  # - id: white
-  #   red: 100%
-  #   green: 100%
-  #   blue: 100%
-  # - id: gray
-  #   red: 50%
-  #   green: 50%
-  #   blue: 50%
-
 mqtt:
   broker: 192.168.1.99
   on_message:
@@ -94,6 +85,22 @@ mqtt:
         - text_sensor.template.publish:
             id: usbswitch_output_state
             state: !lambda 'return x;'
+    - topic: "zigbee2mqtt/Sean's Office Light"
+      then:
+        - lambda: |-
+            json::parse_json(x, [](JsonObject root) -> bool {
+              if (root["state"].is<const char *>()) {
+                id(light_on) = (strcmp(root["state"].as<const char *>(), "ON") == 0);
+              }
+              if (root["brightness"].is<int>()) {
+                id(light_brightness) = root["brightness"].as<int>();
+              }
+              if (root["color_temp"].is<int>()) {
+                id(light_colortemp) = root["color_temp"].as<int>();
+              }
+              return true;
+            });
+        - script.execute: update_light_display
 
 globals:
   - id: seanpc_pending
@@ -104,6 +111,22 @@ globals:
     type: bool
     restore_value: no
     initial_value: 'false'
+  - id: jiggler_active
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: light_on
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: light_brightness
+    type: int
+    restore_value: no
+    initial_value: '127'
+  - id: light_colortemp
+    type: int
+    restore_value: no
+    initial_value: '300'
 
 binary_sensor:
   - platform: homeassistant
@@ -115,13 +138,7 @@ binary_sensor:
             id: seanpc_pending
             value: 'false'
         - lvgl.widget.hide: seanpc_spinner
-        - lvgl.label.update:
-            id: seanpc_status_icon
-            text_color: !lambda "return x ? lv_color_hex(0x4CAF50) : lv_color_hex(0xF44336);"
-        - lvgl.label.update:
-            id: seanpc_status_text
-            text: !lambda 'return x ? std::string("ON") : std::string("OFF");'
-            text_color: !lambda "return x ? lv_color_hex(0x4CAF50) : lv_color_hex(0xF44336);"
+        - script.execute: update_seanpc_display
   - platform: homeassistant
     id: ginapc_status
     entity_id: binary_sensor.ginapc_status
@@ -131,13 +148,7 @@ binary_sensor:
             id: ginapc_pending
             value: 'false'
         - lvgl.widget.hide: ginapc_spinner
-        - lvgl.label.update:
-            id: ginapc_status_icon
-            text_color: !lambda "return x ? lv_color_hex(0x4CAF50) : lv_color_hex(0xF44336);"
-        - lvgl.label.update:
-            id: ginapc_status_text
-            text: !lambda 'return x ? std::string("ON") : std::string("OFF");'
-            text_color: !lambda "return x ? lv_color_hex(0x4CAF50) : lv_color_hex(0xF44336);"
+        - script.execute: update_ginapc_display
 
 text_sensor:
   - platform: template
@@ -145,43 +156,37 @@ text_sensor:
     id: monitor_input_state
     internal: true
     on_value:
-      - if:
-          condition: { lambda: 'return x == "pc";' }
-          then:
-            - lvgl.label.update: { id: lbl_monitor_pc_icon, text: $mdi_radiobox_marked }
-            - lvgl.label.update: { id: lbl_monitor_mac_icon, text: $mdi_radiobox_blank }
-          else:
-            - lvgl.label.update: { id: lbl_monitor_pc_icon, text: $mdi_radiobox_blank }
-            - lvgl.label.update: { id: lbl_monitor_mac_icon, text: $mdi_radiobox_marked }
+      - lambda: |-
+          bool is_pc = (x == "pc");
+          lv_color_t col = is_pc ? lv_color_hex(0xCC2828) : lv_color_hex(0x4A6ADA);
+          lv_obj_set_style_bg_color(id(pill_monitor), col, LV_PART_MAIN);
+          lv_obj_set_style_bg_color(id(strip_monitor), col, LV_PART_MAIN);
+          lv_label_set_text(id(lbl_monitor_state), is_pc ? "PC" : "MAC");
   - platform: template
     name: "KVM Input State"
     id: kvm_input_state
     internal: true
     on_value:
-      - if:
-          condition: { lambda: 'return x == "pc";' }
-          then:
-            - lvgl.label.update: { id: lbl_kvm_pc_icon, text: $mdi_radiobox_marked }
-            - lvgl.label.update: { id: lbl_kvm_mac_icon, text: $mdi_radiobox_blank }
-          else:
-            - lvgl.label.update: { id: lbl_kvm_pc_icon, text: $mdi_radiobox_blank }
-            - lvgl.label.update: { id: lbl_kvm_mac_icon, text: $mdi_radiobox_marked }
+      - lambda: |-
+          bool is_pc = (x == "pc");
+          lv_color_t col = is_pc ? lv_color_hex(0xCC2828) : lv_color_hex(0x4A6ADA);
+          lv_obj_set_style_bg_color(id(pill_kvm), col, LV_PART_MAIN);
+          lv_obj_set_style_bg_color(id(strip_kvm), col, LV_PART_MAIN);
+          lv_label_set_text(id(lbl_kvm_state), is_pc ? "PC" : "MAC");
   - platform: template
     name: "USB Switch Output State"
     id: usbswitch_output_state
     internal: true
     on_value:
-      - if:
-          condition: { lambda: 'return x == "pc";' }
-          then:
-            - lvgl.label.update: { id: lbl_usbswitch_pc_icon, text: $mdi_radiobox_marked }
-            - lvgl.label.update: { id: lbl_usbswitch_mac_icon, text: $mdi_radiobox_blank }
-          else:
-            - lvgl.label.update: { id: lbl_usbswitch_pc_icon, text: $mdi_radiobox_blank }
-            - lvgl.label.update: { id: lbl_usbswitch_mac_icon, text: $mdi_radiobox_marked }
+      - lambda: |-
+          bool is_pc = (x == "pc");
+          lv_color_t col = is_pc ? lv_color_hex(0xCC2828) : lv_color_hex(0x4A6ADA);
+          lv_obj_set_style_bg_color(id(pill_usb), col, LV_PART_MAIN);
+          lv_obj_set_style_bg_color(id(strip_usb), col, LV_PART_MAIN);
+          lv_label_set_text(id(lbl_usb_state), is_pc ? "PC" : "MAC");
 
 time:
-  - platform: sntp        
+  - platform: sntp
     id: sntp_time
     timezone: Australia/Melbourne
     servers:
@@ -200,35 +205,42 @@ script:
   - id: time_update
     then:
       - lvgl.label.update:
-          id: display_time
+          id: display_time_hr
           text: !lambda |-
-            static char time_buf[17];
-            auto now = id(sntp_time).now();            
-            bool is_pm = now.hour >= 12;
-            int hour_12 = now.hour % 12;
-            if (hour_12 == 0) {
-                hour_12 = 12; // 12 AM/PM should be displayed as 12, not 0
-            }
-            snprintf(time_buf, sizeof(time_buf), "%2d:%02d%s", hour_12, now.minute, is_pm ? "pm" : "am");
-            return time_buf;
+            static char hr_buf[4];
+            auto now = id(sntp_time).now();
+            int h = now.hour % 12;
+            if (h == 0) h = 12;
+            snprintf(hr_buf, sizeof(hr_buf), "%d", h);
+            return hr_buf;
+      - lvgl.label.update:
+          id: display_time_min
+          text: !lambda |-
+            static char min_buf[8];
+            auto now = id(sntp_time).now();
+            snprintf(min_buf, sizeof(min_buf), ":%02d%s", now.minute, now.hour >= 12 ? "pm" : "am");
+            return min_buf;
+
   - id: update_seanpc_display
     then:
-      - lvgl.label.update:
-          id: seanpc_status_icon
-          text_color: !lambda "return id(seanpc_status).state ? lv_color_hex(0x4CAF50) : lv_color_hex(0xF44336);"
-      - lvgl.label.update:
-          id: seanpc_status_text
-          text: !lambda 'return id(seanpc_status).state ? std::string("ON") : std::string("OFF");'
-          text_color: !lambda "return id(seanpc_status).state ? lv_color_hex(0x4CAF50) : lv_color_hex(0xF44336);"
+      - lambda: |-
+          bool on = id(seanpc_status).state;
+          lv_color_t col = on ? lv_color_hex(0x22C55E) : lv_color_hex(0xCC2828);
+          lv_obj_set_style_border_color(id(btn_seanpc), col, LV_PART_MAIN);
+          lv_label_set_text(id(lbl_seanpc_state), on ? "ON" : "OFF");
+          lv_obj_set_style_text_color(id(lbl_seanpc_state), col, LV_PART_MAIN);
+          lv_obj_set_style_text_color(id(lbl_seanpc_icon), col, LV_PART_MAIN);
+
   - id: update_ginapc_display
     then:
-      - lvgl.label.update:
-          id: ginapc_status_icon
-          text_color: !lambda "return id(ginapc_status).state ? lv_color_hex(0x4CAF50) : lv_color_hex(0xF44336);"
-      - lvgl.label.update:
-          id: ginapc_status_text
-          text: !lambda 'return id(ginapc_status).state ? std::string("ON") : std::string("OFF");'
-          text_color: !lambda "return id(ginapc_status).state ? lv_color_hex(0x4CAF50) : lv_color_hex(0xF44336);"
+      - lambda: |-
+          bool on = id(ginapc_status).state;
+          lv_color_t col = on ? lv_color_hex(0x22C55E) : lv_color_hex(0xCC2828);
+          lv_obj_set_style_border_color(id(btn_ginapc), col, LV_PART_MAIN);
+          lv_label_set_text(id(lbl_ginapc_state), on ? "ON" : "OFF");
+          lv_obj_set_style_text_color(id(lbl_ginapc_state), col, LV_PART_MAIN);
+          lv_obj_set_style_text_color(id(lbl_ginapc_icon), col, LV_PART_MAIN);
+
   - id: seanpc_wake_action
     then:
       - globals.set:
@@ -239,7 +251,7 @@ script:
           service: rest_command.upsnap_wake
           data:
             device_id: "ihbgmfc7e5v83gj"
-      - delay: 30s  # Timeout after 30 seconds
+      - delay: 30s
       - if:
           condition:
             lambda: 'return id(seanpc_pending);'
@@ -248,6 +260,7 @@ script:
             - globals.set:
                 id: seanpc_pending
                 value: 'false'
+
   - id: seanpc_shutdown_action
     then:
       - globals.set:
@@ -258,7 +271,7 @@ script:
           service: rest_command.upsnap_shutdown
           data:
             device_id: "ihbgmfc7e5v83gj"
-      - delay: 30s  # Timeout after 30 seconds
+      - delay: 30s
       - if:
           condition:
             lambda: 'return id(seanpc_pending);'
@@ -267,6 +280,7 @@ script:
             - globals.set:
                 id: seanpc_pending
                 value: 'false'
+
   - id: ginapc_wake_action
     then:
       - globals.set:
@@ -286,6 +300,7 @@ script:
             - globals.set:
                 id: ginapc_pending
                 value: 'false'
+
   - id: ginapc_shutdown_action
     then:
       - globals.set:
@@ -306,9 +321,48 @@ script:
                 id: ginapc_pending
                 value: 'false'
 
+  - id: update_light_display
+    then:
+      - lambda: |-
+          bool on = id(light_on);
+          lv_color_t bulb_col = on ? lv_color_hex(0xFFC04C) : lv_color_hex(0x555555);
+          lv_color_t bg_col   = on ? lv_color_hex(0x3A2A10) : lv_color_hex(0x1A1A1A);
+          lv_obj_set_style_text_color(id(lbl_home_bulb), bulb_col, LV_PART_MAIN);
+          lv_obj_set_style_bg_color(id(btn_home_bulb), bg_col, LV_PART_MAIN);
+          lv_label_set_text(id(lbl_light_state), on ? "ON" : "OFF");
+          lv_obj_set_style_text_color(id(lbl_light_state), on ? lv_color_hex(0xFFC04C) : lv_color_hex(0x666666), LV_PART_MAIN);
+          lv_obj_set_style_text_color(id(lbl_light_big_bulb), on ? lv_color_hex(0xFFC04C) : lv_color_hex(0x444444), LV_PART_MAIN);
+          lv_obj_set_style_bg_color(id(btn_light_toggle), on ? lv_color_hex(0x3A2A10) : lv_color_hex(0x1A1A1A), LV_PART_MAIN);
+          lv_slider_set_value(id(slider_brightness), id(light_brightness), LV_ANIM_OFF);
+          lv_slider_set_value(id(slider_colortemp), id(light_colortemp), LV_ANIM_OFF);
+
+  - id: light_toggle_action
+    then:
+      - mqtt.publish:
+          topic: "zigbee2mqtt/Sean's Office Light/set"
+          payload: !lambda 'return id(light_on) ? std::string("{\"state\":\"OFF\"}") : std::string("{\"state\":\"ON\"}");'
+
+  - id: jiggler_toggle_action
+    then:
+      - lambda: |-
+          id(jiggler_active) = !id(jiggler_active);
+          bool on = id(jiggler_active);
+          lv_color_t on_col  = lv_color_hex(0x22C55E);
+          lv_color_t off_col = lv_color_hex(0x2A2A2A);
+          lv_color_t txt_on  = lv_color_hex(0xEEEEEE);
+          lv_color_t txt_off = lv_color_hex(0x888888);
+          lv_color_t icon_off = lv_color_hex(0xDDDDDD);
+          lv_obj_set_style_bg_color(id(jiggler_track), on ? on_col : off_col, LV_PART_MAIN);
+          lv_obj_set_x(id(jiggler_handle), on ? 31 : 1);
+          lv_label_set_text(id(lbl_jiggler_state), on ? "ON" : "OFF");
+          lv_obj_set_style_text_color(id(lbl_jiggler_state), on ? txt_on : txt_off, LV_PART_MAIN);
+          lv_obj_set_style_text_color(id(lbl_jiggler_icon), on ? on_col : icon_off, LV_PART_MAIN);
+      - mqtt.publish:
+          topic: "seans_jiggler/switch/command"
+          payload: !lambda 'return id(jiggler_active) ? std::string("ON") : std::string("OFF");'
+
 packages:
-  # Generic configuration for ESP32 screens
-  wifi: !include 
+  wifi: !include
     file: modules/base/wifi.yaml
     vars:
       use_address: 192.168.1.61
@@ -328,732 +382,1192 @@ packages:
       uid: btn_sean_cover_office
       entity_id: cover.sean_s_office_blind
 
-  btn_sean_cover_blinds: !include
-    file: modules/sensors/cover_state.yaml
-    vars:
-      uid: btn_sean_cover_blinds
-      entity_id: cover.sean_s_office_blind
-
-  btn_living_cover_blinds: !include
-    file: modules/sensors/cover_state.yaml
-    vars:
-      uid: btn_living_cover_blinds
-      entity_id: cover.living_room_blind
-
-  btn_master_cover_blinds: !include
-    file: modules/sensors/cover_state.yaml
-    vars:
-      uid: btn_master_cover_blinds
-      entity_id: cover.master_bedroom_blind
-
-# LVGL pages and buttons
 lvgl:
-  top_layer: !include
-    file: modules/screens/header_footer.yaml
-    vars:
-      height: $screen_height
-      width: $screen_width
+  rotation: 270
+  # Custom inlined top_layer for two-tone time display
+  top_layer:
+    widgets:
+      - obj:
+          align: top_mid
+          width: 100%
+          height: $header_height
+          bg_color: 0x0C0C0C
+          bg_opa: COVER
+          border_width: 0
+          radius: 0
+          pad_all: 0
+          widgets:
+            - label:
+                id: display_time_hr
+                text: "0"
+                text_font: roboto18
+                text_color: 0xEEEEEE
+                align: left_mid
+                x: 12
+                width: 28
+                text_align: RIGHT
+            - label:
+                id: display_time_min
+                text: ":00am"
+                text_font: roboto18
+                text_color: 0xEEEEEE
+                align: left_mid
+                x: 42
+            - label:
+                text: "OFFICE"
+                text_font: roboto14
+                text_color: 0x444444
+                align: CENTER
+            - label:
+                id: lbl_hastatus
+                hidden: true
+                align: right_mid
+                x: -10
+                text: ""
+                text_color: 0x22C55E
+      - buttonmatrix:
+          align: bottom_mid
+          width: 100%
+          height: $footer_height
+          bg_color: 0x0A0A0A
+          bg_grad_color: 0x0A0A0A
+          bg_grad_dir: NONE
+          bg_opa: COVER
+          border_width: 0
+          radius: 0
+          pad_all: 0
+          items:
+            bg_color: 0x0A0A0A
+            bg_grad_color: 0x0A0A0A
+            bg_opa: COVER
+            border_width: 0
+            text_color: 0x444444
+            radius: 0
+          rows:
+            - buttons:
+              - id: page_prev
+                text: ""
+                on_press:
+                  then:
+                    lvgl.page.previous:
+              - id: page_home
+                text: ""
+                on_press:
+                  then:
+                    lvgl.page.show: main_page
+              - id: page_next
+                text: ""
+                on_press:
+                  then:
+                    lvgl.page.next:
+      # Color picker modal — hidden by default, overlays everything
+      - obj:
+          id: color_picker_modal
+          hidden: true
+          width: 100%
+          height: 100%
+          align: CENTER
+          bg_color: 0x000000
+          bg_opa: COVER
+          border_width: 0
+          radius: 0
+          pad_top: 60
+          pad_bottom: 60
+          pad_left: 24
+          pad_right: 24
+          scrollbar_mode: "OFF"
+          layout:
+            type: flex
+            flex_flow: COLUMN
+            flex_align_main: SPACE_EVENLY
+            flex_align_cross: CENTER
+          widgets:
+            - label:
+                text: "PICK A COLOR"
+                text_font: roboto14
+                text_color: 0xCCCCCC
+                width: 100%
+                text_align: CENTER
+            # Continuous rainbow gradient bar — 18 segments × 20° hue each
+            - obj:
+                width: 432px
+                height: 220px
+                bg_opa: TRANSP
+                border_width: 0
+                radius: 0
+                pad_all: 0
+                scrollbar_mode: "OFF"
+                clip_corner: true
+                layout:
+                  type: flex
+                  flex_flow: ROW
+                  pad_column: 0
+                  pad_row: 0
+                widgets:
+                  - obj: { width: 24px, height: 220px, bg_color: 0xFF0000, bg_grad_color: 0xFF5500, bg_grad_dir: HOR, bg_opa: COVER, border_width: 0, radius: 0, pad_all: 0, clickable: true, on_press: [ { mqtt.publish: { topic: "zigbee2mqtt/Sean's Office Light/set", payload: '{"color":{"hue":10,"saturation":100}}' } }, { lvgl.widget.hide: color_picker_modal } ] }
+                  - obj: { width: 24px, height: 220px, bg_color: 0xFF5500, bg_grad_color: 0xFFAA00, bg_grad_dir: HOR, bg_opa: COVER, border_width: 0, radius: 0, pad_all: 0, clickable: true, on_press: [ { mqtt.publish: { topic: "zigbee2mqtt/Sean's Office Light/set", payload: '{"color":{"hue":30,"saturation":100}}' } }, { lvgl.widget.hide: color_picker_modal } ] }
+                  - obj: { width: 24px, height: 220px, bg_color: 0xFFAA00, bg_grad_color: 0xFFFF00, bg_grad_dir: HOR, bg_opa: COVER, border_width: 0, radius: 0, pad_all: 0, clickable: true, on_press: [ { mqtt.publish: { topic: "zigbee2mqtt/Sean's Office Light/set", payload: '{"color":{"hue":50,"saturation":100}}' } }, { lvgl.widget.hide: color_picker_modal } ] }
+                  - obj: { width: 24px, height: 220px, bg_color: 0xFFFF00, bg_grad_color: 0xAAFF00, bg_grad_dir: HOR, bg_opa: COVER, border_width: 0, radius: 0, pad_all: 0, clickable: true, on_press: [ { mqtt.publish: { topic: "zigbee2mqtt/Sean's Office Light/set", payload: '{"color":{"hue":70,"saturation":100}}' } }, { lvgl.widget.hide: color_picker_modal } ] }
+                  - obj: { width: 24px, height: 220px, bg_color: 0xAAFF00, bg_grad_color: 0x55FF00, bg_grad_dir: HOR, bg_opa: COVER, border_width: 0, radius: 0, pad_all: 0, clickable: true, on_press: [ { mqtt.publish: { topic: "zigbee2mqtt/Sean's Office Light/set", payload: '{"color":{"hue":90,"saturation":100}}' } }, { lvgl.widget.hide: color_picker_modal } ] }
+                  - obj: { width: 24px, height: 220px, bg_color: 0x55FF00, bg_grad_color: 0x00FF00, bg_grad_dir: HOR, bg_opa: COVER, border_width: 0, radius: 0, pad_all: 0, clickable: true, on_press: [ { mqtt.publish: { topic: "zigbee2mqtt/Sean's Office Light/set", payload: '{"color":{"hue":110,"saturation":100}}' } }, { lvgl.widget.hide: color_picker_modal } ] }
+                  - obj: { width: 24px, height: 220px, bg_color: 0x00FF00, bg_grad_color: 0x00FF55, bg_grad_dir: HOR, bg_opa: COVER, border_width: 0, radius: 0, pad_all: 0, clickable: true, on_press: [ { mqtt.publish: { topic: "zigbee2mqtt/Sean's Office Light/set", payload: '{"color":{"hue":130,"saturation":100}}' } }, { lvgl.widget.hide: color_picker_modal } ] }
+                  - obj: { width: 24px, height: 220px, bg_color: 0x00FF55, bg_grad_color: 0x00FFAA, bg_grad_dir: HOR, bg_opa: COVER, border_width: 0, radius: 0, pad_all: 0, clickable: true, on_press: [ { mqtt.publish: { topic: "zigbee2mqtt/Sean's Office Light/set", payload: '{"color":{"hue":150,"saturation":100}}' } }, { lvgl.widget.hide: color_picker_modal } ] }
+                  - obj: { width: 24px, height: 220px, bg_color: 0x00FFAA, bg_grad_color: 0x00FFFF, bg_grad_dir: HOR, bg_opa: COVER, border_width: 0, radius: 0, pad_all: 0, clickable: true, on_press: [ { mqtt.publish: { topic: "zigbee2mqtt/Sean's Office Light/set", payload: '{"color":{"hue":170,"saturation":100}}' } }, { lvgl.widget.hide: color_picker_modal } ] }
+                  - obj: { width: 24px, height: 220px, bg_color: 0x00FFFF, bg_grad_color: 0x00AAFF, bg_grad_dir: HOR, bg_opa: COVER, border_width: 0, radius: 0, pad_all: 0, clickable: true, on_press: [ { mqtt.publish: { topic: "zigbee2mqtt/Sean's Office Light/set", payload: '{"color":{"hue":190,"saturation":100}}' } }, { lvgl.widget.hide: color_picker_modal } ] }
+                  - obj: { width: 24px, height: 220px, bg_color: 0x00AAFF, bg_grad_color: 0x0055FF, bg_grad_dir: HOR, bg_opa: COVER, border_width: 0, radius: 0, pad_all: 0, clickable: true, on_press: [ { mqtt.publish: { topic: "zigbee2mqtt/Sean's Office Light/set", payload: '{"color":{"hue":210,"saturation":100}}' } }, { lvgl.widget.hide: color_picker_modal } ] }
+                  - obj: { width: 24px, height: 220px, bg_color: 0x0055FF, bg_grad_color: 0x0000FF, bg_grad_dir: HOR, bg_opa: COVER, border_width: 0, radius: 0, pad_all: 0, clickable: true, on_press: [ { mqtt.publish: { topic: "zigbee2mqtt/Sean's Office Light/set", payload: '{"color":{"hue":230,"saturation":100}}' } }, { lvgl.widget.hide: color_picker_modal } ] }
+                  - obj: { width: 24px, height: 220px, bg_color: 0x0000FF, bg_grad_color: 0x5500FF, bg_grad_dir: HOR, bg_opa: COVER, border_width: 0, radius: 0, pad_all: 0, clickable: true, on_press: [ { mqtt.publish: { topic: "zigbee2mqtt/Sean's Office Light/set", payload: '{"color":{"hue":250,"saturation":100}}' } }, { lvgl.widget.hide: color_picker_modal } ] }
+                  - obj: { width: 24px, height: 220px, bg_color: 0x5500FF, bg_grad_color: 0xAA00FF, bg_grad_dir: HOR, bg_opa: COVER, border_width: 0, radius: 0, pad_all: 0, clickable: true, on_press: [ { mqtt.publish: { topic: "zigbee2mqtt/Sean's Office Light/set", payload: '{"color":{"hue":270,"saturation":100}}' } }, { lvgl.widget.hide: color_picker_modal } ] }
+                  - obj: { width: 24px, height: 220px, bg_color: 0xAA00FF, bg_grad_color: 0xFF00FF, bg_grad_dir: HOR, bg_opa: COVER, border_width: 0, radius: 0, pad_all: 0, clickable: true, on_press: [ { mqtt.publish: { topic: "zigbee2mqtt/Sean's Office Light/set", payload: '{"color":{"hue":290,"saturation":100}}' } }, { lvgl.widget.hide: color_picker_modal } ] }
+                  - obj: { width: 24px, height: 220px, bg_color: 0xFF00FF, bg_grad_color: 0xFF00AA, bg_grad_dir: HOR, bg_opa: COVER, border_width: 0, radius: 0, pad_all: 0, clickable: true, on_press: [ { mqtt.publish: { topic: "zigbee2mqtt/Sean's Office Light/set", payload: '{"color":{"hue":310,"saturation":100}}' } }, { lvgl.widget.hide: color_picker_modal } ] }
+                  - obj: { width: 24px, height: 220px, bg_color: 0xFF00AA, bg_grad_color: 0xFF0055, bg_grad_dir: HOR, bg_opa: COVER, border_width: 0, radius: 0, pad_all: 0, clickable: true, on_press: [ { mqtt.publish: { topic: "zigbee2mqtt/Sean's Office Light/set", payload: '{"color":{"hue":330,"saturation":100}}' } }, { lvgl.widget.hide: color_picker_modal } ] }
+                  - obj: { width: 24px, height: 220px, bg_color: 0xFF0055, bg_grad_color: 0xFF0000, bg_grad_dir: HOR, bg_opa: COVER, border_width: 0, radius: 0, pad_all: 0, clickable: true, on_press: [ { mqtt.publish: { topic: "zigbee2mqtt/Sean's Office Light/set", payload: '{"color":{"hue":350,"saturation":100}}' } }, { lvgl.widget.hide: color_picker_modal } ] }
+            - obj:
+                width: 100%
+                height: 44px
+                radius: 22
+                bg_color: 0x2A2A2A
+                bg_opa: COVER
+                border_width: 0
+                pad_all: 0
+                scrollbar_mode: "OFF"
+                clickable: true
+                pressed:
+                  bg_color: 0x444444
+                on_press:
+                  - lvgl.widget.hide: color_picker_modal
+                widgets:
+                  - label:
+                      text: "Cancel"
+                      text_font: roboto14
+                      text_color: 0xCCCCCC
+                      align: CENTER
+
   pages:
+    # ─────────────────────────────────────────────
+    # MAIN PAGE
+    # ─────────────────────────────────────────────
     - id: main_page
       layout:
         type: flex
         flex_flow: COLUMN
+        flex_align_main: SPACE_EVENLY
+        flex_align_cross: CENTER
       styles: page_style
       width: $screen_width
-      bg_color: $bg_color
+      bg_color: 0x111111
       bg_opa: cover
+      pad_top: 30
+      pad_bottom: 30
+      pad_left: 6
+      pad_right: 6
       widgets:
-        - obj: !include
-            file: modules/screens/header_title_object.yaml
-            vars:
-              title: Office
+
+        # ── PC POWER ROW ──────────────────────────
         - obj:
             width: 100%
-            height: 70px
-            align: CENTER
+            height: 60px
+            bg_opa: TRANSP
             scrollbar_mode: "OFF"
+            clickable: false
             layout:
               type: flex
-              flex_flow: ROW_WRAP
-              flex_align_main: CENTER
-              flex_align_cross: CENTER
-            widgets:
-              - button: !include
-                  file: modules/buttons/cover_blind_slider.yaml
-                  vars:
-                    uid: btn_sean_cover_office
-                    width: 100%
-                    height: 70px # Single height for bar
-                    text: Blinds
-                    icon: $mdi_blinds
-                    entity_id: cover.sean_s_office_blind
-        - obj:
-            width: 100%
-            height: 340px
-            scrollbar_mode: "OFF"
-            layout:
-              type: flex
-              flex_flow: COLUMN
+              flex_flow: ROW
               flex_align_main: SPACE_BETWEEN
               flex_align_cross: CENTER
             widgets:
-              # PC Power Buttons
+              # SeanPC button — absolute positioned children, no nested flex
               - obj:
-                  width: 100%
-                  height: 60px
-                  radius: 10
-                  scrollbar_mode: "OFF"
-                  layout:
-                    type: grid
-                    grid_columns: ['33%', '33%', '33%']  # Changed from ['50%', '50%'] to 3 columns
-                    grid_rows: ['100%']
-                  widgets:
-                    # SeanPC Button
-                    - button:
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 0
-                        width: 100%
-                        height: 100%
-                        bg_opa: TRANSP
-                        on_press:
-                          then:
-                            - lambda: |-
-                                if (id(seanpc_status).state) {
-                                  id(seanpc_shutdown_action).execute();
-                                } else {
-                                  id(seanpc_wake_action).execute();
-                                }
-                        widgets:
-                          - obj:
-                              width: 100%
-                              height: 100%
-                              pad_all: 0
-                              bg_opa: TRANSP
-                              clickable: false
-                              scrollbar_mode: "OFF"
-                              layout:
-                                type: flex
-                                flex_flow: ROW
-                                flex_align_main: START
-                                flex_align_cross: CENTER
-                              widgets:
-                                - label:
-                                    id: seanpc_status_icon
-                                    text: $mdi_power
-                                    text_font: $icon_font
-                                    text_color: !lambda "return id(seanpc_status).state ? lv_color_hex(0x4CAF50) : lv_color_hex(0xF44336);"
-                                - obj:
-                                    width: 80px
-                                    height: 100%
-                                    pad_all: 0
-                                    bg_opa: TRANSP
-                                    clickable: false
-                                    scrollbar_mode: "OFF"
-                                    layout:
-                                      type: flex
-                                      flex_flow: COLUMN
-                                      flex_align_main: START
-                                      flex_align_cross: START
-                                      pad_row: 0
-                                    widgets:
-                                      - label: { text: "SeanPC", text_font: roboto18 }
-                                      - label:
-                                          id: seanpc_status_text
-                                          text: !lambda 'return id(seanpc_status).state ? std::string("ON") : std::string("OFF");'
-                                          text_color: !lambda "return id(seanpc_status).state ? lv_color_hex(0x4CAF50) : lv_color_hex(0xF44336);"
-                                          text_font: roboto18
-                    # Spinner column (column 1)
-                    - obj:
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 1
-                        grid_cell_x_align: STRETCH
-                        grid_cell_y_align: STRETCH
-                        width: 100%
-                        height: 100%
-                        bg_opa: TRANSP
-                        scrollbar_mode: "OFF"
-                        widgets:
-                          - spinner:
-                              id: seanpc_spinner
-                              hidden: true
-                              width: 35
-                              height: 35
-                              align: CENTER
-                              spin_time: 800ms
-                              arc_length: 60
-                              arc_width: 3        # Background donut thickness
-                              arc_color: 0xFFFFFF # Background donut color (white)
-                              indicator:
-                                arc_color: 0xFF9800  # Spinning arc color (orange)
-                                arc_width: 3         # Spinning arc thickness
-                          - spinner:
-                              id: ginapc_spinner
-                              hidden: true
-                              width: 35
-                              height: 35
-                              align: CENTER
-                              spin_time: 800ms
-                              arc_length: 60
-                              arc_width: 3
-                              arc_color: 0xFFFFFF
-                              indicator:
-                                arc_color: 0xFF9800
-                                arc_width: 3
-                    # GinaPC Button
-                    - button:
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 2
-                        grid_cell_x_align: STRETCH
-                        grid_cell_y_align: STRETCH
-                        width: 100%
-                        height: 100%
-                        bg_opa: TRANSP
-                        on_press:
-                          then:
-                            - lambda: |-
-                                if (id(ginapc_status).state) {
-                                  id(ginapc_shutdown_action).execute();
-                                } else {
-                                  id(ginapc_wake_action).execute();
-                                }
-                        widgets:
-                          - obj:
-                              width: 100%
-                              height: 100%
-                              pad_all: 0
-                              pad_right: 5  # Padding from the right edge
-                              bg_opa: TRANSP
-                              clickable: false
-                              scrollbar_mode: "OFF"
-                              layout:
-                                type: flex
-                                flex_flow: ROW
-                                flex_align_main: END  # Push to right
-                                flex_align_cross: CENTER
-                              widgets:
-                                - obj:
-                                    width: 70px
-                                    height: 100%
-                                    pad_all: 0
-                                    bg_opa: TRANSP
-                                    clickable: false
-                                    scrollbar_mode: "OFF"
-                                    layout:
-                                      type: flex
-                                      flex_flow: COLUMN
-                                      flex_align_main: START
-                                      flex_align_cross: END
-                                      pad_row: 0
-                                    widgets:
-                                      - label: 
-                                          text: "GinaPC"
-                                          text_font: roboto18
-                                          pad_all: 0
-                                          text_align: RIGHT
-                                          width: 100%
-                                      - label:
-                                          id: ginapc_status_text
-                                          text: !lambda 'return id(ginapc_status).state ? std::string("ON") : std::string("OFF");'
-                                          text_color: !lambda "return id(ginapc_status).state ? lv_color_hex(0x4CAF50) : lv_color_hex(0xF44336);"
-                                          text_font: roboto18
-                                          pad_all: 0
-                                          text_align: RIGHT
-                                          width: 100%
-                                - label:
-                                    id: ginapc_status_icon
-                                    text: $mdi_power
-                                    text_font: $icon_font
-                                    text_color: !lambda "return id(ginapc_status).state ? lv_color_hex(0x4CAF50) : lv_color_hex(0xF44336);"
-                                    pad_all: 0
-                                    pad_left: 0
-              # Input Matrix Grid
-              - obj:
-                  width: 100%
-                  height: 30px
-                  bg_color: $button_off_color
+                  id: btn_seanpc
+                  width: 184px
+                  height: 56px
+                  radius: 12
+                  bg_color: 0x1A1A1A
                   bg_opa: COVER
+                  border_width: 2
+                  border_color: 0x22C55E
+                  pad_all: 0
                   scrollbar_mode: "OFF"
-                  layout:
-                    type: grid
-                    grid_columns: ['33%', '33%', '33%']
-                    grid_rows: ['100%']
+                  clickable: true
+                  pressed:
+                    bg_color: 0x2E2E2E
+                  on_press:
+                    then:
+                      - lambda: |-
+                          if (id(seanpc_status).state) {
+                            id(seanpc_shutdown_action).execute();
+                          } else {
+                            id(seanpc_wake_action).execute();
+                          }
                   widgets:
                     - label:
-                        text: "MUX"
+                        id: lbl_seanpc_icon
+                        text: $mdi_power
+                        text_font: light40
+                        text_color: 0x22C55E
+                        align: left_mid
+                        x: 10
+                    - spinner:
+                        id: seanpc_spinner
+                        hidden: true
+                        width: 24
+                        height: 24
+                        align: right_mid
+                        x: -16
+                        spin_time: 800ms
+                        arc_length: 60
+                        arc_width: 3
+                        arc_color: 0x333333
+                        indicator:
+                          arc_color: 0xCC2828
+                          arc_width: 3
+                    - label:
+                        text: "SeanPC"
                         text_font: roboto18
-                        text_color: white
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 0
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                    - button:
-                        id: btn_all_pc
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 1
-                        bg_opa: TRANSP
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                        on_press:
-                          - mqtt.publish: { topic: "monitor/input/set", payload: "pc" }
-                          - mqtt.publish: { topic: "usb_switch/device/set", payload: "pc" }
-                        widgets:
-                          - label:
-                              text: "PC"
-                              text_font: roboto18
-                              text_color: white
-                              align: CENTER
-                    - button:
-                        id: btn_all_mac
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 2
-                        bg_opa: TRANSP
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                        on_press:
-                          - mqtt.publish: { topic: "monitor/input/set", payload: "mac" }
-                          - mqtt.publish: { topic: "usb_switch/device/set", payload: "mac" }
-                        widgets:
-                          - label:
-                              text: "Mac"
-                              text_font: roboto18
-                              text_color: white
-                              align: CENTER
-              # Monitor Input Row
-              - obj:
-                  width: 100%
-                  height: 50px
-                  radius: 10
-                  scrollbar_mode: "OFF"
-                  layout:
-                    type: grid
-                    grid_columns: ['33%', '33%', '33%']
-                    grid_rows: ['100%']
-                  widgets:
-                    - label: 
-                        text: $mdi_monitor
-                        text_font: $icon_font
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 0
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                    - button:
-                        id: btn_monitor_pc
-                        bg_opa: TRANSP
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 1
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                        on_press:
-                          - mqtt.publish: { topic: "monitor/input/set", payload: "pc" }
-                        widgets: [{ label: { id: lbl_monitor_pc_icon, text: $mdi_radiobox_blank, text_font: $icon_font_small, align: CENTER } }]
-                    - button:
-                        id: btn_monitor_mac
-                        bg_opa: TRANSP
-                        on_press:
-                          - mqtt.publish: { topic: "monitor/input/set", payload: "mac" }
-                        widgets: [{ label: { id: lbl_monitor_mac_icon, text: $mdi_radiobox_blank, text_font: $icon_font_small, align: CENTER } }]
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 2
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-              # USB Switch Row
-              - obj:
-                  width: 100%
-                  height: 50px
-                  radius: 10
-                  scrollbar_mode: "OFF"
-                  layout:
-                    type: grid
-                    grid_columns: ['33%', '33%', '33%']
-                    grid_rows: ['100%']
-                  widgets:
-                    - label: 
-                        text: $mdi_usb
-                        text_font: $icon_font
-                        bg_opa: TRANSP
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 0
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                    - button:
-                        id: btn_usb_switch_pc
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 1
-                        bg_opa: TRANSP
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                        on_press:
-                          - mqtt.publish: { topic: "usb_switch/device/set", payload: "pc" }
-                        widgets: [{ label: { id: lbl_usbswitch_pc_icon, text: $mdi_radiobox_blank, text_font: $icon_font_small, align: CENTER } }]
-                    - button:
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 2
-                        bg_opa: TRANSP
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                        id: btn_usb_switch_mac
-                        on_press:
-                          - mqtt.publish: { topic: "usb_switch/device/set", payload: "mac" }
-                        widgets: [{ label: { id: lbl_usbswitch_mac_icon, text: $mdi_radiobox_blank, text_font: $icon_font_small, align: CENTER } }]
-              # Monitor KVM Row
-              - obj:
-                  width: 100%
-                  height: 50px
-                  radius: 10
-                  scrollbar_mode: "OFF"
-                  layout:
-                    type: grid
-                    grid_columns: ['33%', '33%', '33%']
-                    grid_rows: ['100%']
-                  widgets:
-                    - label: 
-                        text: $mdi_monitor_share
-                        text_font: $icon_font
-                        bg_opa: TRANSP
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 0
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                    - button:
-                        id: btn_kvm_pc
-                        bg_opa: TRANSP
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 1
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                        on_press:
-                          - mqtt.publish: { topic: "monitor/kvm_usb/set", payload: "pc" }
-                        widgets: [{ label: { id: lbl_kvm_pc_icon, text: $mdi_radiobox_blank, text_font: $icon_font_small, align: CENTER } }]
-                    - button:
-                        id: btn_kvm_mac
-                        bg_opa: TRANSP
-                        on_press:
-                          - mqtt.publish: { topic: "monitor/kvm_usb/set", payload: "mac" }
-                        widgets: [{ label: { id: lbl_kvm_mac_icon, text: $mdi_radiobox_blank, text_font: $icon_font_small, align: CENTER } }]
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 2
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-              # Desktop Monitor Title
-              - obj:
-                  width: 100%
-                  height: 25px
-                  bg_color: $button_off_color
-                  bg_opa: COVER
-                  radius: 10
-                  scrollbar_mode: "OFF"
-                  layout:
-                    type: grid
-                    grid_columns: ['100%']
-                    grid_rows: ['100%']
-                  widgets:
-                    - label: 
-                        text: "PC Monitor"
-                        text_font: roboto18
-                        text_color: white
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 0
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-              # Desktop Monitor Buttons
-              - obj:
-                  width: 100%
-                  height: 50px
-                  radius: 10
-                  scrollbar_mode: "OFF"
-                  layout:
-                    type: grid
-                    grid_columns: ['33%', '33%', '33%']
-                    grid_rows: ['100%']
-                  widgets:
-                    - button:
-                        id: switch_to_dualscreen
-                        bg_opa: TRANSP
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 0
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                        widgets:
-                          - label:
-                              id: switch_to_dualscreen_label
-                              align: CENTER
-                              text: $mdi_monitor_multiple
-                              text_font: $icon_font
-                        on_press:
-                          - homeassistant.service:
-                              service: button.press
-                              data:
-                                entity_id: button.9800x3d_displaydualscreen
-                    - button:
-                        id: switch_to_oled
-                        bg_opa: TRANSP
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 1
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                        widgets:
-                          - label:
-                              id: switch_to_oled_label
-                              align: CENTER
-                              text: $mdi_monitor_small
-                              text_font: $icon_font
-                        on_press:
-                          - homeassistant.service:
-                              service: button.press
-                              data:
-                                entity_id: button.9800x3d_displayoledonly
-                    - button:
-                        id: switch_to_ultrawide
-                        bg_opa: TRANSP
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 2
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                        widgets:
-                          - label:
-                              id: switch_to_ultrawide_label
-                              align: CENTER
-                              text: $mdi_monitor
-                              text_font: $icon_font
-                        on_press:
-                          - homeassistant.service:
-                              service: button.press
-                              data:
-                                entity_id: button.9800x3d_displayultrawideonly
-              # Desktop Monitor Labels
-              - obj:
-                  width: 100%
-                  height: 20px
-                  radius: 10
-                  scrollbar_mode: "OFF"
-                  layout:
-                    type: grid
-                    grid_columns: ['33%', '33%', '33%']
-                    grid_rows: ['100%']
-                  widgets:
-                    - button:
-                        id: switch_to_dualscreen_btn_label
-                        bg_opa: TRANSP
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 0
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                        widgets:
-                          - label:
-                              align: CENTER
-                              id: switch_to_dualscreen_text_label
-                              text: "Dual Screen"
-                              text_font: roboto18
-                              text_color: white
-                        on_press:
-                          - homeassistant.service:
-                              service: button.press
-                              data:
-                                entity_id: button.9800x3d_displaydualscreen
-                    - button:
-                        id: switch_to_oled_btn_label
-                        bg_opa: TRANSP
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 1
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                        widgets:
-                          - label:
-                              align: CENTER
-                              id: switch_to_oled_text_label
-                              text: "OLED"
-                              text_font: roboto18
-                              text_color: white
-                        on_press:
-                          - homeassistant.service:
-                              service: button.press
-                              data:
-                                entity_id: button.9800x3d_displayoledonly
-                    - button:
-                        id: switch_to_ultrawide_btn_label
-                        bg_opa: TRANSP
-                        grid_cell_row_pos: 0
-                        grid_cell_column_pos: 2
-                        grid_cell_x_align: CENTER
-                        grid_cell_y_align: CENTER
-                        widgets:
-                          - label:
-                              align: CENTER
-                              id: switch_to_ultrawide_text_label
-                              text: "Ultrawide"
-                              text_font: roboto18
-                              text_color: white
-                        on_press:
-                          - homeassistant.service:
-                              service: button.press
-                              data:
-                                entity_id: button.9800x3d_displayultrawideonly
+                        text_color: 0xCCCCCC
+                        align: left_mid
+                        x: 60
+                        y: -9
+                    - label:
+                        id: lbl_seanpc_state
+                        text: "OFF"
+                        text_font: roboto14
+                        text_color: 0xCC2828
+                        align: left_mid
+                        x: 60
+                        y: 12
 
-        # - obj:
-        #     width: 100%
-        #     height: $button_height_single
-        #     align: CENTER
-        #     layout:
-        #       type: flex
-        #       flex_flow: ROW_WRAP
-        #       flex_align_main: CENTER
-        #       flex_align_cross: CENTER
-        #     widgets:
-        #       - button:
-        #           id: switch_to_dualscreen
-        #           height: $button_height_single
-        #           widgets:
-        #             - label:
-        #                 id: switch_to_dualscreen_label
-        #                 align: CENTER
-        #                 text: $mdi_monitor_multiple
-        #                 text_font: $icon_font
-        #             - label:
-        #                 align: bottom_mid
-        #                 id: switch_to_dualscreen_text_label
-        #                 text: "Dual Screen"
-        #                 text_font: $text_font_small
-        #           on_press:
-        #             - homeassistant.service:
-        #                 service: button.press
-        #                 data:
-        #                   entity_id: button.9800x3d_displaydualscreen
-        #       - button:
-        #           id: switch_to_oled
-        #           height: $button_height_single
-        #           widgets:
-        #             - label:
-        #                 id: switch_to_oled_label
-        #                 align: CENTER
-        #                 text: $mdi_monitor_small
-        #                 text_font: $icon_font
-        #             - label:
-        #                 align: bottom_mid
-        #                 id: switch_to_oled_text_label
-        #                 text: "OLED Only"
-        #                 text_font: $text_font_small
-        #           on_press:
-        #             - homeassistant.service:
-        #                 service: button.press
-        #                 data:
-        #                   entity_id: button.9800x3d_displayoledonly
-        #       - button:
-        #           id: switch_to_ultrawide
-        #           height: $button_height_single
-        #           widgets:
-        #             - label:
-        #                 id: switch_to_ultrawide_label
-        #                 align: CENTER
-        #                 text: $mdi_monitor
-        #                 text_font: $icon_font
-        #             - label:
-        #                 align: bottom_mid
-        #                 id: switch_to_ultrawide_text_label
-        #                 text: "Ultrawide Only"
-        #                 text_font: $text_font_small
-        #           on_press:
-        #             - homeassistant.service:
-        #                 service: button.press
-        #                 data:
-        #                   entity_id: button.9800x3d_displayultrawideonly
-    - id: blinds_page
+              # Office light bulb — opens light_page
+              - obj:
+                  id: btn_home_bulb
+                  width: 56px
+                  height: 56px
+                  radius: 28
+                  bg_color: 0x1A1A1A
+                  bg_opa: COVER
+                  border_width: 0
+                  pad_all: 0
+                  scrollbar_mode: "OFF"
+                  clickable: true
+                  pressed:
+                    bg_color: 0x2E2E2E
+                  on_press:
+                    - lvgl.page.show: light_page
+                  widgets:
+                    - label:
+                        id: lbl_home_bulb
+                        text: $mdi_lightbulb
+                        text_font: $icon_font_small
+                        text_color: 0x555555
+                        align: CENTER
+
+              # GinaPC button — absolute positioned children, mirrored
+              - obj:
+                  id: btn_ginapc
+                  width: 184px
+                  height: 56px
+                  radius: 12
+                  bg_color: 0x1A1A1A
+                  bg_opa: COVER
+                  border_width: 2
+                  border_color: 0xCC2828
+                  pad_all: 0
+                  scrollbar_mode: "OFF"
+                  clickable: true
+                  pressed:
+                    bg_color: 0x2E2E2E
+                  on_press:
+                    then:
+                      - lambda: |-
+                          if (id(ginapc_status).state) {
+                            id(ginapc_shutdown_action).execute();
+                          } else {
+                            id(ginapc_wake_action).execute();
+                          }
+                  widgets:
+                    - label:
+                        id: lbl_ginapc_icon
+                        text: $mdi_power
+                        text_font: light40
+                        text_color: 0xCC2828
+                        align: right_mid
+                        x: -10
+                    - spinner:
+                        id: ginapc_spinner
+                        hidden: true
+                        width: 24
+                        height: 24
+                        align: left_mid
+                        x: 16
+                        spin_time: 800ms
+                        arc_length: 60
+                        arc_width: 3
+                        arc_color: 0x333333
+                        indicator:
+                          arc_color: 0xCC2828
+                          arc_width: 3
+                    - label:
+                        text: "GinaPC"
+                        text_font: roboto18
+                        text_color: 0xCCCCCC
+                        align: right_mid
+                        x: -60
+                        y: -9
+                    - label:
+                        id: lbl_ginapc_state
+                        text: "OFF"
+                        text_font: roboto14
+                        text_color: 0x888888
+                        align: right_mid
+                        x: -60
+                        y: 12
+
+        # ── BLINDS SLIDER ─────────────────────────
+        - obj:
+            width: 100%
+            height: 56px
+            bg_color: 0x1C1C1C
+            bg_opa: COVER
+            radius: 10
+            border_width: 1
+            border_color: 0x2A2A2A
+            scrollbar_mode: "OFF"
+            pad_left: 14
+            pad_right: 14
+            layout:
+              type: grid
+              grid_columns: ["56px", "FR(1)", "44px"]
+              grid_rows: ["100%"]
+            widgets:
+              - label:
+                  text: "Blinds"
+                  text_font: roboto14
+                  text_color: 0x555555
+                  grid_cell_row_pos: 0
+                  grid_cell_column_pos: 0
+                  grid_cell_x_align: START
+                  grid_cell_y_align: CENTER
+              - slider:
+                  id: slider_btn_sean_cover_office
+                  width: 100%
+                  height: 10px
+                  grid_cell_row_pos: 0
+                  grid_cell_column_pos: 1
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: CENTER
+                  bg_color: 0x2A2A2A
+                  bg_opa: COVER
+                  indicator:
+                    bg_color: 0x555555
+                    bg_grad_color: 0x999999
+                    bg_grad_dir: HOR
+                    bg_opa: COVER
+                  knob:
+                    bg_color: 0xAAAAAA
+                    bg_opa: COVER
+                    width: 22px
+                    height: 22px
+                    radius: 11
+                  on_release:
+                    - homeassistant.action:
+                        action: cover.set_cover_position
+                        data:
+                          entity_id: cover.sean_s_office_blind
+                          position: !lambda return int(x);
+              - label:
+                  id: label_btn_sean_cover_office_pos
+                  text: "--%"
+                  text_font: roboto14
+                  text_color: 0x555555
+                  grid_cell_row_pos: 0
+                  grid_cell_column_pos: 2
+                  grid_cell_x_align: CENTER
+                  grid_cell_y_align: CENTER
+
+        # ── MUX TOGGLE CARDS ─────────────────────
+        - obj:
+            width: 100%
+            height: 116px
+            bg_opa: TRANSP
+            scrollbar_mode: "OFF"
+            clickable: false
+            layout:
+              type: flex
+              flex_flow: ROW
+              flex_align_main: SPACE_BETWEEN
+              flex_align_cross: CENTER
+
+            widgets:
+              # Monitor card
+              - obj:
+                  id: btn_monitor_card
+                  width: 148px
+                  height: 112px
+                  radius: 14
+                  bg_color: 0x1A1A1A
+                  bg_opa: COVER
+                  border_width: 0
+                  pad_all: 0
+                  scrollbar_mode: "OFF"
+                  clickable: true
+                  pressed:
+                    bg_color: 0x2E2E2E
+                  layout:
+                    type: flex
+                    flex_flow: COLUMN
+                    flex_align_main: START
+                    flex_align_cross: CENTER
+                  on_press:
+                    - mqtt.publish:
+                        topic: "monitor/input/set"
+                        payload: !lambda |-
+                          return id(monitor_input_state).state == "pc" ? std::string("mac") : std::string("pc");
+                  widgets:
+                    - obj:
+                        id: strip_monitor
+                        width: 100%
+                        height: 4px
+                        radius: 2
+                        bg_color: 0xCC2828
+                        bg_opa: COVER
+                        pad_all: 0
+                    - obj:
+                        width: 44px
+                        height: 44px
+                        radius: 22
+                        bg_color: 0x111111
+                        bg_opa: COVER
+                        border_width: 1
+                        border_color: 0x2A2A2A
+                        pad_all: 0
+                        widgets:
+                          - label:
+                              text: $mdi_monitor
+                              text_font: $icon_font_small
+                              text_color: 0xDDDDDD
+                              align: CENTER
+                    - label:
+                        text: "MONITOR"
+                        text_font: roboto12
+                        text_color: 0x555555
+                    - obj:
+                        id: pill_monitor
+                        width: 70px
+                        height: 22px
+                        radius: 11
+                        bg_color: 0xCC2828
+                        bg_opa: COVER
+                        border_width: 0
+                        pad_all: 0
+                        widgets:
+                          - label:
+                              id: lbl_monitor_state
+                              text: "PC"
+                              text_font: roboto12
+                              text_color: 0xFFFFFF
+                              align: CENTER
+
+              # USB card
+              - obj:
+                  id: btn_usb_card
+                  width: 148px
+                  height: 112px
+                  radius: 14
+                  bg_color: 0x1A1A1A
+                  bg_opa: COVER
+                  border_width: 0
+                  pad_all: 0
+                  scrollbar_mode: "OFF"
+                  clickable: true
+                  pressed:
+                    bg_color: 0x2E2E2E
+                  layout:
+                    type: flex
+                    flex_flow: COLUMN
+                    flex_align_main: START
+                    flex_align_cross: CENTER
+                  on_press:
+                    - mqtt.publish:
+                        topic: "usb_switch/device/set"
+                        payload: !lambda |-
+                          return id(usbswitch_output_state).state == "pc" ? std::string("mac") : std::string("pc");
+                  widgets:
+                    - obj:
+                        id: strip_usb
+                        width: 100%
+                        height: 4px
+                        radius: 2
+                        bg_color: 0xCC2828
+                        bg_opa: COVER
+                        pad_all: 0
+                    - obj:
+                        width: 44px
+                        height: 44px
+                        radius: 22
+                        bg_color: 0x111111
+                        bg_opa: COVER
+                        border_width: 1
+                        border_color: 0x2A2A2A
+                        pad_all: 0
+                        widgets:
+                          - label:
+                              text: $mdi_usb
+                              text_font: $icon_font_small
+                              text_color: 0xDDDDDD
+                              align: CENTER
+                    - label:
+                        text: "USB"
+                        text_font: roboto12
+                        text_color: 0x555555
+                    - obj:
+                        id: pill_usb
+                        width: 70px
+                        height: 22px
+                        radius: 11
+                        bg_color: 0xCC2828
+                        bg_opa: COVER
+                        border_width: 0
+                        pad_all: 0
+                        widgets:
+                          - label:
+                              id: lbl_usb_state
+                              text: "PC"
+                              text_font: roboto12
+                              text_color: 0xFFFFFF
+                              align: CENTER
+
+              # KVM card
+              - obj:
+                  id: btn_kvm_card
+                  width: 148px
+                  height: 112px
+                  radius: 14
+                  bg_color: 0x1A1A1A
+                  bg_opa: COVER
+                  border_width: 0
+                  pad_all: 0
+                  scrollbar_mode: "OFF"
+                  clickable: true
+                  pressed:
+                    bg_color: 0x2E2E2E
+                  layout:
+                    type: flex
+                    flex_flow: COLUMN
+                    flex_align_main: START
+                    flex_align_cross: CENTER
+                  on_press:
+                    - mqtt.publish:
+                        topic: "monitor/kvm_usb/set"
+                        payload: !lambda |-
+                          return id(kvm_input_state).state == "pc" ? std::string("mac") : std::string("pc");
+                  widgets:
+                    - obj:
+                        id: strip_kvm
+                        width: 100%
+                        height: 4px
+                        radius: 2
+                        bg_color: 0x4A6ADA
+                        bg_opa: COVER
+                        pad_all: 0
+                    - obj:
+                        width: 44px
+                        height: 44px
+                        radius: 22
+                        bg_color: 0x111111
+                        bg_opa: COVER
+                        border_width: 1
+                        border_color: 0x2A2A2A
+                        pad_all: 0
+                        widgets:
+                          - label:
+                              text: $mdi_monitor_share
+                              text_font: $icon_font_small
+                              text_color: 0xDDDDDD
+                              align: CENTER
+                    - label:
+                        text: "KVM"
+                        text_font: roboto12
+                        text_color: 0x555555
+                    - obj:
+                        id: pill_kvm
+                        width: 70px
+                        height: 22px
+                        radius: 11
+                        bg_color: 0x4A6ADA
+                        bg_opa: COVER
+                        border_width: 0
+                        pad_all: 0
+                        widgets:
+                          - label:
+                              id: lbl_kvm_state
+                              text: "MAC"
+                              text_font: roboto12
+                              text_color: 0xFFFFFF
+                              align: CENTER
+
+        # ── MASTER SWITCH ─────────────────────────
+        - obj:
+            width: 100%
+            height: 50px
+            bg_opa: TRANSP
+            scrollbar_mode: "OFF"
+            clickable: false
+            layout:
+              type: flex
+              flex_flow: ROW
+              flex_align_main: SPACE_BETWEEN
+              flex_align_cross: CENTER
+
+            widgets:
+              - button:
+                  id: btn_all_pc
+                  width: 228px
+                  height: 48px
+                  radius: 24
+                  bg_color: 0xCC2828
+                  bg_opa: COVER
+                  shadow_width: 0
+                  border_width: 0
+                  pad_all: 0
+                  pressed:
+                    bg_color: 0xFF8866
+                  on_press:
+                    - mqtt.publish: { topic: "monitor/input/set",    payload: "pc" }
+                    - mqtt.publish: { topic: "usb_switch/device/set", payload: "pc" }
+                    - mqtt.publish: { topic: "monitor/kvm_usb/set",  payload: "pc" }
+                  widgets:
+                    - label:
+                        text: "ALL -> PC"
+                        text_font: roboto18
+                        text_color: 0xFFFFFF
+                        align: CENTER
+
+              - button:
+                  id: btn_all_mac
+                  width: 228px
+                  height: 48px
+                  radius: 24
+                  bg_color: 0x4A6ADA
+                  bg_opa: COVER
+                  shadow_width: 0
+                  border_width: 0
+                  pad_all: 0
+                  pressed:
+                    bg_color: 0x88A0FF
+                  on_press:
+                    - mqtt.publish: { topic: "monitor/input/set",    payload: "mac" }
+                    - mqtt.publish: { topic: "usb_switch/device/set", payload: "mac" }
+                    - mqtt.publish: { topic: "monitor/kvm_usb/set",  payload: "mac" }
+                  widgets:
+                    - label:
+                        text: "ALL -> MAC"
+                        text_font: roboto18
+                        text_color: 0xFFFFFF
+                        align: CENTER
+
+        # ── BOTTOM ROW: DISPLAY + JIGGLER ─────────
+        - obj:
+            width: 100%
+            height: 70px
+            bg_opa: TRANSP
+            scrollbar_mode: "OFF"
+            clickable: false
+            layout:
+              type: flex
+              flex_flow: ROW
+              flex_align_main: SPACE_BETWEEN
+              flex_align_cross: CENTER
+
+            widgets:
+              # Display mode: Dual
+              - obj:
+                  id: switch_to_dualscreen
+                  width: 90px
+                  height: 64px
+                  radius: 10
+                  bg_color: 0x1A1A1A
+                  bg_opa: COVER
+                  border_width: 0
+                  pad_all: 0
+                  scrollbar_mode: "OFF"
+                  clickable: true
+                  pressed:
+                    bg_color: 0x2E2E2E
+                  on_press:
+                    - homeassistant.service:
+                        service: button.press
+                        data:
+                          entity_id: button.9800x3d_displaydualscreen
+                  widgets:
+                    - label:
+                        text: $mdi_monitor_multiple
+                        text_font: $icon_font_small
+                        text_color: 0xDDDDDD
+                        align: CENTER
+                        y: -10
+                    - label:
+                        text: "DUAL"
+                        text_font: roboto12
+                        text_color: 0x888888
+                        align: CENTER
+                        y: 16
+
+              # Display mode: OLED
+              - obj:
+                  id: switch_to_oled
+                  width: 90px
+                  height: 64px
+                  radius: 10
+                  bg_color: 0x1A1A1A
+                  bg_opa: COVER
+                  border_width: 0
+                  pad_all: 0
+                  scrollbar_mode: "OFF"
+                  clickable: true
+                  pressed:
+                    bg_color: 0x2E2E2E
+                  on_press:
+                    - homeassistant.service:
+                        service: button.press
+                        data:
+                          entity_id: button.9800x3d_displayoledonly
+                  widgets:
+                    - label:
+                        text: $mdi_monitor_small
+                        text_font: $icon_font_small
+                        text_color: 0xDDDDDD
+                        align: CENTER
+                        y: -10
+                    - label:
+                        text: "OLED"
+                        text_font: roboto12
+                        text_color: 0x888888
+                        align: CENTER
+                        y: 16
+
+              # Display mode: Ultrawide
+              - obj:
+                  id: switch_to_ultrawide
+                  width: 90px
+                  height: 64px
+                  radius: 10
+                  bg_color: 0x1A1A1A
+                  bg_opa: COVER
+                  border_width: 0
+                  pad_all: 0
+                  scrollbar_mode: "OFF"
+                  clickable: true
+                  pressed:
+                    bg_color: 0x2E2E2E
+                  on_press:
+                    - homeassistant.service:
+                        service: button.press
+                        data:
+                          entity_id: button.9800x3d_displayultrawideonly
+                  widgets:
+                    - label:
+                        text: $mdi_monitor
+                        text_font: $icon_font_small
+                        text_color: 0xDDDDDD
+                        align: CENTER
+                        y: -10
+                    - label:
+                        text: "ULTRA"
+                        text_font: roboto12
+                        text_color: 0x888888
+                        align: CENTER
+                        y: 16
+
+              # Mouse Jiggler
+              - obj:
+                  id: btn_jiggler
+                  width: 96px
+                  height: 64px
+                  radius: 10
+                  bg_color: 0x1A1A1A
+                  bg_opa: COVER
+                  border_width: 0
+                  pad_all: 0
+                  scrollbar_mode: "OFF"
+                  clickable: true
+                  pressed:
+                    bg_color: 0x2E2E2E
+                  on_press:
+                    - script.execute: jiggler_toggle_action
+                  widgets:
+                    - label:
+                        id: lbl_jiggler_icon
+                        text: $mdi_mouse
+                        text_font: $icon_font_small
+                        text_color: 0xDDDDDD
+                        align: top_mid
+                        y: 4
+                    - obj:
+                        width: 44px
+                        height: 14px
+                        radius: 7
+                        id: jiggler_track
+                        bg_color: 0x2A2A2A
+                        bg_opa: COVER
+                        border_width: 0
+                        pad_all: 0
+                        align: CENTER
+                        widgets:
+                          - obj:
+                              id: jiggler_handle
+                              width: 12px
+                              height: 12px
+                              radius: 6
+                              bg_color: 0x888888
+                              bg_opa: COVER
+                              border_width: 0
+                              align: left_mid
+                              x: 1
+                              y: 0
+                    - label:
+                        id: lbl_jiggler_state
+                        text: "OFF"
+                        text_font: roboto12
+                        text_color: 0x888888
+                        align: bottom_mid
+                        y: -4
+
+    # ─────────────────────────────────────────────
+    # LIGHT PAGE
+    # ─────────────────────────────────────────────
+    - id: light_page
       layout:
         type: flex
-        flex_flow: ROW_WRAP
+        flex_flow: COLUMN
+        flex_align_main: SPACE_EVENLY
         flex_align_cross: CENTER
-        flex_align_main: CENTER
       styles: page_style
       width: $screen_width
-      bg_color: $bg_color
+      bg_color: 0x111111
       bg_opa: cover
+      pad_top: 36
+      pad_bottom: 42
+      pad_left: 16
+      pad_right: 16
       widgets:
-        - obj: !include
-            file: modules/screens/header_title_object.yaml
-            vars:
-              title: Blinds
-        - button: !include
-            file: modules/buttons/cover_blind_button.yaml
-            vars:
-              uid: btn_sean_cover_blinds
-              height: $button_height_double
-              text: Office
-              icon: $mdi_blinds
-              entity_id: cover.sean_s_office_blind
-        - button: !include
-            file: modules/buttons/cover_blind_button.yaml
-            vars:
-              uid: btn_living_cover_blinds
-              height: $button_height_double
-              text: Living
-              icon: $mdi_blinds
-              entity_id: cover.living_room_blind
-        - button: !include
-            file: modules/buttons/cover_blind_button.yaml
-            vars:
-              uid: btn_master_cover_blinds
-              height: $button_height_double
-              text: Master
-              icon: $mdi_blinds
-              entity_id: cover.master_bedroom_blind
-        - button:
-            id: open_all_blinds
-            height: $button_height_single
+
+        # Title
+        - label:
+            text: "OFFICE LIGHT"
+            text_font: roboto14
+            text_color: 0x666666
+            width: 100%
+            text_align: CENTER
+
+        # Big toggle button
+        - obj:
+            id: btn_light_toggle
+            width: 100%
+            height: 100px
+            radius: 20
+            bg_color: 0x1A1A1A
+            bg_opa: COVER
+            border_width: 0
+            pad_all: 0
+            scrollbar_mode: "OFF"
+            clickable: true
+            pressed:
+              bg_color: 0x2E2E2E
+            on_press:
+              - script.execute: light_toggle_action
             widgets:
               - label:
-                  id: open_all_blinds_label
+                  id: lbl_light_big_bulb
+                  text: $mdi_lightbulb
+                  text_font: light40
+                  text_color: 0x444444
                   align: CENTER
-                  text: $mdi_blinds_open
-                  text_font: $icon_font
+                  y: -18
               - label:
-                  align: bottom_mid
-                  id: open_all_blinds_text_label
-                  text: "Open All"
-            on_press:
-              - homeassistant.action:
-                  action: cover.open_cover
-                  data:
-                    entity_id: cover.master_bedroom_blind
-              - homeassistant.action:
-                  action: cover.open_cover
-                  data:
-                    entity_id: cover.living_room_blind
-              - homeassistant.action:
-                  action: cover.open_cover
-                  data:
-                    entity_id: cover.sean_s_office_blind
-        - button:
-            id: close_all_blinds
-            height: $button_height_single
+                  id: lbl_light_state
+                  text: "OFF"
+                  text_font: roboto24
+                  text_color: 0x666666
+                  align: CENTER
+                  y: 32
+
+        # Brightness row
+        - obj:
+            width: 100%
+            height: 56px
+            bg_color: 0x1C1C1C
+            bg_opa: COVER
+            radius: 10
+            border_width: 0
+            pad_left: 14
+            pad_right: 14
+            scrollbar_mode: "OFF"
+            layout:
+              type: grid
+              grid_columns: ["32px", "FR(1)"]
+              grid_rows: ["100%"]
             widgets:
               - label:
-                  id: close_all_blinds_label
-                  align: CENTER
-                  text: $mdi_blinds
-                  text_font: $icon_font
+                  text: $mdi_brightness_6
+                  text_font: $icon_font_small
+                  text_color: 0xDDDDDD
+                  grid_cell_row_pos: 0
+                  grid_cell_column_pos: 0
+                  grid_cell_x_align: CENTER
+                  grid_cell_y_align: CENTER
+              - slider:
+                  id: slider_brightness
+                  min_value: 1
+                  max_value: 254
+                  value: 127
+                  width: 100%
+                  height: 10px
+                  grid_cell_row_pos: 0
+                  grid_cell_column_pos: 1
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: CENTER
+                  bg_color: 0x2A2A2A
+                  bg_opa: COVER
+                  indicator:
+                    bg_color: 0x664422
+                    bg_grad_color: 0xFFC04C
+                    bg_grad_dir: HOR
+                    bg_opa: COVER
+                  knob:
+                    bg_color: 0xFFC04C
+                    bg_opa: COVER
+                    width: 22px
+                    height: 22px
+                    radius: 11
+                  on_release:
+                    - mqtt.publish:
+                        topic: "zigbee2mqtt/Sean's Office Light/set"
+                        payload: !lambda |-
+                          char buf[64];
+                          snprintf(buf, sizeof(buf), "{\"brightness\":%d}", (int)x);
+                          return std::string(buf);
+
+        # Color temp row
+        - obj:
+            width: 100%
+            height: 56px
+            bg_color: 0x1C1C1C
+            bg_opa: COVER
+            radius: 10
+            border_width: 0
+            pad_left: 14
+            pad_right: 14
+            scrollbar_mode: "OFF"
+            layout:
+              type: grid
+              grid_columns: ["32px", "FR(1)"]
+              grid_rows: ["100%"]
+            widgets:
               - label:
-                  align: bottom_mid
-                  id: close_all_blinds_text_label
-                  text: "Close All"
+                  text: $mdi_white_balance_sunny
+                  text_font: $icon_font_small
+                  text_color: 0xDDDDDD
+                  grid_cell_row_pos: 0
+                  grid_cell_column_pos: 0
+                  grid_cell_x_align: CENTER
+                  grid_cell_y_align: CENTER
+              - slider:
+                  id: slider_colortemp
+                  min_value: 153
+                  max_value: 500
+                  value: 300
+                  width: 100%
+                  height: 10px
+                  grid_cell_row_pos: 0
+                  grid_cell_column_pos: 1
+                  grid_cell_x_align: STRETCH
+                  grid_cell_y_align: CENTER
+                  bg_color: 0x2A2A2A
+                  bg_opa: COVER
+                  indicator:
+                    bg_color: 0xAACCFF
+                    bg_grad_color: 0xFFAA55
+                    bg_grad_dir: HOR
+                    bg_opa: COVER
+                  knob:
+                    bg_color: 0xEEEEEE
+                    bg_opa: COVER
+                    width: 22px
+                    height: 22px
+                    radius: 11
+                  on_release:
+                    - mqtt.publish:
+                        topic: "zigbee2mqtt/Sean's Office Light/set"
+                        payload: !lambda |-
+                          char buf[64];
+                          snprintf(buf, sizeof(buf), "{\"color_temp\":%d}", (int)x);
+                          return std::string(buf);
+
+        # Color swatches
+        - obj:
+            width: 100%
+            height: 60px
+            bg_opa: TRANSP
+            scrollbar_mode: "OFF"
+            clickable: false
+            layout:
+              type: flex
+              flex_flow: ROW
+              flex_align_main: SPACE_BETWEEN
+              flex_align_cross: CENTER
+            widgets:
+              - obj:
+                  width: 48px
+                  height: 48px
+                  radius: 24
+                  bg_color: 0xE53935
+                  bg_opa: COVER
+                  border_width: 0
+                  pad_all: 0
+                  scrollbar_mode: "OFF"
+                  clickable: true
+                  pressed:
+                    bg_color: 0xFF6B5C
+                  on_press:
+                    - mqtt.publish:
+                        topic: "zigbee2mqtt/Sean's Office Light/set"
+                        payload: '{"color":{"hue":0,"saturation":100}}'
+              - obj:
+                  width: 48px
+                  height: 48px
+                  radius: 24
+                  bg_color: 0xFB8C00
+                  bg_opa: COVER
+                  border_width: 0
+                  pad_all: 0
+                  scrollbar_mode: "OFF"
+                  clickable: true
+                  pressed:
+                    bg_color: 0xFFB04A
+                  on_press:
+                    - mqtt.publish:
+                        topic: "zigbee2mqtt/Sean's Office Light/set"
+                        payload: '{"color":{"hue":30,"saturation":100}}'
+              - obj:
+                  width: 48px
+                  height: 48px
+                  radius: 24
+                  bg_color: 0xFDD835
+                  bg_opa: COVER
+                  border_width: 0
+                  pad_all: 0
+                  scrollbar_mode: "OFF"
+                  clickable: true
+                  pressed:
+                    bg_color: 0xFFF176
+                  on_press:
+                    - mqtt.publish:
+                        topic: "zigbee2mqtt/Sean's Office Light/set"
+                        payload: '{"color":{"hue":55,"saturation":100}}'
+              - obj:
+                  width: 48px
+                  height: 48px
+                  radius: 24
+                  bg_color: 0x43A047
+                  bg_opa: COVER
+                  border_width: 0
+                  pad_all: 0
+                  scrollbar_mode: "OFF"
+                  clickable: true
+                  pressed:
+                    bg_color: 0x6EC071
+                  on_press:
+                    - mqtt.publish:
+                        topic: "zigbee2mqtt/Sean's Office Light/set"
+                        payload: '{"color":{"hue":120,"saturation":100}}'
+              - obj:
+                  width: 48px
+                  height: 48px
+                  radius: 24
+                  bg_color: 0x1E88E5
+                  bg_opa: COVER
+                  border_width: 0
+                  pad_all: 0
+                  scrollbar_mode: "OFF"
+                  clickable: true
+                  pressed:
+                    bg_color: 0x5DAEF0
+                  on_press:
+                    - mqtt.publish:
+                        topic: "zigbee2mqtt/Sean's Office Light/set"
+                        payload: '{"color":{"hue":215,"saturation":100}}'
+              - obj:
+                  width: 48px
+                  height: 48px
+                  radius: 24
+                  bg_color: 0x8E24AA
+                  bg_opa: COVER
+                  border_width: 0
+                  pad_all: 0
+                  scrollbar_mode: "OFF"
+                  clickable: true
+                  pressed:
+                    bg_color: 0xB45ACB
+                  on_press:
+                    - mqtt.publish:
+                        topic: "zigbee2mqtt/Sean's Office Light/set"
+                        payload: '{"color":{"hue":290,"saturation":100}}'
+
+              # Palette — opens modal picker
+              - obj:
+                  width: 48px
+                  height: 48px
+                  radius: 24
+                  bg_color: 0x2A2A2A
+                  bg_opa: COVER
+                  border_width: 2
+                  border_color: 0xCCCCCC
+                  pad_all: 0
+                  scrollbar_mode: "OFF"
+                  clickable: true
+                  pressed:
+                    bg_color: 0x444444
+                  on_press:
+                    - lvgl.widget.show: color_picker_modal
+                  widgets:
+                    - label:
+                        text: $mdi_palette
+                        text_font: $icon_font_small
+                        text_color: 0xEEEEEE
+                        align: CENTER
+
+        # Done button
+        - obj:
+            width: 100%
+            height: 44px
+            radius: 22
+            bg_color: 0x1A1A1A
+            bg_opa: COVER
+            border_width: 0
+            pad_all: 0
+            scrollbar_mode: "OFF"
+            clickable: true
+            pressed:
+              bg_color: 0x2E2E2E
             on_press:
-              - homeassistant.action:
-                  action: cover.close_cover
-                  data:
-                    entity_id: cover.master_bedroom_blind
-              - homeassistant.action:
-                  action: cover.close_cover
-                  data:
-                    entity_id: cover.living_room_blind
-              - homeassistant.action:
-                  action: cover.close_cover
-                  data:
-                    entity_id: cover.sean_s_office_blind
+              - lvgl.page.show: main_page
+            widgets:
+              - label:
+                  text: "Done"
+                  text_font: roboto14
+                  text_color: 0xCCCCCC
+                  align: CENTER
+
+    # ─────────────────────────────────────────────
+    # ABOUT PAGE
+    # ─────────────────────────────────────────────
     - id: about_page
       layout:
         type: flex
         flex_flow: COLUMN_WRAP
       styles: page_style
       width: 100%
-      bg_color: $bg_color
+      bg_color: 0x111111
       bg_opa: cover
       widgets:
         - obj: !include
