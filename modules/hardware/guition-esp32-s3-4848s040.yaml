@@ -75,20 +75,10 @@ touchscreen:
   id: my_touchscreen
   display: my_display
   transform:
-    swap_xy: true
-    mirror_x: true
+    swap_xy: false
+    mirror_x: false
     mirror_y: false
   # on_touch:
-    # - logger.log:
-          # format: Touch at (%d, %d)
-          # args: [touch.x, touch.y]
-    # - lambda: |-
-          # ESP_LOGI("cal", "x=%d, y=%d, x_raw=%d, y_raw=%0d",
-              # touch.x,
-              # touch.y,
-              # touch.x_raw,
-              # touch.y_raw
-              # );
 
 # -------------------------------------------
 # Display st7701s spi
@@ -101,7 +91,6 @@ spi:
 display:
   - platform: st7701s
     id: my_display
-    rotation: 270
     update_interval: never
     auto_clear_enabled: False
     spi_mode: MODE3

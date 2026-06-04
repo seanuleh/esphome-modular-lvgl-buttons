@@ -10,6 +10,20 @@ color:
     - id: ep_green
       hex: '7ACf38'
 
+    # Charcoal theme
+    - id: charcoal_deep
+      hex: '111111'
+    - id: charcoal
+      hex: '1E1E1E'
+    - id: charcoal_light
+      hex: '2A2A2A'
+    - id: accent_crimson
+      hex: 'CC2828'
+    - id: accent_indigo
+      hex: '4A6ADA'
+    - id: green_status
+      hex: '22C55E'
+
       # The grays in order of darkness
     - id: gray50
       hex: 'FAFAFA'

@@ -84,6 +84,8 @@ font:
       "\U000F0902",  # mdi_power_off
       "\U000F0903",  # mdi_power_on
       "\U000F0425",  # mdi_power
+      "\U000F037D",  # mdi_mouse
+      "\U000F037E",  # mdi_mouse_off
     ]
 
   # http://materialdesignicons.com/cdn/7.4.47/
@@ -126,5 +128,7 @@ font:
       "\U000F0902",  # mdi_power_off
       "\U000F0903",  # mdi_power_on
       "\U000F0425",  # mdi_power
+      "\U000F037D",  # mdi_mouse
+      "\U000F037E",  # mdi_mouse_off
     ]
 
