@@ -45,6 +45,12 @@ time:
         then:
           - script.execute: time_update
 
+globals:
+  - id: display_is_asleep
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+
 lvgl:
   on_idle:
     timeout: $touchscreen_idle_timeout
@@ -52,8 +58,10 @@ lvgl:
       - logger.log: "LVGL is idle"
       - lvgl.page.show: main_page
       - light.turn_off: display_backlight
+      - lambda: 'id(display_is_asleep) = true;'
+      - lvgl.pause:
 
-# Wake on screen touch
+# Wake on screen touch — when asleep, only wake; don't register the press as a button action
 touchscreen:
     on_touch:
       then:
@@ -70,8 +78,13 @@ touchscreen:
               - light.turn_on:
                   id: display_backlight
                   brightness: ${touchscreen_daytime_brightness}
-        - lvgl.resume
-        - lvgl.widget.redraw
+        - if:
+            condition:
+              lambda: 'return id(display_is_asleep);'
+            then:
+              - lambda: 'id(display_is_asleep) = false;'
+              - lvgl.resume:
+              - lvgl.widget.redraw:
 
 select:
   - platform: template

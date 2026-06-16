@@ -30,7 +30,7 @@ substitutions:
   button_height_single: '135px'
   button_height_double: '270px'
   button_width: '151px'
-  touchscreen_idle_timeout: "30s"
+  touchscreen_idle_timeout: "30min"
   touchscreen_daytime_brightness: "100%"
   touchscreen_nighttime_brightness: "50%"
   boot_screen_delay: 5s
