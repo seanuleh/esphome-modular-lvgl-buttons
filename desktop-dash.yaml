@@ -1610,3 +1610,38 @@ lvgl:
               - wifi.disable:
               - delay: 3s
               - wifi.enable:
+
+    # ─────────────────────────────────────────────
+    # SLEEP PAGE — fullscreen black with one invisible button.
+    # Tapping anywhere wakes the display and returns to main_page
+    # without triggering the underlying widget.
+    # ─────────────────────────────────────────────
+    - id: sleep_page
+      width: $screen_width
+      height: $screen_height
+      bg_color: 0x000000
+      bg_opa: cover
+      pad_all: 0
+      widgets:
+        - button:
+            id: sleep_wake_btn
+            width: 100%
+            height: 100%
+            bg_opa: 0
+            border_opa: 0
+            shadow_opa: 0
+            outline_opa: 0
+            on_press:
+              - lambda: 'id(display_is_asleep) = false;'
+              - if:
+                  condition:
+                    lambda: 'return id(brightness_mode).state == "Night" || id(brightness_mode).state == "Evening";'
+                  then:
+                    - light.turn_on:
+                        id: display_backlight
+                        brightness: ${touchscreen_nighttime_brightness}
+                  else:
+                    - light.turn_on:
+                        id: display_backlight
+                        brightness: ${touchscreen_daytime_brightness}
+              - lvgl.page.show: main_page
