@@ -1,0 +1,78 @@
+esphome:
+  name: ir-project-living
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+logger:
+  level: VERBOSE
+
+api:
+
+ota:
+  platform: esphome
+  password: !secret ota_password
+
+remote_transmitter:
+  id: tx
+  pin: GPIO4
+  carrier_duty_percent: 50%
+  non_blocking: true
+
+# Receiver so we can capture what the REAL Arcam remote sends — confirms the
+# RC5 address (expected 16) and reveals the input-cycle command, so we can then
+# probe its neighbours for an undocumented direct-select code.
+remote_receiver:
+  id: rx
+  pin:
+    number: GPIO14
+    inverted: true
+  dump: rc5
+  tolerance: 25%
+
+# Sweepable RC5 sender: set address + command over the API, press Send. Lets us
+# hunt undocumented Arcam input-select codes without reflashing. Command goes to
+# 127 to cover RC5X extended commands (Arcam uses some above 63).
+number:
+  - platform: template
+    name: "RC5 Address"
+    id: rc5_address
+    optimistic: true
+    min_value: 0
+    max_value: 31
+    step: 1
+    initial_value: 16
+    restore_value: true
+  - platform: template
+    name: "RC5 Command"
+    id: rc5_command
+    optimistic: true
+    min_value: 0
+    max_value: 127
+    step: 1
+    initial_value: 1
+    restore_value: true
+
+button:
+  - platform: template
+    name: "Send RC5"
+    id: send_rc5
+    on_press:
+      - remote_transmitter.transmit_rc5:
+          address: !lambda "return (int) id(rc5_address).state;"
+          command: !lambda "return (int) id(rc5_command).state;"
+
+  # Fixed shortcut for the prime candidate (old Arcam remote: addr 16 / cmd 1).
+  - platform: template
+    name: "Arcam 16/1 (candidate)"
+    id: arcam_16_1
+    on_press:
+      - remote_transmitter.transmit_rc5:
+          address: 16
+          command: 1

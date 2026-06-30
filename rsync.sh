@@ -1,1 +1,1 @@
-rsync -av --progress --include="desktop-dash.yaml,modules/" sean@192.168.68.99:/data/esphome/config/
+rsync -av --progress --include="desktop-dash.yaml,modules/" sean@192.168.1.99:/data/esphome/config/

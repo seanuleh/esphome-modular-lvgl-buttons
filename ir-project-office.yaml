@@ -1,0 +1,102 @@
+esphome:
+  name: ir-project-office
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+captive_portal:
+
+logger:
+  level: INFO
+
+api:
+
+ota:
+  platform: esphome
+  password: !secret ota_password
+
+text_sensor:
+  - platform: template
+    name: Last IR Bytes
+    id: last_ir_bytes
+    update_interval: never
+
+remote_receiver:
+  id: rx
+  pin:
+    number: GPIO14
+    inverted: true
+  dump: all
+  on_raw:
+    then:
+      - lambda: |-
+          int start = -1;
+          for (int i = (int)x.size()-2; i >= 0; i--) {
+            if (x[i] > 2800 && x[i] < 4200 && x[i+1] < -1300 && x[i+1] > -2200) {
+              start = i + 2;
+              break;
+            }
+          }
+          if (start < 0) return;
+          uint8_t bytes[24]; int nbits = 0;
+          for (int i = start; i+1 < (int)x.size() && nbits < 192; i += 2) {
+            int mark = x[i], sp = -x[i+1];
+            if (mark < 200 || mark > 700) break;
+            int bit;
+            if (sp > 200 && sp < 700) bit = 0;
+            else if (sp > 900 && sp < 1600) bit = 1;
+            else break;
+            int by = nbits >> 3, bi = nbits & 7;
+            if (bi == 0) bytes[by] = 0;
+            bytes[by] |= (bit << (7 - bi));
+            nbits++;
+          }
+          if (nbits < 144) return;
+          if (bytes[0] != 0xC4 || bytes[1] != 0xD3) return;
+
+          char buf[200]; int n = 0;
+          for (int i = 0; i < 18; i++) n += sprintf(buf+n, "%02X ", bytes[i]);
+          id(last_ir_bytes).publish_state(std::string(buf));
+
+          bool power_on = bytes[5] & 0x04;
+          uint8_t b6 = bytes[6];
+          uint8_t mode_bits = ((b6 >> 4) & 1) | (((b6 >> 3) & 1) << 1) | (((b6 >> 2) & 1) << 2);
+          uint8_t tn = bytes[7] >> 4;
+          uint8_t tv = ((tn >> 3) & 1) | (((tn >> 2) & 1) << 1) | (((tn >> 1) & 1) << 2) | ((tn & 1) << 3);
+          float temp_c = 16.0f + (float)tv;
+
+          auto *c = id(aircon);
+          if (!power_on) {
+            c->mode = climate::CLIMATE_MODE_OFF;
+          } else {
+            switch (mode_bits) {
+              case 1: c->mode = climate::CLIMATE_MODE_HEAT; break;
+              case 2: c->mode = climate::CLIMATE_MODE_DRY; break;
+              case 3: c->mode = climate::CLIMATE_MODE_COOL; break;
+              case 4: c->mode = climate::CLIMATE_MODE_HEAT_COOL; break;
+              case 7: c->mode = climate::CLIMATE_MODE_FAN_ONLY; break;
+              default: break;
+            }
+            c->target_temperature = temp_c;
+          }
+          c->publish_state();
+          ESP_LOGI("mitsu", "power=%d mode=%u temp=%.0f", power_on, mode_bits, temp_c);
+
+remote_transmitter:
+  id: tx
+  pin: GPIO4
+  carrier_duty_percent: 50%
+  non_blocking: true
+
+climate:
+  - platform: mitsubishi
+    name: Aircon
+    id: aircon
+    transmitter_id: tx
+    receiver_id: rx
