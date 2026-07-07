@@ -1,10 +1,8 @@
 esphome:
   name: ir-project-office
 
-esp32:
-  board: esp32dev
-  framework:
-    type: arduino
+esp8266:
+  board: esp12e
 
 wifi:
   ssid: !secret wifi_ssid
@@ -17,7 +15,7 @@ wifi:
 captive_portal:
 
 logger:
-  level: INFO
+  level: VERBOSE
 
 api:
 
@@ -96,7 +94,6 @@ remote_transmitter:
   id: tx
   pin: GPIO4
   carrier_duty_percent: 50%
-  non_blocking: true
 
 climate:
   - platform: mitsubishi
