@@ -162,17 +162,14 @@ text_sensor:
           lv_obj_set_style_bg_color(id(pill_monitor), col, LV_PART_MAIN);
           lv_obj_set_style_bg_color(id(strip_monitor), col, LV_PART_MAIN);
           lv_label_set_text(id(lbl_monitor_state), is_pc ? "PC" : "MAC");
+      # The input drives whether the KVM card is usable at all.
+      - script.execute: update_kvm_lock
   - platform: template
     name: "KVM Input State"
     id: kvm_input_state
     internal: true
     on_value:
-      - lambda: |-
-          bool is_pc = (x == "pc");
-          lv_color_t col = is_pc ? lv_color_hex(0xCC2828) : lv_color_hex(0x4A6ADA);
-          lv_obj_set_style_bg_color(id(pill_kvm), col, LV_PART_MAIN);
-          lv_obj_set_style_bg_color(id(strip_kvm), col, LV_PART_MAIN);
-          lv_label_set_text(id(lbl_kvm_state), is_pc ? "PC" : "MAC");
+      - script.execute: update_kvm_lock
   - platform: template
     name: "USB Switch Output State"
     id: usbswitch_output_state
@@ -220,6 +217,31 @@ script:
             auto now = id(sntp_time).now();
             snprintf(min_buf, sizeof(min_buf), ":%02d%s", now.minute, now.hour >= 12 ? "pm" : "am");
             return min_buf;
+
+  # The KVM card is only meaningful while the PC (DisplayPort) input is live. On the
+  # Mac input the monitor carries USB over Thunderbolt and ignores VCP 0xE7 entirely,
+  # so the card is greyed out and made unclickable rather than offering a control that
+  # does nothing but blip the USB hub. See ~/docs/monitor-control.md.
+  - id: update_kvm_lock
+    then:
+      - lambda: |-
+          bool locked = (id(monitor_input_state).state != "pc");
+          bool is_pc = (id(kvm_input_state).state == "pc");
+          lv_color_t col = locked ? lv_color_hex(0x3A3A3A)
+                                  : (is_pc ? lv_color_hex(0xCC2828) : lv_color_hex(0x4A6ADA));
+          lv_obj_set_style_bg_color(id(pill_kvm), col, LV_PART_MAIN);
+          lv_obj_set_style_bg_color(id(strip_kvm), col, LV_PART_MAIN);
+          // While locked the USB really is on the Mac whatever 0xE7 says, so show MAC.
+          lv_label_set_text(id(lbl_kvm_state), locked ? "MAC" : (is_pc ? "PC" : "MAC"));
+          lv_obj_set_style_text_color(id(lbl_kvm_state),
+                                      lv_color_hex(locked ? 0x8A8A8A : 0xFFFFFF), LV_PART_MAIN);
+          lv_obj_set_style_bg_color(id(btn_kvm_card),
+                                    lv_color_hex(locked ? 0x141414 : 0x1A1A1A), LV_PART_MAIN);
+          if (locked) {
+            lv_obj_clear_flag(id(btn_kvm_card), LV_OBJ_FLAG_CLICKABLE);
+          } else {
+            lv_obj_add_flag(id(btn_kvm_card), LV_OBJ_FLAG_CLICKABLE);
+          }
 
   - id: update_seanpc_display
     then:
@@ -956,10 +978,16 @@ lvgl:
                     flex_align_main: START
                     flex_align_cross: CENTER
                   on_press:
-                    - mqtt.publish:
-                        topic: "monitor/kvm_usb/set"
-                        payload: !lambda |-
-                          return id(kvm_input_state).state == "pc" ? std::string("mac") : std::string("pc");
+                    # Second line of defence: update_kvm_lock already clears CLICKABLE on the
+                    # Mac input, but never publish 0xE7 there even if that flag is missed.
+                    - if:
+                        condition:
+                          lambda: 'return id(monitor_input_state).state == "pc";'
+                        then:
+                          - mqtt.publish:
+                              topic: "monitor/kvm_usb/set"
+                              payload: !lambda |-
+                                return id(kvm_input_state).state == "pc" ? std::string("mac") : std::string("pc");
                   widgets:
                     - obj:
                         id: strip_kvm
@@ -1635,7 +1663,7 @@ lvgl:
               - lambda: 'id(display_is_asleep) = false;'
               - if:
                   condition:
-                    lambda: 'return id(brightness_mode).state == "Night" || id(brightness_mode).state == "Evening";'
+                    lambda: 'return id(brightness_mode).current_option() == "Night" || id(brightness_mode).current_option() == "Evening";'
                   then:
                     - light.turn_on:
                         id: display_backlight

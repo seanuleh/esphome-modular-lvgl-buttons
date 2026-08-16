@@ -65,7 +65,7 @@ select:
       then:
         - if:
             condition:
-              - lambda: 'return id(current_theme).state == "Dark";'
+              - lambda: 'return id(current_theme).current_option() == "Dark";'
             then:
               - lvgl.style.update:
                   id: page_style
@@ -73,7 +73,7 @@ select:
               - lvgl.widget.redraw                  
         - if:
             condition:
-              - lambda: 'return id(current_theme).state == "Light";'
+              - lambda: 'return id(current_theme).current_option() == "Light";'
             then:
               - lvgl.style.update:
                   id: page_style

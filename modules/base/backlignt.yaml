@@ -55,10 +55,14 @@ lvgl:
   on_idle:
     timeout: $touchscreen_idle_timeout
     then:
-      - logger.log: "LVGL is idle — sleeping"
-      - lambda: 'id(display_is_asleep) = true;'
-      - lvgl.page.show: sleep_page
-      - light.turn_off: display_backlight
+      - if:
+          condition:
+            lambda: 'return !id(display_is_asleep);'
+          then:
+            - logger.log: "LVGL is idle — sleeping"
+            - lambda: 'id(display_is_asleep) = true;'
+            - lvgl.page.show: sleep_page
+            - light.turn_off: display_backlight
 
 # Touch logging only. Wake is handled by sleep_page's fullscreen button so the wake-tap can't accidentally trigger a real widget.
 touchscreen:
@@ -84,21 +88,21 @@ select:
         - lvgl.widget.redraw
         - if:
             condition:
-              - lambda: 'return id(brightness_mode).state == "Day";'
+              - lambda: 'return id(brightness_mode).current_option() == "Day";'
             then:
               - light.turn_on:
                   id: display_backlight
                   brightness: ${touchscreen_daytime_brightness}
         - if:
             condition:
-              - lambda: 'return id(brightness_mode).state == "Evening";'
+              - lambda: 'return id(brightness_mode).current_option() == "Evening";'
             then:
               - light.turn_on:
                   id: display_backlight
                   brightness: ${touchscreen_nighttime_brightness}
         - if:
             condition:
-              - lambda: 'return id(brightness_mode).state == "Night";'
+              - lambda: 'return id(brightness_mode).current_option() == "Night";'
             then:
               - light.turn_on:
                   id: display_backlight
