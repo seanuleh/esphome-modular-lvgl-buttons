@@ -41,3 +41,10 @@ Sanity check before/after a flash:
   newer than the YAML you edited.
 - After flash, confirm `desktop-dash/sensor/last_restart/state` over MQTT
   bumped to a fresh timestamp.
+
+## Previewing LVGL changes
+
+Render widgets headlessly before flashing: `tools/lvprev/` (symlinked as
+`~/bin/lvprev` on uleh) builds a `host` + SDL preview in a throwaway container and
+grabs frames under Xvfb. Usage and gotchas: `~/docs/headless-browser.md` on uleh,
+"ESPHome LVGL screens". `tools/lvprev/example-jiggler.yaml` is a worked example.

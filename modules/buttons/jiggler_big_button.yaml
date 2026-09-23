@@ -1,0 +1,50 @@
+# Jiggler button: the desk version of the big button on the HA "Jiggler"
+# dashboard (/dashboard-jiggler). Logic and state live in
+# modules/sections/jiggler_logic.yaml; include both.
+#
+# Green = a jiggler is actually on (from the jigglers' own retained MQTT state),
+# grey = off. A tap never flips it: it shows a white outline and
+# STARTING.../STOPPING... until the real state changes, or says why nothing
+# happened (see jiggler_press).
+id: btn_jiggler
+width: 160px
+height: 64px
+radius: 10
+bg_color: 0x1A1A1A
+bg_grad_color: 0x1A1A1A
+bg_grad_dir: VER
+bg_opa: COVER
+border_width: 0
+border_color: 0xFFFFFF
+pad_all: 0
+scrollbar_mode: "OFF"
+clickable: true
+pressed:
+  bg_color: 0x2E2E2E
+  bg_grad_color: 0x2E2E2E
+on_press:
+  - script.execute: jiggler_press
+widgets:
+  - label:
+      id: lbl_jiggler_icon
+      text: "\U000F037E"  # mdi_mouse_off
+      text_font: light24
+      text_color: 0x888888
+      align: left_mid
+      x: 12
+  - label:
+      id: lbl_jiggler_state
+      text: "OFF"
+      text_font: roboto18
+      text_color: 0xEEEEEE
+      align: left_mid
+      x: 46
+      y: -9
+  - label:
+      id: lbl_jiggler_sub
+      text: "TAP TO START"
+      text_font: roboto12
+      text_color: 0x888888
+      align: left_mid
+      x: 46
+      y: 11

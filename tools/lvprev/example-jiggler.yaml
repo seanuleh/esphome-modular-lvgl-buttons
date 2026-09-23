@@ -1,0 +1,130 @@
+
+esphome:
+  name: jigprev
+  on_boot:
+    priority: -100
+    then:
+      - delay: 3s
+
+      - globals.set: {id: jig_dongle_on, value: 'false'}
+      - globals.set: {id: jig_monitor_on, value: 'false'}
+      - globals.set: {id: jig_pending, value: 'false'}
+      - globals.set: {id: jig_target, value: 'false'}
+      - script.execute: update_jiggler_display
+      - logger.log: "STATE 0"
+      - delay: 3s
+
+      - globals.set: {id: jig_dongle_on, value: 'false'}
+      - globals.set: {id: jig_monitor_on, value: 'false'}
+      - globals.set: {id: jig_pending, value: 'true'}
+      - globals.set: {id: jig_target, value: 'true'}
+      - script.execute: update_jiggler_display
+      - logger.log: "STATE 1"
+      - delay: 3s
+
+      - globals.set: {id: jig_dongle_on, value: 'true'}
+      - globals.set: {id: jig_monitor_on, value: 'false'}
+      - globals.set: {id: jig_pending, value: 'false'}
+      - globals.set: {id: jig_target, value: 'false'}
+      - script.execute: update_jiggler_display
+      - logger.log: "STATE 2"
+      - delay: 3s
+
+      - globals.set: {id: jig_dongle_on, value: 'false'}
+      - globals.set: {id: jig_monitor_on, value: 'true'}
+      - globals.set: {id: jig_pending, value: 'false'}
+      - globals.set: {id: jig_target, value: 'false'}
+      - script.execute: update_jiggler_display
+      - logger.log: "STATE 3"
+      - delay: 3s
+
+      - globals.set: {id: jig_dongle_on, value: 'true'}
+      - globals.set: {id: jig_monitor_on, value: 'false'}
+      - globals.set: {id: jig_pending, value: 'true'}
+      - globals.set: {id: jig_target, value: 'false'}
+      - script.execute: update_jiggler_display
+      - logger.log: "STATE 4"
+      - delay: 3s
+
+      - globals.set: {id: jig_dongle_on, value: 'false'}
+      - globals.set: {id: jig_monitor_on, value: 'false'}
+      - globals.set: {id: jig_pending, value: 'false'}
+      - globals.set: {id: jig_target, value: 'false'}
+      - script.execute: update_jiggler_display
+      - script.execute: {id: jiggler_flash, msg: "NOT ON MAC"}
+      - logger.log: "STATE 5"
+      - delay: 3s
+
+      - globals.set: {id: jig_dongle_on, value: 'false'}
+      - globals.set: {id: jig_monitor_on, value: 'false'}
+      - globals.set: {id: jig_pending, value: 'false'}
+      - globals.set: {id: jig_target, value: 'false'}
+      - script.execute: update_jiggler_display
+      - script.execute: {id: jiggler_flash, msg: "NO RESPONSE"}
+      - logger.log: "STATE 6"
+      - delay: 3s
+
+host:
+logger:
+api:
+packages:
+  fonts: !include modules/base/fonts.yaml
+  jiggler: !include modules/sections/jiggler_logic.yaml
+text_sensor:
+  - {platform: template, id: monitor_input_state}
+  - {platform: template, id: kvm_input_state}
+  - {platform: template, id: usbswitch_output_state}
+display:
+  - platform: sdl
+    show_test_card: false
+    dimensions: {width: 480, height: 480}
+lvgl:
+  theme:
+    obj: {border_width: 0, pad_all: 0, bg_opa: TRANSP, scrollable: false}
+    label: {border_width: 0, scrollable: false}
+  pages:
+    - id: p
+      bg_color: 0x111111
+      pad_left: 6
+      pad_right: 6
+      widgets:
+        - obj:
+            width: 100%
+            height: 70px
+            align: CENTER
+            bg_opa: TRANSP
+            border_width: 0
+            layout: {type: flex, flex_flow: ROW, flex_align_main: SPACE_BETWEEN, flex_align_cross: CENTER}
+            widgets:
+
+              - obj:
+                  width: 90px
+                  height: 64px
+                  radius: 10
+                  bg_color: 0x1A1A1A
+                  bg_opa: COVER
+                  border_width: 0
+                  widgets:
+                    - label: {text: "DUAL", text_font: roboto12, text_color: 0x888888, align: CENTER, y: 16}
+
+              - obj:
+                  width: 90px
+                  height: 64px
+                  radius: 10
+                  bg_color: 0x1A1A1A
+                  bg_opa: COVER
+                  border_width: 0
+                  widgets:
+                    - label: {text: "OLED", text_font: roboto12, text_color: 0x888888, align: CENTER, y: 16}
+
+              - obj:
+                  width: 90px
+                  height: 64px
+                  radius: 10
+                  bg_color: 0x1A1A1A
+                  bg_opa: COVER
+                  border_width: 0
+                  widgets:
+                    - label: {text: "ULTRA", text_font: roboto12, text_color: 0x888888, align: CENTER, y: 16}
+
+              - obj: !include modules/buttons/jiggler_big_button.yaml

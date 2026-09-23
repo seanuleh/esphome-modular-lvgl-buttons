@@ -86,6 +86,7 @@ font:
       "\U000F0425",  # mdi_power
       "\U000F037D",  # mdi_mouse
       "\U000F037E",  # mdi_mouse_off
+      "\U000F1552",  # mdi_mouse_move_vertical
     ]
 
   # http://materialdesignicons.com/cdn/7.4.47/
@@ -130,5 +131,6 @@ font:
       "\U000F0425",  # mdi_power
       "\U000F037D",  # mdi_mouse
       "\U000F037E",  # mdi_mouse_off
+      "\U000F1552",  # mdi_mouse_move_vertical
     ]
 

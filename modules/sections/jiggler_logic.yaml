@@ -1,0 +1,135 @@
+# State and behaviour for modules/buttons/jiggler_big_button.yaml.
+#
+# State comes from the jigglers' retained MQTT state topics, so the button is
+# right at boot and follows changes made anywhere (HA app, automation, web UI).
+# The host config must feed them in from mqtt.on_message:
+#   dongle_jiggler/switch/state -> jig_dongle_on, seans_jiggler/switch/state -> jig_monitor_on,
+#   each followed by script.execute: jiggler_state_changed
+# and provide text sensors monitor_input_state, kvm_input_state and
+# usbswitch_output_state (values "mac" / "pc").
+#
+# A tap calls script.jiggler_toggle in HA, the same as the dashboard's big button.
+# HA picks which jiggler to turn on (see esp32-s3-mouse-jiggler docs/ha-orchestration.md).
+
+globals:
+  - id: jig_dongle_on
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: jig_monitor_on
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  # A tap is waiting for the real state to change to jig_target.
+  - id: jig_pending
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+  - id: jig_target
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+
+script:
+  - id: update_jiggler_display
+    then:
+      - lambda: |-
+          bool d = id(jig_dongle_on), m = id(jig_monitor_on);
+          bool on = d || m;
+          bool p = id(jig_pending);
+          lv_obj_t *btn = id(btn_jiggler);
+          lv_obj_set_style_bg_color(btn, lv_color_hex(on ? 0x22C55E : 0x1A1A1A), LV_PART_MAIN);
+          lv_obj_set_style_bg_grad_color(btn, lv_color_hex(on ? 0x15803D : 0x1A1A1A), LV_PART_MAIN);
+          lv_obj_set_style_border_width(btn, p ? 2 : 0, LV_PART_MAIN);
+          lv_label_set_text(id(lbl_jiggler_icon), on ? "\U000F1552" : "\U000F037E");  // mouse_move_vertical / mouse_off
+          lv_obj_set_style_text_color(id(lbl_jiggler_icon), lv_color_hex(on ? 0xFFFFFF : 0x888888), LV_PART_MAIN);
+          lv_label_set_text(id(lbl_jiggler_state), on ? "JIGGLING" : "OFF");
+          lv_obj_set_style_text_color(id(lbl_jiggler_state), lv_color_hex(on ? 0xFFFFFF : 0xEEEEEE), LV_PART_MAIN);
+          const char *sub = p ? (id(jig_target) ? "STARTING..." : "STOPPING...")
+                          : on ? (d ? "DONGLE" : "MONITOR") : "TAP TO START";
+          lv_label_set_text(id(lbl_jiggler_sub), sub);
+          lv_obj_set_style_text_color(id(lbl_jiggler_sub),
+                                      lv_color_hex(p ? 0xFFFFFF : on ? 0xDCFCE7 : 0x888888), LV_PART_MAIN);
+
+  # Called after either jiggler's state topic updates.
+  - id: jiggler_state_changed
+    then:
+      - if:
+          condition:
+            lambda: 'return id(jig_pending) && (id(jig_dongle_on) || id(jig_monitor_on)) == id(jig_target);'
+          then:
+            - globals.set:
+                id: jig_pending
+                value: 'false'
+            - script.stop: jiggler_timeout
+      - script.execute: update_jiggler_display
+
+  - id: jiggler_press
+    then:
+      - if:
+          condition:
+            lambda: 'return id(jig_pending);'
+          then:
+            - logger.log: "jiggler: tap ignored, previous one still pending"
+          else:
+            - if:
+                # Turning on with nothing routed to the Mac: HA's script would do nothing.
+                condition:
+                  lambda: |-
+                    bool on = id(jig_dongle_on) || id(jig_monitor_on);
+                    bool reaches = id(usbswitch_output_state).state == "mac" ||
+                                   id(monitor_input_state).state == "mac" ||
+                                   id(kvm_input_state).state == "mac";
+                    return !on && !reaches;
+                then:
+                  - script.execute:
+                      id: jiggler_flash
+                      msg: "NOT ON MAC"
+                else:
+                  - if:
+                      condition:
+                        api.connected:
+                      then:
+                        - globals.set:
+                            id: jig_target
+                            value: '!(id(jig_dongle_on) || id(jig_monitor_on))'
+                        - globals.set:
+                            id: jig_pending
+                            value: 'true'
+                        - script.execute: update_jiggler_display
+                        - homeassistant.action:
+                            action: script.jiggler_toggle
+                        - script.execute: jiggler_timeout
+                      else:
+                        - script.execute:
+                            id: jiggler_flash
+                            msg: "HA OFFLINE"
+
+  # No state change 6 s after a tap: give up and say so.
+  - id: jiggler_timeout
+    mode: restart
+    then:
+      - delay: 6s
+      - if:
+          condition:
+            lambda: 'return id(jig_pending);'
+          then:
+            - globals.set:
+                id: jig_pending
+                value: 'false'
+            - script.execute:
+                id: jiggler_flash
+                msg: "NO RESPONSE"
+
+  # Red message in the sub-label for 2.5 s, then back to the real state.
+  - id: jiggler_flash
+    mode: restart
+    parameters:
+      msg: string
+    then:
+      - script.execute: update_jiggler_display
+      - lambda: |-
+          lv_label_set_text(id(lbl_jiggler_sub), msg.c_str());
+          lv_obj_set_style_text_color(id(lbl_jiggler_sub), lv_color_hex(0xF87171), LV_PART_MAIN);
+      - delay: 2500ms
+      - script.execute: update_jiggler_display

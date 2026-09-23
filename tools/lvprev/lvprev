@@ -1,0 +1,10 @@
+#!/bin/sh
+# lvprev <dir-with-preview.yaml-and-modules>   (env: PREVIEW START EVERY SHOTS CROP)
+# Build the image once:  docker build -t esphome-lvprev ~/bin/lvprev
+set -e
+dir=$(cd "$1" && pwd)
+cp "$(dirname "$0")/run.sh" "$dir/.lvprev_run.sh"
+mkdir -p "$HOME/.cache/lvprev-pio"
+docker run --rm -v "$dir":/config -v "$HOME/.cache/lvprev-pio":/root/.platformio -w /config \
+  -e PREVIEW -e START -e EVERY -e SHOTS -e CROP --entrypoint sh esphome-lvprev .lvprev_run.sh
+echo "$dir/all.png"

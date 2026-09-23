@@ -85,6 +85,19 @@ mqtt:
         - text_sensor.template.publish:
             id: usbswitch_output_state
             state: !lambda 'return x;'
+    # Jigglers' own retained state: the jiggler button shows only what they report.
+    - topic: dongle_jiggler/switch/state
+      then:
+        - globals.set:
+            id: jig_dongle_on
+            value: !lambda 'return x == "ON";'
+        - script.execute: jiggler_state_changed
+    - topic: seans_jiggler/switch/state
+      then:
+        - globals.set:
+            id: jig_monitor_on
+            value: !lambda 'return x == "ON";'
+        - script.execute: jiggler_state_changed
     - topic: "zigbee2mqtt/Sean's Office Light"
       then:
         - lambda: |-
@@ -108,10 +121,6 @@ globals:
     restore_value: no
     initial_value: 'false'
   - id: ginapc_pending
-    type: bool
-    restore_value: no
-    initial_value: 'false'
-  - id: jiggler_active
     type: bool
     restore_value: no
     initial_value: 'false'
@@ -364,25 +373,6 @@ script:
           topic: "zigbee2mqtt/Sean's Office Light/set"
           payload: !lambda 'return id(light_on) ? std::string("{\"state\":\"OFF\"}") : std::string("{\"state\":\"ON\"}");'
 
-  - id: jiggler_toggle_action
-    then:
-      - lambda: |-
-          id(jiggler_active) = !id(jiggler_active);
-          bool on = id(jiggler_active);
-          lv_color_t on_col  = lv_color_hex(0x22C55E);
-          lv_color_t off_col = lv_color_hex(0x2A2A2A);
-          lv_color_t txt_on  = lv_color_hex(0xEEEEEE);
-          lv_color_t txt_off = lv_color_hex(0x888888);
-          lv_color_t icon_off = lv_color_hex(0xDDDDDD);
-          lv_obj_set_style_bg_color(id(jiggler_track), on ? on_col : off_col, LV_PART_MAIN);
-          lv_obj_set_x(id(jiggler_handle), on ? 31 : 1);
-          lv_label_set_text(id(lbl_jiggler_state), on ? "ON" : "OFF");
-          lv_obj_set_style_text_color(id(lbl_jiggler_state), on ? txt_on : txt_off, LV_PART_MAIN);
-          lv_obj_set_style_text_color(id(lbl_jiggler_icon), on ? on_col : icon_off, LV_PART_MAIN);
-      - mqtt.publish:
-          topic: "seans_jiggler/switch/command"
-          payload: !lambda 'return id(jiggler_active) ? std::string("ON") : std::string("OFF");'
-
 packages:
   wifi: !include
     file: modules/base/wifi.yaml
@@ -397,6 +387,7 @@ packages:
   sensors: !include modules/sensors/sensors_base.yaml
   theme_style: !include modules/base/theme_style.yaml
   hardware: !include modules/hardware/guition-esp32-s3-4848s040.yaml
+  jiggler: !include modules/sections/jiggler_logic.yaml
 
   btn_sean_cover_office: !include
     file: modules/sensors/cover_state.yaml
@@ -1206,59 +1197,8 @@ lvgl:
                         align: CENTER
                         y: 16
 
-              # Mouse Jiggler
-              - obj:
-                  id: btn_jiggler
-                  width: 96px
-                  height: 64px
-                  radius: 10
-                  bg_color: 0x1A1A1A
-                  bg_opa: COVER
-                  border_width: 0
-                  pad_all: 0
-                  scrollbar_mode: "OFF"
-                  clickable: true
-                  pressed:
-                    bg_color: 0x2E2E2E
-                  on_press:
-                    - script.execute: jiggler_toggle_action
-                  widgets:
-                    - label:
-                        id: lbl_jiggler_icon
-                        text: $mdi_mouse
-                        text_font: $icon_font_small
-                        text_color: 0xDDDDDD
-                        align: top_mid
-                        y: 4
-                    - obj:
-                        width: 44px
-                        height: 14px
-                        radius: 7
-                        id: jiggler_track
-                        bg_color: 0x2A2A2A
-                        bg_opa: COVER
-                        border_width: 0
-                        pad_all: 0
-                        align: CENTER
-                        widgets:
-                          - obj:
-                              id: jiggler_handle
-                              width: 12px
-                              height: 12px
-                              radius: 6
-                              bg_color: 0x888888
-                              bg_opa: COVER
-                              border_width: 0
-                              align: left_mid
-                              x: 1
-                              y: 0
-                    - label:
-                        id: lbl_jiggler_state
-                        text: "OFF"
-                        text_font: roboto12
-                        text_color: 0x888888
-                        align: bottom_mid
-                        y: -4
+              # Mouse Jiggler: same one-tap toggle as the HA dashboard's big button
+              - obj: !include modules/buttons/jiggler_big_button.yaml
 
     # ─────────────────────────────────────────────
     # LIGHT PAGE
